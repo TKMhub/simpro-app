@@ -1,16 +1,13 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
+import Header from "@/components/Header";
 
-const geistSans = Geist({
+const noto_sans_jp = Noto_Sans_JP({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -24,10 +21,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body className={`${noto_sans_jp.variable} antialiased bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300`}>
+        {/* Theme no-flash init */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var s=localStorage.getItem('theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var e=s?s==='dark':d;var c=document.documentElement.classList;c.toggle('dark',e);}catch(e){}})();",
+          }}
+        />
+        {/* Global Header */}
+        <Header />
+        <div className="pt-16">{children}</div>
       </body>
     </html>
   );
