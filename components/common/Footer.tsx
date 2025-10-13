@@ -7,7 +7,7 @@ export default function Footer() {
   return (
     <footer className="my-5 sm:mt-16">
       <div className="mx-auto max-w-6xl px-3 sm:px-6">
-        <div className=" flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6 py-4 rounded-xl border border-white/10 bg-[#1f2937] text-neutral-200 shadow-sm shadow-black/5">
+        <div className=" flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6 py-4 rounded-xl border border-white/10 bg-[#343434] text-neutral-200 shadow-sm shadow-black/5">
           <div className="flex">
 
           <div className=" justify-between">
