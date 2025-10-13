@@ -5,7 +5,7 @@ export default function Footer() {
   const year = new Date().getFullYear();
   const topics = getAllTags();
   return (
-    <footer className="my-12 sm:mt-16">
+    <footer className="my-5 sm:mt-16">
       <div className="mx-auto max-w-6xl px-3 sm:px-6">
         <div className=" flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6 py-4 rounded-xl backdrop-blur-lg border border-[var(--glass-border)] bg-[var(--glass-bg)] shadow-sm shadow-black/5">
           <div className="flex justify-between">
@@ -27,15 +27,15 @@ export default function Footer() {
                     href="/about"
                     className="px-2 py-1.5 rounded-md hover:bg-[var(--hover-surface)] transition-colors"
                   >
-                    About
+                    about
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="/link"
+                    href="/blog"
                     className="px-2 py-1.5 rounded-md hover:bg-[var(--hover-surface)] transition-colors"
                   >
-                    Links
+                    blog
                   </Link>
                 </li>
                 <li>
@@ -43,7 +43,15 @@ export default function Footer() {
                     href="/product"
                     className="px-2 py-1.5 rounded-md hover:bg-[var(--hover-surface)] transition-colors"
                   >
-                    Products
+                    product
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/link"
+                    className="px-2 py-1.5 rounded-md hover:bg-[var(--hover-surface)] transition-colors"
+                  >
+                    link
                   </Link>
                 </li>
               </ul>

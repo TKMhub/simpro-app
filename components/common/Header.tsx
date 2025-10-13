@@ -100,20 +100,20 @@ export default function Header() {
                       <li>
                         <SheetClose asChild>
                           <Link
-                            href="/blog"
+                            href="/about"
                             className="block rounded-md px-3 py-2 text-base transition-colors hover:bg-white/50 hover:text-neutral-950"
                           >
-                            blog
+                            about
                           </Link>
                         </SheetClose>
                       </li>
                       <li>
                         <SheetClose asChild>
                           <Link
-                            href="/about"
+                            href="/blog"
                             className="block rounded-md px-3 py-2 text-base transition-colors hover:bg-white/50 hover:text-neutral-950"
                           >
-                            about
+                            blog
                           </Link>
                         </SheetClose>
                       </li>
@@ -166,18 +166,18 @@ export default function Header() {
             <ul className="flex items-center gap-2 sm:gap-3 md:gap-4 text-sm">
               <li>
                 <Link
-                  href="/blog"
-                  className="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-md hover:bg-[var(--hover-surface)] transition-colors"
-                >
-                  blog
-                </Link>
-              </li>
-              <li>
-                <Link
                   href="/about"
                   className="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-md hover:bg-[var(--hover-surface)] transition-colors"
                 >
                   about
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/blog"
+                  className="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-md hover:bg-[var(--hover-surface)] transition-colors"
+                >
+                  blog
                 </Link>
               </li>
               <li>
