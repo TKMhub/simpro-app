@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="40" viewBox="0 0 160 40" role="img" aria-label="Brand">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="1" y2="0">
+      <stop offset="0" stop-color="#e6b3c2"/>
+      <stop offset="0.5" stop-color="#9aa6b2"/>
+      <stop offset="1" stop-color="#1e80b6"/>
+    </linearGradient>
+  </defs>
+  <rect width="160" height="40" rx="8" fill="url(#g)" opacity="0.15"/>
+  <text x="20" y="26" font-family="system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Noto Sans, sans-serif" font-weight="700" font-size="20" fill="#0b0d10" opacity="0.88">Brand</text>
+</svg>
