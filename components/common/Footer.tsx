@@ -1,8 +1,10 @@
 import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
+import { getAllTags } from "@/lib/blogData";
 
 export default function Footer() {
   const year = new Date().getFullYear();
+  const topics = getAllTags();
   return (
     <footer className="mt-12 sm:mt-16">
       <div className="mx-auto max-w-6xl px-3 sm:px-6">
@@ -12,7 +14,7 @@ export default function Footer() {
           <div className="flex items-center gap-3 text-sm text-[var(--muted-foreground)]">
             <span className="font-medium text-[var(--foreground)]">Simplo</span>
             <span aria-hidden>•</span>
-            <span>© {year}</span>
+            <span>@ {year}</span>
           </div>
 
           <nav aria-label="フッターナビゲーション" className="order-last sm:order-none">
@@ -34,13 +36,31 @@ export default function Footer() {
               </li>
             </ul>
           </nav>
-
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-          </div>
         </div>
+
+        {/* Topics from existing content */}
+        {topics.length > 0 && (
+          <div className="mt-3 px-2 sm:px-4">
+            <div className="flex items-center gap-2 text-xs text-[var(--muted-foreground)] mb-1.5">
+              <span className="uppercase tracking-wide">Topics</span>
+            </div>
+            <nav aria-label="トピック一覧">
+              <ul className="flex flex-wrap gap-1.5">
+                {topics.map((tag) => (
+                  <li key={tag}>
+                    <Link
+                      href={{ pathname: "/blog", query: { tag } }}
+                      className="inline-block rounded-md border px-2.5 py-1 text-xs hover:bg-[var(--hover-surface)] transition-colors"
+                    >
+                      {tag}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
+        )}
       </div>
     </footer>
   );
 }
-

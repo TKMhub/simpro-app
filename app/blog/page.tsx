@@ -2,16 +2,37 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { blogPosts, getAllTags } from "@/lib/blogData";
+import { normalizeCategories } from "@/lib/blogCategories";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { useSearchParams } from "next/navigation";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export default function BlogListPage() {
+  const searchParams = useSearchParams();
   const allTags = useMemo(() => getAllTags(), []);
   const [activeTags, setActiveTags] = useState<string[]>([]);
   const [query, setQuery] = useState("");
+
+  // Initialize active tags from URL query (?tag=React&tag=Next.js)
+  useEffect(() => {
+    const urlTags = searchParams ? searchParams.getAll("tag") : [];
+    if (urlTags.length > 0) {
+      const valid = urlTags.filter((t) => allTags.includes(t));
+      if (valid.length > 0) {
+        setActiveTags(Array.from(new Set(valid)));
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, allTags.join("|")]);
 
   const toggleTag = (tag: string) => {
     setActiveTags((prev) =>
@@ -23,6 +44,19 @@ export default function BlogListPage() {
     setActiveTags([]);
     setQuery("");
   };
+
+  const categories = useMemo(() => normalizeCategories(allTags), [allTags]);
+
+  const popularTags = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const p of blogPosts) {
+      for (const t of p.tags) counts.set(t, (counts.get(t) ?? 0) + 1);
+    }
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([t]) => t)
+      .slice(0, 6);
+  }, []);
 
   const filtered = useMemo(() => {
     return blogPosts.filter((p) => {
@@ -67,28 +101,70 @@ export default function BlogListPage() {
           )}
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          {allTags.map((tag) => {
-            const active = activeTags.includes(tag);
-            return (
-              <button
-                key={tag}
-                onClick={() => toggleTag(tag)}
-                className={[
-                  "transition-transform",
-                  active ? "scale-[1.03]" : "hover:scale-[1.02]",
-                ].join(" ")}
-                aria-pressed={active}
-              >
-                <Badge
-                  variant={active ? "default" : "secondary"}
-                  className={active ? "bg-blue-600" : ""}
+        {/* Quick access: おすすめタグ */}
+        <div className="space-y-2">
+          <p className="text-xs text-muted-foreground">おすすめタグ</p>
+          <div className="flex flex-wrap gap-2">
+            {popularTags.map((tag) => {
+              const active = activeTags.includes(tag);
+              return (
+                <button
+                  key={tag}
+                  onClick={() => toggleTag(tag)}
+                  className={[
+                    "transition-transform",
+                    active ? "scale-[1.03]" : "hover:scale-[1.02]",
+                  ].join(" ")}
+                  aria-pressed={active}
                 >
-                  {tag}
-                </Badge>
-              </button>
-            );
-          })}
+                  <Badge
+                    variant={active ? "default" : "secondary"}
+                    className={active ? "bg-blue-600" : ""}
+                  >
+                    {tag}
+                  </Badge>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Category accordion: 大項目 / 小項目 */}
+        <div className="rounded-md border bg-card">
+          <Accordion type="multiple" className="w-full">
+            {categories.map((cat, idx) => (
+              <AccordionItem key={cat.name} value={`${idx}`}>
+                <AccordionTrigger className="px-3">
+                  <span className="text-sm">{cat.name}</span>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="px-3 pb-1 flex flex-wrap gap-2">
+                    {cat.items.map((tag) => {
+                      const active = activeTags.includes(tag);
+                      return (
+                        <button
+                          key={tag}
+                          onClick={() => toggleTag(tag)}
+                          className={[
+                            "transition-transform",
+                            active ? "scale-[1.03]" : "hover:scale-[1.02]",
+                          ].join(" ")}
+                          aria-pressed={active}
+                        >
+                          <Badge
+                            variant={active ? "default" : "secondary"}
+                            className={active ? "bg-blue-600" : ""}
+                          >
+                            {tag}
+                          </Badge>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </section>
 
@@ -144,4 +220,3 @@ export default function BlogListPage() {
     </main>
   );
 }
-
