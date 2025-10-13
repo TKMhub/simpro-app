@@ -39,6 +39,9 @@
   --glass-bg: rgba(255, 255, 255, 0.6);
   --glass-border: rgba(255, 255, 255, 0.2);
   --hover-surface: rgba(0, 0, 0, 0.05);
+  /* Cover-specific glass per requirement: light = black glass, dark = white glass */
+  --cover-glass-bg: rgba(0, 0, 0, 0.6);
+  --cover-foreground: #f3f4f6; /* near-white for readability on black glass */
 }
 
 .dark {
@@ -77,6 +80,9 @@
   --glass-bg: rgba(17, 24, 39, 0.5); /* slate-900/50 */
   --glass-border: rgba(255, 255, 255, 0.1);
   --hover-surface: rgba(255, 255, 255, 0.06);
+  /* Cover-specific glass: dark = white glass */
+  --cover-glass-bg: rgba(255, 255, 255, 0.7);
+  --cover-foreground: #0f172a; /* slate-900 on white glass */
 }
 
 /* Set default page colors using tokens to benefit non-Tailwind surfaces */

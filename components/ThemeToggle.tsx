@@ -12,10 +12,9 @@ export default function ThemeToggle() {
   const [isDark, setIsDark] = useState<boolean | null>(null);
 
   useEffect(() => {
-    // Initialize from localStorage or system preference
+    // Initialize from localStorage only (ignore system preference)
     const stored = typeof window !== "undefined" ? localStorage.getItem("theme") : null;
-    const prefersDark = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const initial = stored ? stored === "dark" : prefersDark;
+    const initial = stored ? stored === "dark" : false;
     setIsDark(initial);
   }, []);
 
@@ -59,4 +58,3 @@ export default function ThemeToggle() {
     </button>
   );
 }
-

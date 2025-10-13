@@ -51,7 +51,7 @@ export default function Header() {
         <div
           className={[
             "flex items-center gap-4 py-2 px-8 rounded-xl transition-all duration-500",
-            "backdrop-blur-lg border-white/60 dark:border-white/50",
+            "backdrop-blur-lg border-[var(--glass-border)]",
             // --- 背景色：スクロール状況とテーマで変化（青を強調） ---
             scrolled
             //スクロール時
