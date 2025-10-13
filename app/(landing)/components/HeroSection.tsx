@@ -59,7 +59,7 @@ export default function HeroSection(props: HeroSectionProps) {
     socials = [],
   } = props;
   return (
-    <section className="relative w-full py-8 sm:py-10 md:py-12">
+    <section className="relative w-full py-4 sm:py-5 md:py-6">
       {/* 統一左右余白 */}
       <div className="mx-3 sm:mx-4 md:mx-6">
         {/* 1) カバー（すりガラス＋ダーク/ライト切替） */}
@@ -67,26 +67,26 @@ export default function HeroSection(props: HeroSectionProps) {
           className={cn(
             "relative rounded-3xl",
             // 縦長に調整
-            "h-[220px] sm:h-[260px] md:h-[320px] lg:h-[360px]",
+            "h-[220px] sm:h-[260px] md:h-[320px]",
             // すりガラス
             "backdrop-blur-xl backdrop-saturate-150",
             // カバー色はテーマに依存（light=黒ガラス / dark=白ガラス）
-            "bg-[var(--cover-glass-bg)] ring-1 ring-[color:var(--glass-border)] shadow-xl shadow-black/10",
+            "bg-[var(--cover-glass-bg)] ring-1 ring-[var(--glass-border)] shadow-xl shadow-black/10",
           )}
         >
-          <div className="absolute left-4 top-4 sm:left-5 sm:top-5 md:left-6 md:top-6">
+          <div className="absolute left-5 top-8 sm:left-16 sm:top-10 md:left-20 md:top-10">
             {/* ブランドロゴ（サイズアップ） */}
             <Image
               src={brandLogoSrc}
               alt={brandLogoAlt}
-              width={240}
-              height={64}
-              className="h-10 sm:h-12 md:h-14 w-auto"
+              width={1000}
+              height={1000}
+              className="h-12 sm:h-20 md:h-30 w-auto"
               priority={false}
             />
             {/* バナー説明文（背景に応じた文字色） */}
             {bannerText && (
-              <p className="mt-3 text-sm sm:text-base md:text-lg text-[var(--cover-foreground)]">
+              <p className="mt-4 text-base sm:text-lg md:text-xl font-medium text-[var(--cover-foreground)]">
                 {bannerText}
               </p>
             )}
@@ -94,12 +94,12 @@ export default function HeroSection(props: HeroSectionProps) {
         </div>
 
         {/* 2) アバター + テキスト（横並びで横幅いっぱい） */}
-        <div className="mt-6 sm:mt-7 md:mt-8 flex items-start gap-5 sm:gap-6 md:gap-8 w-full">
+        <div className="mt-6 sm:mt-10 md:mt-10 flex items-start gap-5 sm:gap-6 md:gap-8 w-full">
           {/* アバター（画像置換想定） */}
           <div
             className={cn(
-              "size-28 sm:size-32 md:size-36 lg:size-40 rounded-full overflow-hidden",
-              "ring-4 ring-[color:var(--glass-border)] shadow-2xl"
+              "sm:mx-10 md:mx-20 size-20 sm:size-32 md:size-40 lg:size-40 rounded-full overflow-hidden",
+              "ring-4 ring-[var(--glass-border)] shadow-2xl"
             )}
           >
             <Image
@@ -115,7 +115,7 @@ export default function HeroSection(props: HeroSectionProps) {
           {/* テキストブロック */}
           <div className="flex-1 min-w-0">
             {/* タイトル */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-[var(--foreground)]">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight text-[var(--foreground)]">
               {name}
             </h1>
             {/* ハンドル + タグライン */}
@@ -130,7 +130,7 @@ export default function HeroSection(props: HeroSectionProps) {
 
             {/* SNS 行（X/Instagram/YouTube/TikTok） */}
             {socials.length > 0 && (
-              <ul className="mt-5 flex items-center gap-4 sm:gap-5">
+              <ul className="flex items-center gap-4 sm:gap-5">
                 {socials.map((s, i) => (
                   <li key={`${s.type}-${i}`}>
                     <Link
@@ -138,7 +138,7 @@ export default function HeroSection(props: HeroSectionProps) {
                       aria-label={s.label ?? s.type}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="rounded-full p-2 hover:bg-[var(--hover-surface)] transition focus-visible:ring-2 focus-visible:ring-[color:var(--ring)] focus-visible:outline-none"
+                      className="rounded-full p-2 hover:bg-[var(--hover-surface)] transition focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:outline-none"
                     >
                       {s.iconSrc ? (
                         <Image
