@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/common/Header";
+import Footer from "@/components/common/Footer";
 
 const noto_sans_jp = Noto_Sans_JP({
   variable: "--font-geist-sans",
@@ -31,7 +32,8 @@ export default function RootLayout({
         />
         {/* Global Header */}
         <Header />
-        <div className="pt-16">{children}</div>
+        <div className="pt-16 min-h-[calc(100dvh-6rem)]">{children}</div>
+        <Footer />
       </body>
     </html>
   );
