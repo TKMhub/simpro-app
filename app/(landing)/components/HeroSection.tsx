@@ -141,14 +141,15 @@ export default function HeroSection(props: HeroSectionProps) {
               "ring-4 ring-[var(--glass-border)] shadow-2xl"
             )}
           >
-            <Image
-              src={avatarSrc}
-              alt={avatarAlt}
-              width={400}
-              height={400}
-              className="h-full w-full object-cover"
-              priority
-            />
+             <img
+                src="/taku.jpg"
+                alt={avatarAlt}
+                className="h-full w-full object-cover"
+                width={400}
+                height={400}
+                loading="eager"
+                decoding="async"
+              />
           </div>
 
           {/* テキストブロック */}
