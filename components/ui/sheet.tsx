@@ -36,7 +36,7 @@ function SheetOverlay({
     <SheetPrimitive.Overlay
       data-slot="sheet-overlay"
       className={cn(
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/60 sm:bg-black/50",
         className
       )}
       {...props}
@@ -58,7 +58,10 @@ function SheetContent({
       <SheetPrimitive.Content
         data-slot="sheet-content"
         className={cn(
-          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
+          "data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
+          // Frosted glass on mobile; fall back to theme background on sm+
+          "backdrop-blur-xl backdrop-saturate-150 bg-white/65 text-neutral-900 shadow-2xl border border-white/20",
+          "sm:backdrop-blur-none sm:backdrop-saturate-100 sm:bg-background sm:text-foreground sm:border-transparent",
           side === "right" &&
             "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm",
           side === "left" &&

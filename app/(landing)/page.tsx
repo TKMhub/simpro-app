@@ -14,10 +14,10 @@ export default function LandingPage() {
         handle="@taku"
         tagline="Webの修行中 / 個人開発奮闘中 / ベンチプレス110kg / Reactの 先生"
         socials={[
-          { type: "x", href: "https://x.com/", label: "X", iconSrc: "/icons/x.svg" },
-          { type: "instagram", href: "https://instagram.com/", label: "Instagram", iconSrc: "/icons/instagram.svg" },
-          { type: "youtube", href: "https://youtube.com/", label: "YouTube", iconSrc: "/icons/youtube.svg" },
-          { type: "tiktok", href: "https://tiktok.com/", label: "TikTok", iconSrc: "/icons/tiktok.svg" },
+          { type: "x", href: "https://x.com/", label: "X" },
+          { type: "instagram", href: "https://instagram.com/", label: "Instagram" },
+          { type: "youtube", href: "https://youtube.com/", label: "YouTube" },
+          { type: "tiktok", href: "https://tiktok.com/", label: "TikTok" },
         ]}
         // gradient を差し替えたい場合は以下のように指定
         // gradient={{ from: "from-pink-200", via: "via-slate-300", to: "to-sky-600" }}

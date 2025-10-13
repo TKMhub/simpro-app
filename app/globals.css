@@ -90,3 +90,48 @@ html, body {
   background: var(--background);
   color: var(--foreground);
 }
+
+/* Shooting star (meteor) effect for cover right side (desktop only) */
+@keyframes meteor-streak {
+  0% { transform: translate3d(0,0,0) rotate(var(--angle,45deg)); opacity: 0; }
+  8% { opacity: var(--opacity, 1); }
+  100% { transform: translate3d(var(--dx,-420px), var(--dy,420px), 0) rotate(var(--angle,45deg)); opacity: 0; }
+}
+
+.meteor {
+  position: absolute;
+  width: var(--size, 2px);
+  height: var(--size, 2px);
+  transform: rotate(var(--angle, 45deg));
+  opacity: var(--opacity, 0.9);
+  animation: meteor-streak var(--dur, 2.6s) linear infinite;
+  animation-delay: var(--delay, 0s);
+  filter:
+    drop-shadow(0 0 6px color-mix(in oklab, var(--color, #fff) 60%, transparent))
+    drop-shadow(0 0 16px color-mix(in oklab, var(--color, #fff) 30%, transparent));
+  will-change: transform, opacity;
+}
+
+.meteor::before {
+  content: "";
+  position: absolute;
+  width: var(--size, 2px);
+  height: var(--size, 2px);
+  border-radius: 50%;
+  background: var(--color, #fff);
+  box-shadow:
+    0 0 10px color-mix(in oklab, var(--color, #fff) 90%, transparent),
+    0 0 28px color-mix(in oklab, var(--color, #fff) 45%, transparent);
+}
+
+.meteor::after {
+  content: "";
+  position: absolute;
+  top: calc(var(--size, 2px) / 2);
+  left: var(--size, 2px);
+  width: var(--trail, 180px);
+  height: var(--size, 2px);
+  background: linear-gradient(90deg, color-mix(in oklab, var(--color, #fff) 90%, transparent), transparent);
+  transform: translateY(-50%);
+  opacity: var(--opacity, 0.9);
+}

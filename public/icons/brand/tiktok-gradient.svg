@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" role="img" aria-label="TikTok">
+  <defs>
+    <linearGradient id="ttGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#d946ef"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="28" height="28" rx="8" fill="#0a0a0a"/>
+  <path fill="url(#ttGrad)" d="M20 6h2c.3 1.8 1.6 3.6 3 4.3v2.1c-1.7 0-3.4-.6-4.8-1.6V20a6.5 6.5 0 1 1-6.5-6.5c.3 0 .7 0 1 .1V16a3.9 3.9 0 1 0 3.9 3.9V6z"/>
+</svg>

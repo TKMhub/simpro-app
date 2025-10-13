@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" role="img" aria-label="YouTube">
+  <defs>
+    <linearGradient id="ytGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#b91c1c"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="6" width="28" height="20" rx="6" fill="url(#ytGrad)"/>
+  <path d="M14 12l8 4-8 4z" fill="#fff"/>
+</svg>
