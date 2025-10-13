@@ -7,7 +7,7 @@ export default function AboutPage() {
       <section className="text-center space-y-6">
         <div className="flex justify-center">
           <Image
-            src="/avatar.svg"
+            src="/taku.jpg"
             alt="プロフィール画像"
             width={128}
             height={128}
