@@ -8,7 +8,9 @@ export default function Footer() {
     <footer className="my-5 sm:mt-16">
       <div className="mx-auto max-w-6xl px-3 sm:px-6">
         <div className=" flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6 py-4 rounded-xl border border-white/10 bg-[#1f2937] text-neutral-200 shadow-sm shadow-black/5">
-          <div className="flex justify-between">
+          <div className="flex">
+
+          <div className=" justify-between">
             <div className="flex items-center gap-3 text-sm text-neutral-400">
               <span className="font-medium text-neutral-200">
                 Simplo
@@ -20,13 +22,13 @@ export default function Footer() {
             <nav
               aria-label="フッターナビゲーション"
               className="order-last sm:order-none"
-            >
+              >
               <ul className="flex items-center gap-3 text-sm">
                 <li>
                   <Link
                     href="/about"
                     className="px-2 py-1.5 rounded-md hover:bg-white/10 transition-colors"
-                  >
+                    >
                     about
                   </Link>
                 </li>
@@ -34,7 +36,7 @@ export default function Footer() {
                   <Link
                     href="/blog"
                     className="px-2 py-1.5 rounded-md hover:bg-white/10 transition-colors"
-                  >
+                    >
                     blog
                   </Link>
                 </li>
@@ -42,7 +44,7 @@ export default function Footer() {
                   <Link
                     href="/product"
                     className="px-2 py-1.5 rounded-md hover:bg-white/10 transition-colors"
-                  >
+                    >
                     product
                   </Link>
                 </li>
@@ -50,12 +52,13 @@ export default function Footer() {
                   <Link
                     href="/link"
                     className="px-2 py-1.5 rounded-md hover:bg-white/10 transition-colors"
-                  >
+                    >
                     link
                   </Link>
                 </li>
               </ul>
             </nav>
+          </div>
           </div>
           {/* Topics from existing content (frosted card) */}
           {topics.length > 0 && (
