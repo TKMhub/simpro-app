@@ -178,19 +178,21 @@ export default function HeroSection(props: HeroSectionProps) {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {/* 背景にブランド風グラデ、アイコンは白（lucide） */}
+                    {/* 背景にブランド風グラデ、アイコンは白（lucide） */}
                       <span
                         className={cn(
-                          "inline-flex items-center justify-center rounded-full p-2",
-                          s.type === 'instagram' && 'bg-[radial-gradient(30%_130%_at_30%_107%,#feda75_0%,#fa7e1e_25%,#d62976_50%,#962fbf_75%,#4f5bd5_100%)]',
-                          s.type === 'x'         && 'bg-gradient-to-br from-slate-700 to-black',
-                          s.type === 'youtube'   && 'bg-gradient-to-br from-red-500 to-red-700',
-                          s.type === 'tiktok'    && 'bg-gradient-to-br from-cyan-400 to-fuchsia-500',
-                          s.type === 'blog'      && 'bg-gradient-to-br from-emerald-400 to-sky-500'
+                          "inline-flex items-center justify-center rounded-full p-2 transition-[background] duration-200",
+                          // Instagram: switch to linear gradient (like TikTok style) with IG-ish colors
+                          // Base 50% transparency, hover to 100%
+                          s.type === 'instagram' && 'bg-gradient-to-br from-amber-300/50 via-rose-500/50 to-violet-600/50 hover:from-amber-300 hover:via-rose-500 hover:to-violet-600',
+                          s.type === 'x'         && 'bg-gradient-to-br from-slate-700/50 to-black/50 hover:from-slate-700 hover:to-black',
+                          s.type === 'youtube'   && 'bg-gradient-to-br from-red-500/50 to-red-700/50 hover:from-red-500 hover:to-red-700',
+                          s.type === 'tiktok'    && 'bg-gradient-to-br from-cyan-400/50 to-fuchsia-500/50 hover:from-cyan-400 hover:to-fuchsia-500',
+                          s.type === 'blog'      && 'bg-gradient-to-br from-emerald-400/50 to-sky-500/50 hover:from-emerald-400 hover:to-sky-500'
                         )}
                       >
                         <SocialIcon type={s.type} className="size-5 sm:size-6 text-white" />
-                      </span>
+                      </span> 
                     </Link>
                   </li>
                 ))}

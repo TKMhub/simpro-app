@@ -1,6 +1,9 @@
 import HeroSection from "./components/HeroSection";
+import LandingSummary from "@/components/LandingSummary";
+import { fetchSummaryData } from "@/lib/summaryData";
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const { sections, items } = await fetchSummaryData();
   return (
     <main>
       <HeroSection
@@ -19,9 +22,10 @@ export default function LandingPage() {
           { type: "youtube", href: "https://youtube.com/", label: "YouTube" },
           { type: "tiktok", href: "https://tiktok.com/", label: "TikTok" },
         ]}
-        // gradient を差し替えたい場合は以下のように指定
-        // gradient={{ from: "from-pink-200", via: "via-slate-300", to: "to-sky-600" }}
       />
+
+      {/* Title area below: Channel Tabs + Summary Slider */}
+      <LandingSummary sections={sections} items={items} />
     </main>
   );
 }
