@@ -17,10 +17,11 @@ export default function AboutPage() {
         </div>
         <div className="space-y-2">
           <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">
-            たくみ / Webエンジニア・ITコンサルタント
+            taku / システムエンジニア・ITコンサルタント
           </h1>
           <p className="text-[var(--muted-foreground)]">
-            システム開発と個人サービスを通じて、シンプルに価値を生む。
+            日頃、考えていることや学んだことをこちらに記事にまとめたり、個人開発をしています。<br />
+            可能な限り有意義な情報をお届けできるようにします。
           </p>
         </div>
       </section>
@@ -30,21 +31,23 @@ export default function AboutPage() {
         <h2 className="text-xl font-semibold">経歴</h2>
         <div className="relative pl-5 border-l border-[var(--color-border)] space-y-6">
           <div>
-            <div className="text-sm text-[var(--muted-foreground)]">2020〜2023</div>
+            <div className="text-sm text-[var(--muted-foreground)]">2021〜2023</div>
             <p className="mt-1 leading-relaxed">
-              倉庫物流会社の基幹システムマイグレーション案件に従事。要件定義〜開発〜リリースを一貫して担当。
+              システムエンジニアとして、バックエンドからフロントエンドまで幅広くWebアプリケーション開発に従事。<br/>
+              当時、実務で使用していた技術スタックは、Vue.js / Spring / PostgreSQL / AWS（保守） でした。
             </p>
           </div>
           <div>
             <div className="text-sm text-[var(--muted-foreground)]">2023〜現在</div>
             <p className="mt-1 leading-relaxed">
-              コンサルティングファーム「ノースサンド」に転職。PMOとして生命保険システム刷新案件を推進。半年でシニアコンサルタントに昇格。
+              コンサルティングファームに転職。
             </p>
           </div>
           <div>
             <div className="text-sm text-[var(--muted-foreground)]">Parallel</div>
             <p className="mt-1 leading-relaxed">
-              並行して、個人開発ブランド「Simpro」「CodeParts」を運営し、Webアプリテンプレートや自動化ツールを配布中。
+              個人開発では「Simpro」を開発中。Web開発を実践形式で修行中。<br/>
+              Webアプリテンプレートやツールも配布、有意義な情報をお届けできるようなサイトにする予定。
             </p>
           </div>
         </div>
@@ -64,7 +67,7 @@ export default function AboutPage() {
           </div>
           <div className="rounded-lg border border-[var(--color-border)] p-4">
             <h3 className="font-medium mb-2">クラウド・DB</h3>
-            <p className="text-[var(--muted-foreground)]">AWS / Supabase / Prisma</p>
+            <p className="text-[var(--muted-foreground)]">Supabase / Prisma / Vercel / AWS（修行中）</p>
           </div>
           <div className="rounded-lg border border-[var(--color-border)] p-4">
             <h3 className="font-medium mb-2">その他</h3>

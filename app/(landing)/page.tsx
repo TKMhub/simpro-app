@@ -10,12 +10,12 @@ export default async function LandingPage() {
         // 画像は public/ に配置してください。無い場合は下記「ダミー代替案」を参照
         brandLogoSrc="/Simplo_gray_main_sub.svg"
         brandLogoAlt="Simplo"
-        bannerText="プログラミング / エンジニア / 日常 / 転職"
+        bannerText="複雑な仕組みを“シンプルに使える形”に変換する。"
         avatarSrc="/avatar.svg"
         avatarAlt="taku"
         name="taku"
         handle="@taku"
-        tagline="Webの修行中 / 個人開発奮闘中 / ベンチプレス110kg / Reactの 先生"
+        tagline="エンジニア / プログラミング / 個人開発 / コンサル / 読書 / 日常"
         socials={[
           { type: "x", href: "https://x.com/", label: "X" },
           { type: "instagram", href: "https://instagram.com/", label: "Instagram" },
