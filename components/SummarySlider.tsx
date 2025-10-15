@@ -22,6 +22,7 @@ export default function SummarySlider({ items, intervalMs = 3500 }: SummarySlide
   const [api, setApi] = React.useState<ReturnType<typeof import("embla-carousel-react")["default"]> | null>(null);
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
   const hoverRef = React.useRef(false);
+  const draggingRef = React.useRef(false);
 
   const clearTimer = React.useCallback(() => {
     if (timerRef.current) {
@@ -35,8 +36,7 @@ export default function SummarySlider({ items, intervalMs = 3500 }: SummarySlide
     if (!api) return;
     timerRef.current = setInterval(() => {
       // Only advance when not hovered and not dragging
-      const isDragging = api.pointerDown?.() ?? false;
-      if (!hoverRef.current && !isDragging) {
+      if (!hoverRef.current && !draggingRef.current) {
         api.scrollNext();
       }
     }, intervalMs);
@@ -46,8 +46,8 @@ export default function SummarySlider({ items, intervalMs = 3500 }: SummarySlide
     if (!api) return;
     startTimer();
 
-    const onPointerDown = () => clearTimer();
-    const onPointerUp = () => startTimer();
+    const onPointerDown = () => { draggingRef.current = true; clearTimer(); };
+    const onPointerUp = () => { draggingRef.current = false; startTimer(); };
     const onMouseEnter = () => { hoverRef.current = true; clearTimer(); };
     const onMouseLeave = () => { hoverRef.current = false; startTimer(); };
 
