@@ -102,7 +102,7 @@ export default function AboutPage() {
           <div className="rounded-lg border border-[var(--color-border)] overflow-hidden">
             <div className="relative aspect-[16/9] bg-black/5 dark:bg-white/5">
               {/* 外部画像は素のimgで表示（next/imageのドメイン設定不要） */}
-              <img
+              <Image
                 src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=1200&auto=format&fit=crop"
                 alt="トイプードルの子犬"
                 className="absolute inset-0 w-full h-full object-cover"
