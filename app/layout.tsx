@@ -1,13 +1,7 @@
 import type { Metadata } from "next";
-import { Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
-
-const noto_sans_jp = Noto_Sans_JP({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
 
 export const metadata: Metadata = {
@@ -22,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${noto_sans_jp.variable} antialiased bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300`}>
+      <body className={`antialiased bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300`}>
         {/* Theme no-flash init */}
         <script
           dangerouslySetInnerHTML={{

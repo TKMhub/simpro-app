@@ -1,5 +1,5 @@
 export type Section = {
-  id: "about" | "links" | "products";
+  id: "about" | "blog" | "product" | "link";
   label: string;
 };
 
@@ -22,9 +22,10 @@ export type SummaryData = {
 export async function fetchSummaryData(): Promise<SummaryData> {
   // Dummy data for now.
   const sections: Section[] = [
-    { id: "about", label: "About" },
-    { id: "links", label: "Links" },
-    { id: "products", label: "Products" },
+    { id: "about", label: "about" },
+    { id: "blog", label: "blog" },
+    { id: "product", label: "product" },
+    { id: "link", label: "link" },
   ];
 
   const items: SummaryItem[] = [
@@ -47,34 +48,51 @@ export async function fetchSummaryData(): Promise<SummaryData> {
       tags: ["React", "Next.js", "TypeScript"],
     },
     {
-      id: "links-1",
-      section: "links",
+      id: "blog-1",
+      section: "blog",
+      title: "最新記事を読む",
+      description: "学びや実践メモを公開中。",
+      cta: { label: "ブログへ", href: "/blog" },
+      image: { src: "/blog/covers/nextjs.svg", alt: "Blog" },
+      tags: ["Blog", "Update"],
+    },
+    {
+      id: "blog-2",
+      section: "blog",
+      title: "TypeScript 実践Tips 10選",
+      description: "日常で役立つ型の使い方。",
+      cta: { label: "読む", href: "/blog/typescript-tips" },
+      image: { src: "/blog/covers/typescript.svg", alt: "TypeScript" },
+      tags: ["TypeScript", "Tips"],
+    },
+    {
+      id: "link-1",
+      section: "link",
       title: "X (Twitter)",
       description: "日々の気づきや学習ログをポストしています。",
       cta: { label: "フォロー", href: "https://x.com/" },
-      image: { src: "/x-card.png", alt: "X Profile" },
       tags: ["Social", "Updates"],
     },
     {
-      id: "links-2",
-      section: "links",
+      id: "link-2",
+      section: "link",
       title: "YouTube",
       description: "開発ログや技術メモなどの動画を更新中。",
       cta: { label: "見る", href: "https://youtube.com/" },
       tags: ["Video", "Devlog"],
     },
     {
-      id: "products-1",
-      section: "products",
+      id: "product-1",
+      section: "product",
       title: "個人開発プロダクト A",
       description: "日常の習慣化を助けるミニアプリ。",
       cta: { label: "サイトへ", href: "/product/a" },
-      image: { src: "/product-a.png", alt: "Product A" },
+      image: { src: "/file.svg", alt: "Product" },
       tags: ["App", "Habit"],
     },
     {
-      id: "products-2",
-      section: "products",
+      id: "product-2",
+      section: "product",
       title: "個人開発プロダクト B",
       description: "SNS 連携のアイデアメモ帳。",
       cta: { label: "サイトへ", href: "/product/b" },
@@ -84,4 +102,3 @@ export async function fetchSummaryData(): Promise<SummaryData> {
 
   return { sections, items };
 }
-

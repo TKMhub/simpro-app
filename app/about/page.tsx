@@ -54,7 +54,7 @@ export default function AboutPage() {
       </section>
 
       {/* Skills */}
-      <section className="space-y-6">
+      <section id="skills" className="space-y-6">
         <h2 className="text-xl font-semibold">スキル</h2>
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="rounded-lg border border-[var(--color-border)] p-4">
@@ -76,6 +76,85 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* Hobby */}
+      <section id="hobby" className="space-y-6">
+        <h2 className="text-xl font-semibold">趣味</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {/* 個人開発（Simpro） */}
+          <div className="rounded-lg border border-[var(--color-border)] overflow-hidden">
+            <div className="relative aspect-[16/9] bg-black/5 dark:bg-white/5">
+              {/* ローカルのブランドロゴを使用 */}
+              <Image
+                src="/Simplo_gray_main_sub.svg"
+                alt="Simpro ロゴ"
+                className="absolute inset-0 m-auto max-h-[70%] object-contain"
+              />
+            </div>
+            <div className="p-4 space-y-2">
+              <h3 className="font-medium">個人開発（Simpro）</h3>
+              <p className="text-[var(--muted-foreground)] text-sm">
+                このサイト「Simpro」についての紹介や個人開発の記録をまとめています。
+              </p>
+            </div>
+          </div>
+
+          {/* 犬と戯れること */}
+          <div className="rounded-lg border border-[var(--color-border)] overflow-hidden">
+            <div className="relative aspect-[16/9] bg-black/5 dark:bg-white/5">
+              {/* 外部画像は素のimgで表示（next/imageのドメイン設定不要） */}
+              <img
+                src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=1200&auto=format&fit=crop"
+                alt="トイプードルの子犬"
+                className="absolute inset-0 w-full h-full object-cover"
+                loading="lazy"
+              />
+            </div>
+            <div className="p-4 space-y-2">
+              <h3 className="font-medium">犬と戯れること</h3>
+              <p className="text-[var(--muted-foreground)] text-sm">
+                トイプードルを飼っています。まだ赤ちゃんで本当に可愛い（2025年8月当時）。
+              </p>
+            </div>
+          </div>
+
+          {/* デザイン（Instagram） */}
+          <div className="rounded-lg border border-[var(--color-border)] overflow-hidden">
+            <div className="relative aspect-[16/9] bg-black/5 dark:bg-white/5">
+              <img
+                src="/icons/brand/instagram-gradient.svg"
+                alt="Instagram ロゴデザイン"
+                className="absolute inset-0 m-auto max-h-[70%] object-contain"
+              />
+            </div>
+            <div className="p-4 space-y-2">
+              <h3 className="font-medium">デザイン</h3>
+              <p className="text-[var(--muted-foreground)] text-sm">
+                Instagram にデザインしたロゴを掲載しています。
+              </p>
+            </div>
+          </div>
+
+          {/* Naruto のフィギュア集め */}
+          <div className="rounded-lg border border-[var(--color-border)] overflow-hidden">
+            <div className="relative aspect-[16/9] bg-black/5 dark:bg-white/5">
+              {/* 汎用的なフィギュア写真を使用 */}
+              <Image
+                src="https://images.unsplash.com/photo-1571786256017-aee7a0c009b6?q=80&w=1200&auto=format&fit=crop"
+                alt="フィギュアの写真"
+                className="absolute inset-0 w-full h-full object-cover"
+                loading="lazy"
+              />
+            </div>
+            <div className="p-4 space-y-2">
+              <h3 className="font-medium">Naruto のフィギュア集め</h3>
+              <p className="text-[var(--muted-foreground)] text-sm">
+                大人になって集め始めました。メインどころをちょろちょろ。ガマ親分、守鶴は渋い。暁もある程度揃えてしまった。
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Mission */}
       <section className="rounded-2xl overflow-hidden">
         <div className="bg-gradient-to-r from-blue-500/20 via-blue-500/10 to-blue-700/20 py-14 px-6 text-center">
@@ -88,4 +167,3 @@ export default function AboutPage() {
     </main>
   );
 }
-
