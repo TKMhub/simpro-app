@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
+  type CarouselApi,
   Carousel,
   CarouselContent,
   CarouselItem,
@@ -19,7 +20,7 @@ export type SummarySliderProps = {
 };
 
 export default function SummarySlider({ items, intervalMs = 3500 }: SummarySliderProps) {
-  const [api, setApi] = React.useState<ReturnType<typeof import("embla-carousel-react")["default"]> | null>(null);
+  const [api, setApi] = React.useState<CarouselApi | null>(null);
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
   const hoverRef = React.useRef(false);
   const draggingRef = React.useRef(false);
@@ -71,7 +72,7 @@ export default function SummarySlider({ items, intervalMs = 3500 }: SummarySlide
     <div className="mx-3 sm:mx-4 md:mx-6">
       <Carousel
         opts={{ loop: true, align: "start", dragFree: false }}
-        setApi={setApi as any}
+        setApi={setApi}
         className="relative"
       >
         <CarouselContent>

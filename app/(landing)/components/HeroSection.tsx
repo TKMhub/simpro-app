@@ -25,8 +25,7 @@ export type HeroSectionProps = {
   socials?: SocialLink[];
 };
 
-// 互換用（未使用だが型の互換を保つ）
-const defaultGradient = { from: "", via: "", to: "" };
+// 互換用の未使用変数は削除（ESLint対策）
 
 // SNS アイコンを種類に応じて返す（lucide-react + fallback for TikTok）
 function SocialIcon({ type, className }: { type: SocialLink["type"]; className?: string }) {
@@ -142,7 +141,7 @@ export default function HeroSection(props: HeroSectionProps) {
             )}
           >
              <Image
-                src="/taku.jpg"
+                src={avatarSrc}
                 alt={avatarAlt}
                 className="h-full w-full object-cover"
                 width={400}

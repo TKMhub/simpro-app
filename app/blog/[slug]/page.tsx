@@ -55,6 +55,8 @@ export default async function BlogDetailPage({ params }: Props) {
               sizes="(max-width: 768px) 100vw, 768px"
               className="object-cover"
               priority
+              width={128}
+              height={128}
             />
           </div>
         )}

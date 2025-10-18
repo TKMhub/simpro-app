@@ -23,7 +23,9 @@ export default function ThemeToggle() {
     setHtmlDarkClass(isDark);
     try {
       localStorage.setItem("theme", isDark ? "dark" : "light");
-    } catch (e) {}
+    } catch {
+      // ignore write errors
+    }
   }, [isDark]);
 
   if (isDark === null) {

@@ -88,6 +88,8 @@ export default function AboutPage() {
                 src="/Simplo_gray_main_sub.svg"
                 alt="Simpro ロゴ"
                 className="absolute inset-0 m-auto max-h-[70%] object-contain"
+                width={128}
+                height={128}
               />
             </div>
             <div className="p-4 space-y-2">
@@ -107,6 +109,8 @@ export default function AboutPage() {
                 alt="トイプードルの子犬"
                 className="absolute inset-0 w-full h-full object-cover"
                 loading="lazy"
+                width={128}
+                height={128}
               />
             </div>
             <div className="p-4 space-y-2">
@@ -124,6 +128,8 @@ export default function AboutPage() {
                 src="/icons/brand/instagram-gradient.svg"
                 alt="Instagram ロゴデザイン"
                 className="absolute inset-0 m-auto max-h-[70%] object-contain"
+                width={128}
+                height={128}
               />
             </div>
             <div className="p-4 space-y-2">
@@ -143,6 +149,8 @@ export default function AboutPage() {
                 alt="フィギュアの写真"
                 className="absolute inset-0 w-full h-full object-cover"
                 loading="lazy"
+                width={128}
+                height={128}
               />
             </div>
             <div className="p-4 space-y-2">

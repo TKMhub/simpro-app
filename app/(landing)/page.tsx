@@ -11,7 +11,7 @@ export default async function LandingPage() {
         brandLogoSrc="/Simplo_gray_main_sub.svg"
         brandLogoAlt="Simplo"
         bannerText="複雑な仕組みを“シンプルに使える形”に変換する。"
-        avatarSrc="/avatar.svg"
+        avatarSrc="/taku.jpg"
         avatarAlt="taku"
         name="taku"
         handle="@taku"
