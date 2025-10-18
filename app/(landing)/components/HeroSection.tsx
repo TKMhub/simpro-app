@@ -28,7 +28,13 @@ export type HeroSectionProps = {
 // 互換用の未使用変数は削除（ESLint対策）
 
 // SNS アイコンを種類に応じて返す（lucide-react + fallback for TikTok）
-function SocialIcon({ type, className }: { type: SocialLink["type"]; className?: string }) {
+function SocialIcon({
+  type,
+  className,
+}: {
+  type: SocialLink["type"];
+  className?: string;
+}) {
   switch (type) {
     case "instagram":
       return <Instagram aria-hidden className={className} />;
@@ -71,45 +77,438 @@ export default function HeroSection(props: HeroSectionProps) {
             // すりガラス
             "backdrop-blur-xl backdrop-saturate-150",
             // カバー色はテーマに依存（light=黒ガラス / dark=白ガラス）
-            "bg-[var(--cover-glass-bg)] ring-1 ring-[var(--glass-border)] shadow-xl shadow-black/10",
+            "bg-[var(--cover-glass-bg)] ring-1 ring-[var(--glass-border)] shadow-xl shadow-black/10"
           )}
         >
           {/* 流星群（PCのみ・右側領域） 自然で中央へ向かう動き */}
           <div className="hidden md:block absolute inset-0 pointer-events-none">
             <div className="absolute right-0 top-0 bottom-0 w-[72%] overflow-hidden">
               {/* 上層: 画面上半分 → 中央へ（下向き成分） */}
-              <span className="meteor" style={{ top: '6%',  left: '98%', ...( { ['--dur']: '2.0s', ['--delay']: '-0.8s', ['--trail']: '340px', ['--size']: '3.5px', ['--dx']: '-900px', ['--dy']: '240px', ['--angle']: '-18deg', ['--color']: '#1d4ed8' } as React.CSSProperties ) }} />
-              <span className="meteor" style={{ top: '12%', left: '99%', ...( { ['--dur']: '2.1s', ['--delay']: '-0.3s', ['--trail']: '320px', ['--size']: '2.0px', ['--dx']: '-1000px', ['--dy']: '220px', ['--angle']: '-15deg', ['--color']: '#374151' } as React.CSSProperties ) }} />
-              <span className="meteor" style={{ top: '18%', left: '94%', ...( { ['--dur']: '2.2s', ['--delay']: '0.2s',  ['--trail']: '300px', ['--size']: '2.5px', ['--dx']: '-980px', ['--dy']: '200px', ['--angle']: '-16deg', ['--color']: '#ffffff' } as React.CSSProperties ) }} />
-              <span className="meteor" style={{ top: '24%', left: '95%', ...( { ['--dur']: '2.5s', ['--delay']: '0.9s',  ['--trail']: '280px', ['--size']: '1.8px', ['--dx']: '-950px', ['--dy']: '180px', ['--angle']: '-12deg', ['--color']: '#1d4ed8' } as React.CSSProperties ) }} />
-              <span className="meteor" style={{ top: '30%', left: '96%', ...( { ['--dur']: '2.4s', ['--delay']: '-1.1s', ['--trail']: '320px', ['--size']: '3.0px', ['--dx']: '-990px', ['--dy']: '160px', ['--angle']: '-14deg', ['--color']: '#374151' } as React.CSSProperties ) }} />
-              <span className="meteor" style={{ top: '40%', left: '92%', ...( { ['--dur']: '2.6s', ['--delay']: '0.8s',  ['--trail']: '260px', ['--size']: '2.2px', ['--dx']: '-920px', ['--dy']: '110px', ['--angle']: '-12deg', ['--color']: '#ffffff' } as React.CSSProperties ) }} />
+              <span
+                className="meteor"
+                style={{
+                  top: "6%",
+                  left: "98%",
+                  ...({
+                    ["--dur"]: "2.0s",
+                    ["--delay"]: "-0.8s",
+                    ["--trail"]: "340px",
+                    ["--size"]: "3.5px",
+                    ["--dx"]: "-900px",
+                    ["--dy"]: "240px",
+                    ["--angle"]: "-18deg",
+                    ["--color"]: "#1d4ed8",
+                  } as React.CSSProperties),
+                }}
+              />
+              <span
+                className="meteor"
+                style={{
+                  top: "12%",
+                  left: "99%",
+                  ...({
+                    ["--dur"]: "2.1s",
+                    ["--delay"]: "-0.3s",
+                    ["--trail"]: "320px",
+                    ["--size"]: "2.0px",
+                    ["--dx"]: "-1000px",
+                    ["--dy"]: "220px",
+                    ["--angle"]: "-15deg",
+                    ["--color"]: "#374151",
+                  } as React.CSSProperties),
+                }}
+              />
+              <span
+                className="meteor"
+                style={{
+                  top: "18%",
+                  left: "94%",
+                  ...({
+                    ["--dur"]: "2.2s",
+                    ["--delay"]: "0.2s",
+                    ["--trail"]: "300px",
+                    ["--size"]: "2.5px",
+                    ["--dx"]: "-980px",
+                    ["--dy"]: "200px",
+                    ["--angle"]: "-16deg",
+                    ["--color"]: "#ffffff",
+                  } as React.CSSProperties),
+                }}
+              />
+              <span
+                className="meteor"
+                style={{
+                  top: "24%",
+                  left: "95%",
+                  ...({
+                    ["--dur"]: "2.5s",
+                    ["--delay"]: "0.9s",
+                    ["--trail"]: "280px",
+                    ["--size"]: "1.8px",
+                    ["--dx"]: "-950px",
+                    ["--dy"]: "180px",
+                    ["--angle"]: "-12deg",
+                    ["--color"]: "#1d4ed8",
+                  } as React.CSSProperties),
+                }}
+              />
+              <span
+                className="meteor"
+                style={{
+                  top: "30%",
+                  left: "96%",
+                  ...({
+                    ["--dur"]: "2.4s",
+                    ["--delay"]: "-1.1s",
+                    ["--trail"]: "320px",
+                    ["--size"]: "3.0px",
+                    ["--dx"]: "-990px",
+                    ["--dy"]: "160px",
+                    ["--angle"]: "-14deg",
+                    ["--color"]: "#374151",
+                  } as React.CSSProperties),
+                }}
+              />
+              <span
+                className="meteor"
+                style={{
+                  top: "40%",
+                  left: "92%",
+                  ...({
+                    ["--dur"]: "2.6s",
+                    ["--delay"]: "0.8s",
+                    ["--trail"]: "260px",
+                    ["--size"]: "2.2px",
+                    ["--dx"]: "-920px",
+                    ["--dy"]: "110px",
+                    ["--angle"]: "-12deg",
+                    ["--color"]: "#ffffff",
+                  } as React.CSSProperties),
+                }}
+              />
 
               {/* 中央層: 中央帯を横断（ほぼ水平） */}
-              <span className="meteor" style={{ top: '48%', left: '97%', ...( { ['--dur']: '1.9s', ['--delay']: '-0.6s', ['--trail']: '360px', ['--size']: '4px',   ['--dx']: '-1000px', ['--dy']: '0px',   ['--angle']: '-8deg', ['--color']: '#ffffff' } as React.CSSProperties ) }} />
-              <span className="meteor" style={{ top: '50%', left: '99%', ...( { ['--dur']: '2.0s', ['--delay']: '0.1s',  ['--trail']: '340px', ['--size']: '2.5px', ['--dx']: '-1100px', ['--dy']: '0px',   ['--angle']: '-8deg', ['--color']: '#1d4ed8' } as React.CSSProperties ) }} />
-              <span className="meteor" style={{ top: '52%', left: '93%', ...( { ['--dur']: '2.1s', ['--delay']: '0.5s',  ['--trail']: '300px', ['--size']: '2px',   ['--dx']: '-920px',  ['--dy']: '0px',   ['--angle']: '-8deg', ['--color']: '#374151' } as React.CSSProperties ) }} />
-              <span className="meteor" style={{ top: '55%', left: '95%', ...( { ['--dur']: '2.3s', ['--delay']: '-1.2s', ['--trail']: '300px', ['--size']: '1.6px', ['--dx']: '-980px',  ['--dy']: '0px',   ['--angle']: '-6deg', ['--color']: '#1d4ed8' } as React.CSSProperties ) }} />
+              <span
+                className="meteor"
+                style={{
+                  top: "48%",
+                  left: "97%",
+                  ...({
+                    ["--dur"]: "1.9s",
+                    ["--delay"]: "-0.6s",
+                    ["--trail"]: "360px",
+                    ["--size"]: "4px",
+                    ["--dx"]: "-1000px",
+                    ["--dy"]: "0px",
+                    ["--angle"]: "-8deg",
+                    ["--color"]: "#ffffff",
+                  } as React.CSSProperties),
+                }}
+              />
+              <span
+                className="meteor"
+                style={{
+                  top: "50%",
+                  left: "99%",
+                  ...({
+                    ["--dur"]: "2.0s",
+                    ["--delay"]: "0.1s",
+                    ["--trail"]: "340px",
+                    ["--size"]: "2.5px",
+                    ["--dx"]: "-1100px",
+                    ["--dy"]: "0px",
+                    ["--angle"]: "-8deg",
+                    ["--color"]: "#1d4ed8",
+                  } as React.CSSProperties),
+                }}
+              />
+              <span
+                className="meteor"
+                style={{
+                  top: "52%",
+                  left: "93%",
+                  ...({
+                    ["--dur"]: "2.1s",
+                    ["--delay"]: "0.5s",
+                    ["--trail"]: "300px",
+                    ["--size"]: "2px",
+                    ["--dx"]: "-920px",
+                    ["--dy"]: "0px",
+                    ["--angle"]: "-8deg",
+                    ["--color"]: "#374151",
+                  } as React.CSSProperties),
+                }}
+              />
+              <span
+                className="meteor"
+                style={{
+                  top: "55%",
+                  left: "95%",
+                  ...({
+                    ["--dur"]: "2.3s",
+                    ["--delay"]: "-1.2s",
+                    ["--trail"]: "300px",
+                    ["--size"]: "1.6px",
+                    ["--dx"]: "-980px",
+                    ["--dy"]: "0px",
+                    ["--angle"]: "-6deg",
+                    ["--color"]: "#1d4ed8",
+                  } as React.CSSProperties),
+                }}
+              />
 
               {/* 下層: 画面下半分 → 中央へ（上向き成分） */}
-              <span className="meteor" style={{ top: '62%', left: '96%', ...( { ['--dur']: '2.3s', ['--delay']: '-1.0s', ['--trail']: '320px', ['--size']: '3px',   ['--dx']: '-980px',  ['--dy']: '-160px', ['--angle']: '-6deg',  ['--color']: '#ffffff' } as React.CSSProperties ) }} />
-              <span className="meteor" style={{ top: '68%', left: '99%', ...( { ['--dur']: '2.4s', ['--delay']: '1.1s',  ['--trail']: '320px', ['--size']: '2.4px', ['--dx']: '-1040px', ['--dy']: '-180px', ['--angle']: '-8deg',  ['--color']: '#1d4ed8' } as React.CSSProperties ) }} />
-              <span className="meteor" style={{ top: '74%', left: '94%', ...( { ['--dur']: '2.5s', ['--delay']: '0.4s',  ['--trail']: '280px', ['--size']: '2px',   ['--dx']: '-900px',  ['--dy']: '-220px', ['--angle']: '-10deg', ['--color']: '#374151' } as React.CSSProperties ) }} />
-              <span className="meteor" style={{ top: '80%', left: '96%', ...( { ['--dur']: '2.6s', ['--delay']: '0.9s',  ['--trail']: '300px', ['--size']: '1.7px', ['--dx']: '-960px',  ['--dy']: '-200px', ['--angle']: '-12deg', ['--color']: '#ffffff' } as React.CSSProperties ) }} />
-              <span className="meteor" style={{ top: '86%', left: '98%', ...( { ['--dur']: '2.7s', ['--delay']: '-1.4s', ['--trail']: '320px', ['--size']: '3.2px', ['--dx']: '-1020px', ['--dy']: '-260px', ['--angle']: '-12deg', ['--color']: '#1d4ed8' } as React.CSSProperties ) }} />
+              <span
+                className="meteor"
+                style={{
+                  top: "62%",
+                  left: "96%",
+                  ...({
+                    ["--dur"]: "2.3s",
+                    ["--delay"]: "-1.0s",
+                    ["--trail"]: "320px",
+                    ["--size"]: "3px",
+                    ["--dx"]: "-980px",
+                    ["--dy"]: "-160px",
+                    ["--angle"]: "-6deg",
+                    ["--color"]: "#ffffff",
+                  } as React.CSSProperties),
+                }}
+              />
+              <span
+                className="meteor"
+                style={{
+                  top: "68%",
+                  left: "99%",
+                  ...({
+                    ["--dur"]: "2.4s",
+                    ["--delay"]: "1.1s",
+                    ["--trail"]: "320px",
+                    ["--size"]: "2.4px",
+                    ["--dx"]: "-1040px",
+                    ["--dy"]: "-180px",
+                    ["--angle"]: "-8deg",
+                    ["--color"]: "#1d4ed8",
+                  } as React.CSSProperties),
+                }}
+              />
+              <span
+                className="meteor"
+                style={{
+                  top: "74%",
+                  left: "94%",
+                  ...({
+                    ["--dur"]: "2.5s",
+                    ["--delay"]: "0.4s",
+                    ["--trail"]: "280px",
+                    ["--size"]: "2px",
+                    ["--dx"]: "-900px",
+                    ["--dy"]: "-220px",
+                    ["--angle"]: "-10deg",
+                    ["--color"]: "#374151",
+                  } as React.CSSProperties),
+                }}
+              />
+              <span
+                className="meteor"
+                style={{
+                  top: "80%",
+                  left: "96%",
+                  ...({
+                    ["--dur"]: "2.6s",
+                    ["--delay"]: "0.9s",
+                    ["--trail"]: "300px",
+                    ["--size"]: "1.7px",
+                    ["--dx"]: "-960px",
+                    ["--dy"]: "-200px",
+                    ["--angle"]: "-12deg",
+                    ["--color"]: "#ffffff",
+                  } as React.CSSProperties),
+                }}
+              />
+              <span
+                className="meteor"
+                style={{
+                  top: "86%",
+                  left: "98%",
+                  ...({
+                    ["--dur"]: "2.7s",
+                    ["--delay"]: "-1.4s",
+                    ["--trail"]: "320px",
+                    ["--size"]: "3.2px",
+                    ["--dx"]: "-1020px",
+                    ["--dy"]: "-260px",
+                    ["--angle"]: "-12deg",
+                    ["--color"]: "#1d4ed8",
+                  } as React.CSSProperties),
+                }}
+              />
 
               {/* アクセント: ごく薄いブルー */}
-              <span className="meteor" style={{ top: '36%', left: '99%', ...( { ['--dur']: '2.2s', ['--delay']: '-0.9s', ['--trail']: '320px', ['--size']: '3.5px', ['--dx']: '-980px',  ['--dy']: '140px',  ['--angle']: '-14deg', ['--color']: '#1d4ed8', ['--opacity']: '0.95' } as React.CSSProperties ) }} />
-              <span className="meteor" style={{ top: '40%', left: '98%', ...( { ['--dur']: '2.2s', ['--delay']: '0.7s',  ['--trail']: '320px', ['--size']: '2.8px', ['--dx']: '-1040px', ['--dy']: '120px',  ['--angle']: '-12deg', ['--color']: '#1d4ed8', ['--opacity']: '0.95' } as React.CSSProperties ) }} />
-              <span className="meteor" style={{ top: '68%', left: '97%', ...( { ['--dur']: '2.4s', ['--delay']: '0.6s',  ['--trail']: '320px', ['--size']: '3.0px', ['--dx']: '-980px',  ['--dy']: '-140px', ['--angle']: '-10deg', ['--color']: '#1d4ed8', ['--opacity']: '0.92' } as React.CSSProperties ) }} />
+              <span
+                className="meteor"
+                style={{
+                  top: "36%",
+                  left: "99%",
+                  ...({
+                    ["--dur"]: "2.2s",
+                    ["--delay"]: "-0.9s",
+                    ["--trail"]: "320px",
+                    ["--size"]: "3.5px",
+                    ["--dx"]: "-980px",
+                    ["--dy"]: "140px",
+                    ["--angle"]: "-14deg",
+                    ["--color"]: "#1d4ed8",
+                    ["--opacity"]: "0.95",
+                  } as React.CSSProperties),
+                }}
+              />
+              <span
+                className="meteor"
+                style={{
+                  top: "40%",
+                  left: "98%",
+                  ...({
+                    ["--dur"]: "2.2s",
+                    ["--delay"]: "0.7s",
+                    ["--trail"]: "320px",
+                    ["--size"]: "2.8px",
+                    ["--dx"]: "-1040px",
+                    ["--dy"]: "120px",
+                    ["--angle"]: "-12deg",
+                    ["--color"]: "#1d4ed8",
+                    ["--opacity"]: "0.95",
+                  } as React.CSSProperties),
+                }}
+              />
+              <span
+                className="meteor"
+                style={{
+                  top: "68%",
+                  left: "97%",
+                  ...({
+                    ["--dur"]: "2.4s",
+                    ["--delay"]: "0.6s",
+                    ["--trail"]: "320px",
+                    ["--size"]: "3.0px",
+                    ["--dx"]: "-980px",
+                    ["--dy"]: "-140px",
+                    ["--angle"]: "-10deg",
+                    ["--color"]: "#1d4ed8",
+                    ["--opacity"]: "0.92",
+                  } as React.CSSProperties),
+                }}
+              />
 
               {/* ヒーロー流星（大きめの個体） */}
-              <span className="meteor" style={{ top: '22%', left: '100%', ...( { ['--dur']: '1.8s', ['--delay']: '-0.5s', ['--trail']: '420px', ['--size']: '5.5px', ['--dx']: '-1200px', ['--dy']: '180px', ['--angle']: '-12deg', ['--opacity']: '0.9',  ['--color']: '#1d4ed8' } as React.CSSProperties ) }} />
-              <span className="meteor" style={{ top: '48%', left: '100%', ...( { ['--dur']: '2.0s', ['--delay']: '-1.0s', ['--trail']: '460px', ['--size']: '6px',   ['--dx']: '-1400px', ['--dy']: '0px',   ['--angle']: '-8deg',  ['--opacity']: '0.88', ['--color']: '#ffffff' } as React.CSSProperties ) }} />
-              <span className="meteor" style={{ top: '76%', left: '99%',  ...( { ['--dur']: '1.9s', ['--delay']: '0.3s',  ['--trail']: '400px', ['--size']: '4.5px', ['--dx']: '-1250px', ['--dy']: '-200px', ['--angle']: '-10deg', ['--opacity']: '0.9',  ['--color']: '#374151' } as React.CSSProperties ) }} />
-              <span className="meteor" style={{ top: '30%', left: '100%', ...( { ['--dur']: '1.8s', ['--delay']: '-0.5s', ['--trail']: '420px', ['--size']: '5.5px', ['--dx']: '-1200px', ['--dy']: '180px', ['--angle']: '-12deg', ['--opacity']: '0.9',  ['--color']: '#1d4ed8' } as React.CSSProperties ) }} />
-              <span className="meteor" style={{ top: '50%', left: '100%', ...( { ['--dur']: '2.0s', ['--delay']: '-1.0s', ['--trail']: '460px', ['--size']: '6px',   ['--dx']: '-1400px', ['--dy']: '0px',   ['--angle']: '-8deg',  ['--opacity']: '0.88', ['--color']: '#ffffff' } as React.CSSProperties ) }} />
-              <span className="meteor" style={{ top: '90%', left: '99%',  ...( { ['--dur']: '1.9s', ['--delay']: '0.3s',  ['--trail']: '400px', ['--size']: '4.5px', ['--dx']: '-1250px', ['--dy']: '-200px', ['--angle']: '-10deg', ['--opacity']: '0.9',  ['--color']: '#374151' } as React.CSSProperties ) }} />
+              <span
+                className="meteor"
+                style={{
+                  top: "22%",
+                  left: "100%",
+                  ...({
+                    ["--dur"]: "1.8s",
+                    ["--delay"]: "-0.5s",
+                    ["--trail"]: "420px",
+                    ["--size"]: "5.5px",
+                    ["--dx"]: "-1200px",
+                    ["--dy"]: "180px",
+                    ["--angle"]: "-12deg",
+                    ["--opacity"]: "0.9",
+                    ["--color"]: "#1d4ed8",
+                  } as React.CSSProperties),
+                }}
+              />
+              <span
+                className="meteor"
+                style={{
+                  top: "48%",
+                  left: "100%",
+                  ...({
+                    ["--dur"]: "2.0s",
+                    ["--delay"]: "-1.0s",
+                    ["--trail"]: "460px",
+                    ["--size"]: "6px",
+                    ["--dx"]: "-1400px",
+                    ["--dy"]: "0px",
+                    ["--angle"]: "-8deg",
+                    ["--opacity"]: "0.88",
+                    ["--color"]: "#ffffff",
+                  } as React.CSSProperties),
+                }}
+              />
+              <span
+                className="meteor"
+                style={{
+                  top: "76%",
+                  left: "99%",
+                  ...({
+                    ["--dur"]: "1.9s",
+                    ["--delay"]: "0.3s",
+                    ["--trail"]: "400px",
+                    ["--size"]: "4.5px",
+                    ["--dx"]: "-1250px",
+                    ["--dy"]: "-200px",
+                    ["--angle"]: "-10deg",
+                    ["--opacity"]: "0.9",
+                    ["--color"]: "#374151",
+                  } as React.CSSProperties),
+                }}
+              />
+              <span
+                className="meteor"
+                style={{
+                  top: "30%",
+                  left: "100%",
+                  ...({
+                    ["--dur"]: "1.8s",
+                    ["--delay"]: "-0.5s",
+                    ["--trail"]: "420px",
+                    ["--size"]: "5.5px",
+                    ["--dx"]: "-1200px",
+                    ["--dy"]: "180px",
+                    ["--angle"]: "-12deg",
+                    ["--opacity"]: "0.9",
+                    ["--color"]: "#1d4ed8",
+                  } as React.CSSProperties),
+                }}
+              />
+              <span
+                className="meteor"
+                style={{
+                  top: "50%",
+                  left: "100%",
+                  ...({
+                    ["--dur"]: "2.0s",
+                    ["--delay"]: "-1.0s",
+                    ["--trail"]: "460px",
+                    ["--size"]: "6px",
+                    ["--dx"]: "-1400px",
+                    ["--dy"]: "0px",
+                    ["--angle"]: "-8deg",
+                    ["--opacity"]: "0.88",
+                    ["--color"]: "#ffffff",
+                  } as React.CSSProperties),
+                }}
+              />
+              <span
+                className="meteor"
+                style={{
+                  top: "90%",
+                  left: "99%",
+                  ...({
+                    ["--dur"]: "1.9s",
+                    ["--delay"]: "0.3s",
+                    ["--trail"]: "400px",
+                    ["--size"]: "4.5px",
+                    ["--dx"]: "-1250px",
+                    ["--dy"]: "-200px",
+                    ["--angle"]: "-10deg",
+                    ["--opacity"]: "0.9",
+                    ["--color"]: "#374151",
+                  } as React.CSSProperties),
+                }}
+              />
             </div>
           </div>
           <div className="absolute left-5 top-8 sm:left-16 sm:top-10 md:left-20 md:top-10">
@@ -136,19 +535,23 @@ export default function HeroSection(props: HeroSectionProps) {
           {/* アバター（画像置換想定） */}
           <div
             className={cn(
+              // 既存
               "sm:mx-10 md:mx-20 size-20 sm:size-32 md:size-40 lg:size-40 rounded-full overflow-hidden",
-              "ring-4 ring-[var(--glass-border)] shadow-2xl"
+              "ring-4 ring-[var(--glass-border)]",
+              // ▼ 影をテーマで出し分け（任意値）
+              "[--avatar-shadow:0_10px_30px_rgba(0,0,0,0.14)] dark:[--avatar-shadow:0_12px_36px_rgba(0,0,0,0.55)]",
+              "shadow-[var(--avatar-shadow)]"
             )}
           >
-             <Image
-                src={avatarSrc}
-                alt={avatarAlt}
-                className="h-full w-full object-cover"
-                width={400}
-                height={400}
-                loading="eager"
-                decoding="async"
-              />
+            <Image
+              src={avatarSrc}
+              alt={avatarAlt}
+              className="h-full w-full object-cover"
+              width={400}
+              height={400}
+              loading="eager"
+              decoding="async"
+            />
           </div>
 
           {/* テキストブロック */}
@@ -164,7 +567,9 @@ export default function HeroSection(props: HeroSectionProps) {
                   {handle}
                 </span>
               )}
-              <span className="text-sm sm:text-base md:text-lg text-[var(--muted-foreground)]">{tagline}</span>
+              <span className="text-sm sm:text-base md:text-lg text-[var(--muted-foreground)]">
+                {tagline}
+              </span>
             </div>
 
             {/* SNS 行（X/Instagram/YouTube/TikTok） */}
@@ -178,21 +583,29 @@ export default function HeroSection(props: HeroSectionProps) {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                    {/* 背景にブランド風グラデ、アイコンは白（lucide） */}
+                      {/* 背景にブランド風グラデ、アイコンは白（lucide） */}
                       <span
                         className={cn(
                           "inline-flex items-center justify-center rounded-full p-2 transition-[background] duration-200",
                           // Instagram: switch to linear gradient (like TikTok style) with IG-ish colors
                           // Base 50% transparency, hover to 100%
-                          s.type === 'instagram' && 'bg-gradient-to-br from-amber-300/50 via-rose-500/50 to-violet-600/50 hover:from-amber-300 hover:via-rose-500 hover:to-violet-600',
-                          s.type === 'x'         && 'bg-gradient-to-br from-slate-700/50 to-black/50 hover:from-slate-700 hover:to-black',
-                          s.type === 'youtube'   && 'bg-gradient-to-br from-red-500/50 to-red-700/50 hover:from-red-500 hover:to-red-700',
-                          s.type === 'tiktok'    && 'bg-gradient-to-br from-cyan-400/50 to-fuchsia-500/50 hover:from-cyan-400 hover:to-fuchsia-500',
-                          s.type === 'blog'      && 'bg-gradient-to-br from-emerald-400/50 to-sky-500/50 hover:from-emerald-400 hover:to-sky-500'
+                          s.type === "instagram" &&
+                            "bg-gradient-to-br from-amber-300/50 via-rose-500/50 to-violet-600/50 hover:from-amber-300 hover:via-rose-500 hover:to-violet-600",
+                          s.type === "x" &&
+                            "bg-gradient-to-br from-slate-700/50 to-black/50 hover:from-slate-700 hover:to-black",
+                          s.type === "youtube" &&
+                            "bg-gradient-to-br from-red-500/50 to-red-700/50 hover:from-red-500 hover:to-red-700",
+                          s.type === "tiktok" &&
+                            "bg-gradient-to-br from-cyan-400/50 to-fuchsia-500/50 hover:from-cyan-400 hover:to-fuchsia-500",
+                          s.type === "blog" &&
+                            "bg-gradient-to-br from-emerald-400/50 to-sky-500/50 hover:from-emerald-400 hover:to-sky-500"
                         )}
                       >
-                        <SocialIcon type={s.type} className="size-5 sm:size-6 text-white" />
-                      </span> 
+                        <SocialIcon
+                          type={s.type}
+                          className="size-5 sm:size-6 text-white"
+                        />
+                      </span>
                     </Link>
                   </li>
                 ))}
