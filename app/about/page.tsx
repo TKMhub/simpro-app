@@ -120,7 +120,7 @@ export default function AboutPage() {
           {/* デザイン（Instagram） */}
           <div className="rounded-lg border border-[var(--color-border)] overflow-hidden">
             <div className="relative aspect-[16/9] bg-black/5 dark:bg-white/5">
-              <img
+              <Image
                 src="/icons/brand/instagram-gradient.svg"
                 alt="Instagram ロゴデザイン"
                 className="absolute inset-0 m-auto max-h-[70%] object-contain"
