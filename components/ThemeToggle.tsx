@@ -12,9 +12,19 @@ export default function ThemeToggle() {
   const [isDark, setIsDark] = useState<boolean | null>(null);
 
   useEffect(() => {
-    // Initialize from localStorage only (ignore system preference)
-    const stored = typeof window !== "undefined" ? localStorage.getItem("theme") : null;
-    const initial = stored ? stored === "dark" : false;
+    // Initialize from cookie, then localStorage (matches server and no-flash script)
+    let initial = false;
+    try {
+      if (typeof document !== "undefined") {
+        const m = document.cookie.match(/(?:^|; )theme=([^;]+)/);
+        const fromCookie = m ? decodeURIComponent(m[1]) : null;
+        const fromLocal = localStorage.getItem("theme");
+        const v = fromCookie || fromLocal;
+        initial = v ? v === "dark" : false;
+      }
+    } catch {
+      initial = false;
+    }
     setIsDark(initial);
   }, []);
 
@@ -23,6 +33,10 @@ export default function ThemeToggle() {
     setHtmlDarkClass(isDark);
     try {
       localStorage.setItem("theme", isDark ? "dark" : "light");
+      // Mirror into cookie so SSR can render matching class
+      const value = isDark ? "dark" : "light";
+      // 1 year expiry
+      document.cookie = `theme=${encodeURIComponent(value)}; Path=/; Max-Age=31536000; SameSite=Lax`;
     } catch {
       // ignore write errors
     }

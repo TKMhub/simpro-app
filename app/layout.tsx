@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
+import { cookies } from "next/headers";
 
 
 export const metadata: Metadata = {
@@ -14,14 +15,18 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Best-effort SSR theme class using cookie to minimize hydration mismatch.
+  // Falls back to no class on first visit; client script will correct immediately.
+  const themeCookie = cookies().get("theme")?.value;
+  const ssrHtmlClass = themeCookie === "dark" ? "dark" : undefined;
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning className={ssrHtmlClass}>
       <body className={`antialiased bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300`}>
         {/* Theme no-flash init */}
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "(function(){try{var s=localStorage.getItem('theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var e=s?s==='dark':d;var c=document.documentElement.classList;c.toggle('dark',e);}catch(e){}})();",
+              "(function(){try{var m=document.cookie.match(/(?:^|; )theme=([^;]+)/);var cs=m?decodeURIComponent(m[1]):null;var ls=localStorage.getItem('theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var v=cs||ls;var e=v?v==='dark':d;document.documentElement.classList.toggle('dark',e);}catch(e){}})();",
           }}
         />
         {/* Global Header */}

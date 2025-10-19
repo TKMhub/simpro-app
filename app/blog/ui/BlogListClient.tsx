@@ -188,8 +188,6 @@ export default function BlogListClient() {
                             fill
                             sizes="(max-width: 640px) 112px, 144px"
                             className="object-cover"
-                            width={128}
-                            height={128}
                           />
                         </div>
                       )}
