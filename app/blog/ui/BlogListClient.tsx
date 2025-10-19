@@ -159,7 +159,7 @@ export default function BlogListClient({ initialItems, initialTotal, facets }: P
                         </p>
                         <div className="flex flex-wrap gap-1.5 mt-3">
                           {post.tags.map((t) => (
-                            <Badge key={t} variant="secondary">
+                            <Badge key={t} variant="default" className="rounded-full">
                               {t}
                             </Badge>
                           ))}

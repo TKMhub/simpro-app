@@ -30,4 +30,6 @@ export type NotionBlockNormalized =
 
 export type NotionDocument = {
   blocks: Array<NotionBlockNormalized>;
+  // 取得に失敗した場合に true（画面はフォールバック表示）
+  unavailable?: boolean;
 };

@@ -70,7 +70,7 @@ export default async function BlogDetailPage({ params }: Props) {
         </p>
         <div className="flex flex-wrap gap-2 mt-3">
           {header.tags.map((t) => (
-            <Badge key={t} variant="secondary">{t}</Badge>
+            <Badge key={t} variant="default" className="rounded-full">{t}</Badge>
           ))}
         </div>
 
@@ -86,11 +86,15 @@ export default async function BlogDetailPage({ params }: Props) {
           />
         </div>
 
-        <div className="prose dark:prose-invert max-w-none mt-6">
-          {notion.blocks.map((b, idx) => (
-            <RenderBlock key={idx} b={b} />
-          ))}
-        </div>
+        {notion.unavailable || notion.blocks.length === 0 ? (
+          <p className="text-sm text-muted-foreground mt-6">表示できるコンテンツがありません。</p>
+        ) : (
+          <div className="prose dark:prose-invert max-w-none mt-6">
+            {notion.blocks.map((b, idx) => (
+              <RenderBlock key={idx} b={b} />
+            ))}
+          </div>
+        )}
       </article>
     </main>
   );

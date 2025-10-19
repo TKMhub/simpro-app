@@ -137,8 +137,14 @@ export async function getBlogDetailBySlug(slug: string): Promise<{ header: BlogH
     publishedAt: post.publishedAt?.toISOString() ?? null,
   };
 
-  const rawBlocks = await fetchNotionBlocks(post.notionPageId);
-  const notion = await normalizeNotionDocument(rawBlocks);
+  let notion;
+  try {
+    const rawBlocks = await fetchNotionBlocks(post.notionPageId);
+    notion = await normalizeNotionDocument(rawBlocks);
+  } catch (e) {
+    // Notion側で取得できない場合は空ドキュメントとして返す
+    notion = { blocks: [], unavailable: true };
+  }
 
   return { header, notion };
 }
