@@ -1,4 +1,4 @@
-import Image from "next/image";
+import ImageWithFallback from "@/components/ImageWithFallback";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
@@ -74,18 +74,17 @@ export default async function BlogDetailPage({ params }: Props) {
           ))}
         </div>
 
-        {header.headerImageUrl && (
-          <div className="relative mt-6 aspect-[16/9] w-full overflow-hidden rounded-lg border">
-            <Image
-              src={header.headerImageUrl}
-              alt="cover"
-              fill
-              sizes="(max-width: 768px) 100vw, 768px"
-              className="object-cover"
-              priority
-            />
-          </div>
-        )}
+        <div className="relative mt-6 aspect-[16/9] w-full overflow-hidden rounded-lg border">
+          <ImageWithFallback
+            src={header.headerImageUrl}
+            alt="cover"
+            fill
+            sizes="(max-width: 768px) 100vw, 768px"
+            className="object-cover"
+            priority
+            fallbackSrc="/Simplo_gray_main_sub.jpg"
+          />
+        </div>
 
         <div className="prose dark:prose-invert max-w-none mt-6">
           {notion.blocks.map((b, idx) => (
