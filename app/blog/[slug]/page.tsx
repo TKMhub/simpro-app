@@ -3,54 +3,21 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { getBlogDetailBySlug } from "@/lib/blog/actions";
-import type { NotionBlockNormalized } from "@/lib/blog/types";
+import { RenderBlock } from "@/util/common/notion-render";
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = { params: { slug: string } };
 
 export async function generateMetadata({ params }: Props) {
-  const { slug } = await params;
+  const { slug } = params;
   const data = await getBlogDetailBySlug(slug);
   if (!data) return { title: "Not Found" };
   return { title: `${data.header.title} | Blog`, description: undefined };
 }
 
-function RenderBlock({ b }: { b: NotionBlockNormalized }) {
-  switch (b.type) {
-    case "heading":
-      if (b.level === 1) return <h1>{b.text}</h1>;
-      if (b.level === 2) return <h2>{b.text}</h2>;
-      return <h3>{b.text}</h3>;
-    case "paragraph":
-      return <p>{b.richText}</p>;
-    case "bulleted_list_item":
-      return <ul className="list-disc pl-6"><li>{b.richText}</li></ul>;
-    case "numbered_list_item":
-      return <ol className="list-decimal pl-6"><li>{b.richText}</li></ol>;
-    case "image":
-      return (
-        <figure className="my-4">
-          {/* External or file URL from Notion */}
-          <img src={b.url} alt={b.caption ?? "image"} className="rounded-md border" />
-          {b.caption && <figcaption className="text-xs text-muted-foreground mt-1">{b.caption}</figcaption>}
-        </figure>
-      );
-    case "code":
-      return (
-        <pre className="p-3 rounded border overflow-auto"><code>{b.code}</code></pre>
-      );
-    case "quote":
-      return <blockquote className="border-l-2 pl-3 italic">{b.richText}</blockquote>;
-    case "divider":
-      return <hr className="my-6" />;
-    case "callout":
-      return <div className="p-3 rounded-md border bg-muted/30">{b.richText}</div>;
-    default:
-      return null;
-  }
-}
+// RenderBlock extracted to util/common/notion-render
 
 export default async function BlogDetailPage({ params }: Props) {
-  const { slug } = await params;
+  const { slug } = params;
   const data = await getBlogDetailBySlug(slug);
   if (!data) return notFound();
   const { header, notion } = data;

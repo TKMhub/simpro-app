@@ -1,30 +1,18 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { products } from "@/lib/productData";
 
-function ProductCard({
-  title,
-  description,
-  stack,
-  href,
-}: {
-  title: string;
-  description: string;
-  stack: string;
-  href: string;
-}) {
+function ProductCard({ slug, title, description, stack }: { slug: string; title: string; description: string; stack: string[] }) {
   return (
-    <div className="rounded-xl border border-[var(--color-border)] p-6 transition-all duration-300 hover:scale-105 hover:shadow-md">
-      <div className="space-y-2">
-        <h3 className="text-lg font-semibold">{title}</h3>
-        <p className="text-[var(--muted-foreground)]">{description}</p>
-        <p className="text-sm text-[var(--muted-foreground)]">技術スタック：{stack}</p>
+    <Link href={`/product/${slug}`} className="block group">
+      <div className="rounded-xl border border-[var(--color-border)] p-6 transition-all duration-300 group-hover:shadow-md">
+        <div className="space-y-2">
+          <h3 className="text-lg font-semibold group-hover:underline underline-offset-2">{title}</h3>
+          <p className="text-[var(--muted-foreground)]">{description}</p>
+          <p className="text-sm text-[var(--muted-foreground)]">技術スタック：{stack.join(" / ")}</p>
+        </div>
+        <div className="mt-4 text-sm text-blue-600">詳しく見る →</div>
       </div>
-      <div className="mt-5">
-        <Button asChild>
-          <Link href={href}>サイトを見る</Link>
-        </Button>
-      </div>
-    </div>
+    </Link>
   );
 }
 
@@ -39,20 +27,16 @@ export default function ProductPage() {
       </header>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <ProductCard
-          title="Simpro"
-          description="VBA・GAS・Webツール・テンプレートを配布するWebサービス"
-          stack="Next.js / TailwindCSS / Supabase / Shadcn"
-          href="/simpro"
-        />
-        <ProductCard
-          title="CodeParts"
-          description="ソースコードテンプレート配布＋ブログ＋Tipsの統合サイト"
-          stack="Next.js / Prisma / Supabase / Vercel"
-          href="/codeparts"
-        />
+        {products.map((p) => (
+          <ProductCard
+            key={p.slug}
+            slug={p.slug}
+            title={p.title}
+            description={p.description}
+            stack={p.stack}
+          />
+        ))}
       </div>
     </main>
   );
 }
-
