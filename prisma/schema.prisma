@@ -13,3 +13,33 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// Blog schema
+
+enum PostStatus {
+  draft
+  published
+  archived
+}
+
+model BlogPost {
+  id              String      @id @default(uuid())
+  title           String
+  slug            String      @unique
+  author          String
+  category        String      @default("")
+  tags            String[]    @db.Text
+  status          PostStatus  @default(draft)
+  isPublic        Boolean     @default(false)
+  goodCount       Int         @default(0)
+  headerImagePath String?
+  notionPageId    String      @unique
+  publishedAt     DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([category])
+  @@index([status, isPublic])
+  @@index([slug])
+  @@index([tags])
+}

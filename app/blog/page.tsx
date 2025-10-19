@@ -1,10 +1,12 @@
 import { Suspense } from "react";
 import BlogListClient from "./ui/BlogListClient";
+import { getBlogList } from "@/lib/blog/actions";
 
-export default function BlogListPage() {
+export default async function BlogListPage() {
+  const { items, total, page, pageSize } = await getBlogList({});
   return (
     <Suspense fallback={<main className="mx-auto max-w-4xl px-4 sm:px-6 pb-16" /> }>
-      <BlogListClient />
+      <BlogListClient initialItems={items} initialTotal={total} initialPage={page} initialPageSize={pageSize} />
     </Suspense>
   );
 }

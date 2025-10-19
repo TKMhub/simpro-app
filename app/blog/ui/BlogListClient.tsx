@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
-import { blogPosts, getAllTags } from "@/lib/blogData";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { normalizeCategories } from "@/lib/blogCategories";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { useSearchParams } from "next/navigation";
+import { getBlogList } from "@/lib/blog/actions";
+import type { BlogHeader } from "@/lib/blog/types";
 import {
   Accordion,
   AccordionContent,
@@ -16,20 +17,32 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-export default function BlogListClient() {
+type Props = {
+  initialItems: BlogHeader[];
+  initialTotal: number;
+  initialPage: number;
+  initialPageSize: number;
+};
+
+export default function BlogListClient({ initialItems, initialTotal }: Props) {
   const searchParams = useSearchParams();
-  const allTags = useMemo(() => getAllTags(), []);
   const [activeTags, setActiveTags] = useState<string[]>([]);
   const [query, setQuery] = useState("");
+  const [items, setItems] = useState<BlogHeader[]>(initialItems);
+  const [isPending, startTransition] = useTransition();
+
+  const allTags = useMemo(() => {
+    const set = new Set<string>();
+    for (const p of items) p.tags.forEach((t) => set.add(t));
+    return Array.from(set).sort();
+  }, [items]);
 
   // Initialize active tags from URL query (?tag=React&tag=Next.js)
   useEffect(() => {
     const urlTags = searchParams ? searchParams.getAll("tag") : [];
     if (urlTags.length > 0) {
       const valid = urlTags.filter((t) => allTags.includes(t));
-      if (valid.length > 0) {
-        setActiveTags(Array.from(new Set(valid)));
-      }
+      if (valid.length > 0) setActiveTags(Array.from(new Set(valid)));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, allTags.join("|")]);
@@ -43,42 +56,36 @@ export default function BlogListClient() {
   const clearFilters = () => {
     setActiveTags([]);
     setQuery("");
+    startTransition(async () => {
+      const res = await getBlogList({});
+      setItems(res.items);
+    });
   };
 
   const categories = useMemo(() => normalizeCategories(allTags), [allTags]);
 
   const popularTags = useMemo(() => {
     const counts = new Map<string, number>();
-    for (const p of blogPosts) {
-      for (const t of p.tags) counts.set(t, (counts.get(t) ?? 0) + 1);
-    }
+    for (const p of items) for (const t of p.tags) counts.set(t, (counts.get(t) ?? 0) + 1);
     return Array.from(counts.entries())
       .sort((a, b) => b[1] - a[1])
       .map(([t]) => t)
       .slice(0, 6);
-  }, []);
+  }, [items]);
 
-  const filtered = useMemo(() => {
-    return blogPosts.filter((p) => {
-      const matchesTags =
-        activeTags.length === 0 || activeTags.every((t) => p.tags.includes(t));
-      const q = query.trim().toLowerCase();
-      const matchesQuery =
-        q.length === 0 ||
-        p.title.toLowerCase().includes(q) ||
-        p.excerpt.toLowerCase().includes(q) ||
-        p.tags.some((t) => t.toLowerCase().includes(q));
-      return matchesTags && matchesQuery;
+  // Fetch on filters change
+  useEffect(() => {
+    startTransition(async () => {
+      const res = await getBlogList({ q: query, tags: activeTags });
+      setItems(res.items);
     });
-  }, [activeTags, query]);
+  }, [query, activeTags]);
 
   return (
     <main className="mx-auto max-w-4xl px-4 sm:px-6 pb-16">
       <section className="mt-8 sm:mt-12 mb-6">
         <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">Blog</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          記事のタグとキーワードで絞り込みできます。
-        </p>
+        <p className="text-sm text-muted-foreground mt-1">記事のタグとキーワードで絞り込みできます。</p>
       </section>
 
       <section className="space-y-3 mb-6">
@@ -87,21 +94,17 @@ export default function BlogListClient() {
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="キーワード検索 (タイトル/概要/タグ)"
+              placeholder="キーワード検索 (タイトル/タグ)"
               className="h-10"
             />
           </div>
           {(activeTags.length > 0 || query) && (
-            <button
-              onClick={clearFilters}
-              className="text-sm text-blue-600 hover:underline self-start sm:self-auto"
-            >
+            <button onClick={clearFilters} className="text-sm text-blue-600 hover:underline self-start sm:self-auto">
               クリア
             </button>
           )}
         </div>
 
-        {/* Quick access: おすすめタグ */}
         <div className="space-y-2">
           <p className="text-xs text-muted-foreground">おすすめタグ</p>
           <div className="flex flex-wrap gap-2">
@@ -111,52 +114,33 @@ export default function BlogListClient() {
                 <button
                   key={tag}
                   onClick={() => toggleTag(tag)}
-                  className={[
-                    "transition-transform",
-                    active ? "scale-[1.03]" : "hover:scale-[1.02]",
-                  ].join(" ")}
+                  className={["transition-transform", active ? "scale-[1.03]" : "hover:scale-[1.02]"].join(" ")}
                   aria-pressed={active}
                 >
-                  <Badge
-                    variant={active ? "default" : "secondary"}
-                    className={active ? "bg-blue-600" : ""}
-                  >
-                    {tag}
-                  </Badge>
+                  <Badge variant={active ? "default" : "secondary"}>{tag}</Badge>
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* Category accordion: 大項目 / 小項目 */}
-        <div className="rounded-md border bg-card">
+        <div>
           <Accordion type="multiple" className="w-full">
             {categories.map((cat, idx) => (
               <AccordionItem key={cat.name} value={`${idx}`}>
-                <AccordionTrigger className="px-3">
-                  <span className="text-sm">{cat.name}</span>
-                </AccordionTrigger>
+                <AccordionTrigger className="text-sm">{cat.name}</AccordionTrigger>
                 <AccordionContent>
-                  <div className="px-3 pb-1 flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 py-2">
                     {cat.items.map((tag) => {
                       const active = activeTags.includes(tag);
                       return (
                         <button
                           key={tag}
                           onClick={() => toggleTag(tag)}
-                          className={[
-                            "transition-transform",
-                            active ? "scale-[1.03]" : "hover:scale-[1.02]",
-                          ].join(" ")}
+                          className={["transition-transform", active ? "scale-[1.03]" : "hover:scale-[1.02]"].join(" ")}
                           aria-pressed={active}
                         >
-                          <Badge
-                            variant={active ? "default" : "secondary"}
-                            className={active ? "bg-blue-600" : ""}
-                          >
-                            {tag}
-                          </Badge>
+                          <Badge variant={active ? "default" : "secondary"}>{tag}</Badge>
                         </button>
                       );
                     })}
@@ -169,21 +153,19 @@ export default function BlogListClient() {
       </section>
 
       <section className="space-y-4">
-        {filtered.length === 0 && (
-          <p className="text-sm text-muted-foreground">該当する記事がありません。</p>
-        )}
+        {items.length === 0 && <p className="text-sm text-muted-foreground">該当する記事がありません。</p>}
 
         <ul className="space-y-4">
-          {filtered.map((post) => (
+          {items.map((post) => (
             <li key={post.id}>
               <Link href={`/blog/${post.slug}`} className="block group">
                 <Card className="overflow-hidden">
                   <CardContent className="p-0">
                     <div className="flex gap-4 p-4 sm:p-5">
-                      {post.coverImage && (
+                      {post.headerImageUrl && (
                         <div className="relative w-28 h-20 sm:w-36 sm:h-24 shrink-0 rounded-md overflow-hidden border">
                           <Image
-                            src={post.coverImage}
+                            src={post.headerImageUrl}
                             alt="cover"
                             fill
                             sizes="(max-width: 640px) 112px, 144px"
@@ -192,14 +174,9 @@ export default function BlogListClient() {
                         </div>
                       )}
                       <div className="min-w-0 flex-1">
-                        <h2 className="text-base sm:text-lg font-medium group-hover:underline">
-                          {post.title}
-                        </h2>
+                        <h2 className="text-base sm:text-lg font-medium group-hover:underline">{post.title}</h2>
                         <p className="text-xs text-muted-foreground mt-1">
-                          {new Date(post.date).toLocaleDateString("ja-JP")} ・ {post.author}
-                        </p>
-                        <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                          {post.excerpt}
+                          {new Date(post.updatedAt || post.createdAt).toLocaleDateString("ja-JP")} ・ {post.author}
                         </p>
                         <div className="flex flex-wrap gap-1.5 mt-3">
                           {post.tags.map((t) => (
@@ -220,4 +197,3 @@ export default function BlogListClient() {
     </main>
   );
 }
-
