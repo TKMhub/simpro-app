@@ -23,19 +23,19 @@ function toHyphenatedUuid(id32OrHyphenated: string): string {
   ].join("-");
 }
 
-function extractTitleFromPage(obj: any): string | null {
+function extractTitleFromPage(obj: unknown): string | null {
   // Notion page object: properties contains one "title" typed property
-  const props = obj?.properties ?? {};
+  const props = (obj as { properties?: Record<string, unknown>; child_page?: { title?: unknown } })?.properties ?? {};
   for (const key of Object.keys(props)) {
-    const p = props[key];
+    const p = props[key] as { type?: string; title?: Array<{ plain_text?: string }> };
     if (p?.type === "title") {
       const arr = p.title ?? [];
-      const text = arr.map((t: any) => t?.plain_text ?? "").join("").trim();
+      const text = arr.map((t) => t?.plain_text ?? "").join("").trim();
       if (text) return text;
     }
   }
   // Fall back to child_page if present (rare for search result)
-  const childTitle = obj?.child_page?.title;
+  const childTitle = (obj as { child_page?: { title?: unknown } })?.child_page?.title;
   return childTitle ? String(childTitle) : null;
 }
 
@@ -60,11 +60,12 @@ export async function resolveBlogNotionPageId(opts: {
   // 2) If we have a root page, first try to find a child page with exact title match
   if (rootPageId) {
     const res = await notion.blocks.children.list({ block_id: rootPageId, page_size: 100 });
-    for (const b of res.results) {
-      if (b.type === "child_page" && (b as any).child_page?.title) {
-        const title = (b as any).child_page.title as string;
-        if (searchKeys.includes(title)) {
-          return b.id; // Notion uses block id as page id
+    for (const _b of res.results) {
+      const b = _b as { type?: string; id?: string; child_page?: { title?: string } };
+      if (b.type === "child_page") {
+        const title = b.child_page?.title;
+        if (title && searchKeys.includes(title)) {
+          return String(b.id); // Notion uses block id as page id
         }
       }
     }
@@ -72,11 +73,17 @@ export async function resolveBlogNotionPageId(opts: {
 
   // 3) Fallback: use Notion search API restricted to pages and try exact title match
   for (const query of searchKeys) {
-    const res: any = await (notion as any).search({
+    const res = (await (notion as unknown as {
+      search: (params: {
+        query: string;
+        filter: { value: "page"; property: "object" };
+        page_size: number;
+      }) => Promise<unknown>;
+    }).search({
       query,
       filter: { value: "page", property: "object" },
       page_size: 25,
-    });
+    })) as { results?: Array<{ object?: string; id?: string } & Record<string, unknown>> };
     let firstCandidate: string | null = null;
     for (const r of res.results ?? []) {
       if (r.object === "page" && r.id) {

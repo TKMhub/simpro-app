@@ -31,15 +31,16 @@ export async function fetchNotionBlocks(pageId: string) {
   }
   const normalizedId = toHyphenatedUuid(raw);
 
-  async function getAll(blockId: string, acc: any[] = []) {
+  async function getAll(blockId: string, acc: unknown[] = []) {
     const res = await notion.blocks.children.list({
       block_id: blockId,
       page_size: 100,
     });
     for (const b of res.results) {
       acc.push(b);
-      if ((b as any).has_children && b.id) {
-        await getAll(b.id, acc);
+      const node = b as { has_children?: boolean; id?: string };
+      if (node.has_children && node.id) {
+        await getAll(node.id, acc);
       }
     }
     // NOTE: SDK requires manual pagination; simplified here.

@@ -5,16 +5,18 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getProductBySlug } from "@/lib/productData";
 
-type Props = { params: { slug: string } };
+type Props = { params: Promise<{ slug: string }> };
 
-export function generateMetadata({ params }: Props) {
-  const p = getProductBySlug(params.slug);
+export async function generateMetadata({ params }: Props) {
+  const { slug } = await params;
+  const p = getProductBySlug(slug);
   if (!p) return { title: "Not Found" };
   return { title: `${p.title} | Product`, description: p.description };
 }
 
-export default function ProductDetailPage({ params }: Props) {
-  const product = getProductBySlug(params.slug);
+export default async function ProductDetailPage({ params }: Props) {
+  const { slug } = await params;
+  const product = getProductBySlug(slug);
   if (!product) return notFound();
 
   return (
@@ -78,4 +80,3 @@ export default function ProductDetailPage({ params }: Props) {
     </main>
   );
 }
-

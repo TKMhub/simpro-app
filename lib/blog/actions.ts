@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db/prisma";
+import { Prisma } from "@/lib/generated/prisma";
 import { resolveHeaderImageUrl } from "./image";
 import { normalizeNotionDocument } from "./notion-normalize";
 import { fetchNotionBlocks } from "./notion-client";
@@ -33,7 +34,7 @@ export async function getBlogList(params: ListParams = {}) {
     status = "published",
   } = params;
 
-  const where: any = {};
+  const where: Prisma.BlogPostWhereInput = {};
   // 公開記事のみ
   where.isPublic = true;
   if (status !== "all") where.status = status;
@@ -48,7 +49,8 @@ export async function getBlogList(params: ListParams = {}) {
   }
   if (tags.length) where.AND = tags.map((t) => ({ tags: { has: t } }));
 
-  const orderBy = sort === "created" ? { createdAt: order } : { updatedAt: order };
+  const orderBy: Prisma.BlogPostOrderByWithRelationInput =
+    sort === "created" ? { createdAt: order } : { updatedAt: order };
 
   const [total, rows] = await Promise.all([
     prisma.blogPost.count({ where }),

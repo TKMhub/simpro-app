@@ -1,8 +1,30 @@
 import type { NotionDocument, NotionBlockNormalized } from "./types";
 
-export async function normalizeNotionDocument(blocks: any[]): Promise<NotionDocument> {
+type NotionRichTextLike = { plain_text?: string };
+
+type NotionBlockLike = {
+  id?: string;
+  type?: string;
+  paragraph?: { rich_text?: NotionRichTextLike[] };
+  to_do?: { rich_text?: NotionRichTextLike[]; checked?: boolean };
+  toggle?: { rich_text?: NotionRichTextLike[] };
+  heading_1?: { rich_text?: NotionRichTextLike[] };
+  heading_2?: { rich_text?: NotionRichTextLike[] };
+  heading_3?: { rich_text?: NotionRichTextLike[] };
+  bulleted_list_item?: { rich_text?: NotionRichTextLike[] };
+  numbered_list_item?: { rich_text?: NotionRichTextLike[] };
+  image?:
+    | { type?: "external"; external?: { url?: string }; caption?: NotionRichTextLike[] }
+    | { type?: "file"; file?: { url?: string }; caption?: NotionRichTextLike[] };
+  code?: { language?: string; rich_text?: NotionRichTextLike[] };
+  bookmark?: { url?: string };
+  quote?: { rich_text?: NotionRichTextLike[] };
+  callout?: { rich_text?: NotionRichTextLike[]; icon?: { emoji?: string } };
+};
+
+export async function normalizeNotionDocument(blocks: unknown[]): Promise<NotionDocument> {
   const out: NotionBlockNormalized[] = [];
-  for (const b of blocks) {
+  for (const b of blocks as NotionBlockLike[]) {
     switch (b.type) {
       case "paragraph":
         out.push({ type: "paragraph", richText: concatRichText(b.paragraph?.rich_text) });
@@ -34,8 +56,11 @@ export async function normalizeNotionDocument(blocks: any[]): Promise<NotionDocu
         out.push({ type: "numbered_list_item", richText: concatRichText(b.numbered_list_item?.rich_text) });
         break;
       case "image": {
-        const url = b.image?.type === "external" ? b.image.external.url : b.image?.file?.url;
-        const caption = concatRichText(b.image?.caption);
+        const img = b.image as
+          | { type?: string; external?: { url?: string }; file?: { url?: string }; caption?: NotionRichTextLike[] }
+          | undefined;
+        const url = img?.type === "external" ? img?.external?.url : img?.file?.url;
+        const caption = concatRichText(img?.caption);
         if (url) out.push({ type: "image", url, caption });
         break;
       }
@@ -64,6 +89,6 @@ export async function normalizeNotionDocument(blocks: any[]): Promise<NotionDocu
   return { blocks: out };
 }
 
-function concatRichText(rich?: any[]): string {
-  return (rich ?? []).map((r) => r.plain_text ?? "").join("");
+function concatRichText(rich?: NotionRichTextLike[]): string {
+  return (rich ?? []).map((r) => r?.plain_text ?? "").join("");
 }
