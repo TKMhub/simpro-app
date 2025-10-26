@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db/prisma";
-import { Prisma as PrismaNS } from "@/lib/generated/prisma";
+import { Prisma } from "@/lib/generated/prisma";
 import { fetchNotionBlocks } from "@/lib/blog/notion-client";
 import { normalizeNotionDocument } from "@/lib/blog/notion-normalize";
 import { resolveProductNotionPageId } from "./notion-resolver";
@@ -35,11 +35,11 @@ export async function getProductList(params: ListParams = {}) {
     status = "published",
   } = params;
 
-  const where: any = {};
+  const where: Prisma.ProductPostWhereInput = {};
   where.isPublic = true;
-  if (status !== "all") where.status = status;
+  if (status !== "all") where.status = status as any;
   if (category) where.category = category;
-  if (type) where.type = type;
+  if (type) where.type = type as any;
   if (q) {
     where.OR = [
       { title: { contains: q, mode: "insensitive" } },
@@ -49,68 +49,16 @@ export async function getProductList(params: ListParams = {}) {
   }
   if (tags.length) where.AND = tags.map((t) => ({ tags: { has: t } }));
 
-  const orderBy = sort === "created" ? { createdAt: order } : { updatedAt: order };
+  const orderBy: Prisma.ProductPostOrderByWithRelationInput =
+    sort === "created" ? { createdAt: order as any } : { updatedAt: order as any };
 
-  // Fallback to SQL if the generated client (old) lacks ProductPost delegate
-  const hasDelegate = typeof (prisma as any).productPost?.count === "function" && typeof (prisma as any).productPost?.findMany === "function";
-
-  let total: number;
-  let rows: any[];
-
-  if (hasDelegate) {
-    [total, rows] = await Promise.all([
-      (prisma as any).productPost.count({ where }),
-      (prisma as any).productPost.findMany({ where, orderBy, skip: (page - 1) * pageSize, take: pageSize }),
-    ]);
-  } else {
-    // Build SQL WHERE
-    const whereSqls: any[] = [PrismaNS.sql`"isPublic" = true`];
-    if (status !== "all") whereSqls.push(PrismaNS.sql`"status"::text = ${status}`);
-    if (category) whereSqls.push(PrismaNS.sql`"category" = ${category}`);
-    if (type) whereSqls.push(PrismaNS.sql`"type"::text = ${type}`);
-    if (q) {
-      const like = `%${q}%`;
-      whereSqls.push(PrismaNS.sql`(title ILIKE ${like} OR author ILIKE ${like} OR EXISTS(SELECT 1 FROM unnest("tags") t WHERE t = ${q}))`);
-    }
-    if (tags.length) {
-      // Require all selected tags to be present using EXISTS for each tag
-      for (const t of tags) {
-        whereSqls.push(PrismaNS.sql`EXISTS(SELECT 1 FROM unnest("tags") tag WHERE tag = ${t})`);
-      }
-    }
-    const whereSql = whereSqls.length ? PrismaNS.sql`WHERE ${PrismaNS.join(whereSqls, PrismaNS.sql` AND `)}` : PrismaNS.sql``;
-
-    const orderField = sort === "created" ? PrismaNS.sql`"createdAt"` : PrismaNS.sql`"updatedAt"`;
-    const orderDir = order === "asc" ? PrismaNS.sql`ASC` : PrismaNS.sql`DESC`;
-    const offset = (page - 1) * pageSize;
-
-    const countRows = await prisma.$queryRaw<any[]>`
-      SELECT COUNT(*)::int AS count
-      FROM "ProductPost"
-      ${whereSql}
-    `;
-    total = countRows?.[0]?.count ?? 0;
-
-    rows = await prisma.$queryRaw<any[]>`
-      SELECT id, title, slug, description, author, category, type, tags, status, "isPublic" as "isPublic",
-             "goodCount" as "goodCount", "headerImagePath" as "headerImagePath", "notionPageId" as "notionPageId",
-             "contentLink" as "contentLink", "actionType" as "actionType",
-             to_char("createdAt", 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') as "createdAt",
-             to_char("updatedAt", 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') as "updatedAt",
-             CASE WHEN "publishedAt" IS NULL THEN NULL ELSE to_char("publishedAt", 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') END as "publishedAt"
-      FROM "ProductPost"
-      ${whereSql}
-      ORDER BY ${orderField} ${orderDir}
-      OFFSET ${offset} LIMIT ${pageSize}
-    `;
-  }
+  const [total, rows] = await Promise.all([
+    prisma.productPost.count({ where }),
+    prisma.productPost.findMany({ where, orderBy, skip: (page - 1) * pageSize, take: pageSize }),
+  ]);
 
   const items: ProductHeader[] = await Promise.all(
-    rows.map(async (r) => {
-      const createdAtISO = typeof r.createdAt === 'string' ? r.createdAt : r.createdAt.toISOString();
-      const updatedAtISO = typeof r.updatedAt === 'string' ? r.updatedAt : r.updatedAt.toISOString();
-      const publishedAtISO = r.publishedAt == null ? null : (typeof r.publishedAt === 'string' ? r.publishedAt : r.publishedAt.toISOString());
-      return ({
+    rows.map(async (r) => ({
       id: r.id,
       title: r.title,
       slug: r.slug,
@@ -127,11 +75,10 @@ export async function getProductList(params: ListParams = {}) {
       notionPageId: r.notionPageId,
       contentLink: r.contentLink ?? null,
       actionType: r.actionType as ProductHeader["actionType"],
-      createdAt: createdAtISO,
-      updatedAt: updatedAtISO,
-      publishedAt: publishedAtISO,
-    });
-    })
+      createdAt: r.createdAt.toISOString(),
+      updatedAt: r.updatedAt.toISOString(),
+      publishedAt: r.publishedAt?.toISOString() ?? null,
+    }))
   );
 
   return { items, total, page, pageSize };

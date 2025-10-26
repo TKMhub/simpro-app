@@ -25,6 +25,29 @@ export function getProductCoverPublicUrl({
   // Fallback: local default image
   const fallback = DEFAULT_HEADER_IMAGE;
 
+  function normalizeUnsplashUrl(urlStr: string): string | null {
+    try {
+      const u = new URL(urlStr);
+      if (u.hostname === "images.unsplash.com") return urlStr;
+      if (u.hostname !== "unsplash.com") return null;
+      const parts = u.pathname.split("/").filter(Boolean);
+      let id = "";
+      const photosIdx = parts.findIndex((p) => p === "photos");
+      if (photosIdx >= 0 && parts[photosIdx + 1]) {
+        id = parts[photosIdx + 1];
+      } else {
+        const last = parts[parts.length - 1] || "";
+        const m = last.match(/-([A-Za-z0-9_-]{11})$/);
+        if (m) id = m[1];
+      }
+      if (!id || id.length < 5) return null;
+      const params = new URLSearchParams({ auto: "format", fit: "crop", w: "1600", q: "80" });
+      return `https://images.unsplash.com/photo-${id}?${params.toString()}`;
+    } catch {
+      return null;
+    }
+  }
+
   // 1) no path -> try slug based default in storage
   if (!imgPath && slug) {
     const { data } = supabase.storage
@@ -36,7 +59,15 @@ export function getProductCoverPublicUrl({
   if (!imgPath) return fallback;
 
   // 2) absolute URL
-  if (/^https?:\/\//i.test(imgPath)) return imgPath;
+  if (/^https?:\/\//i.test(imgPath)) {
+    const normalized = normalizeUnsplashUrl(imgPath);
+    if (normalized) return normalized;
+    try {
+      const u = new URL(imgPath);
+      if (u.hostname === "unsplash.com") return fallback;
+    } catch {}
+    return imgPath;
+  }
 
   // 3) local public path
   if (imgPath.startsWith("/")) {
@@ -54,4 +85,3 @@ export function getProductCoverPublicUrl({
   const { data } = supabase.storage.from("product").getPublicUrl(imgPath);
   return data.publicUrl || fallback;
 }
-
