@@ -140,9 +140,7 @@ export async function getBlogDetailBySlug(slug: string): Promise<{ header: BlogH
 
   let notion;
   try {
-    // Resolve the actual Notion page ID.
-    // If `post.notionPageId` is already a UUID, it will be used.
-    // Otherwise, try to find a child page under NOTION_BLOG_ROOT_PAGE_ID by title.
+    // Normalize or resolve Notion page ID from DB value or title
     const pageId = await resolveBlogNotionPageId({
       hintIdOrTitle: post.notionPageId,
       titleCandidates: [post.title],

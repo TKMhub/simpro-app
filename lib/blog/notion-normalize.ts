@@ -7,6 +7,17 @@ export async function normalizeNotionDocument(blocks: any[]): Promise<NotionDocu
       case "paragraph":
         out.push({ type: "paragraph", richText: concatRichText(b.paragraph?.rich_text) });
         break;
+      case "to_do": {
+        const text = concatRichText(b.to_do?.rich_text);
+        const checked = !!b.to_do?.checked;
+        out.push({ type: "paragraph", richText: `${checked ? "[x]" : "[ ]"} ${text}`.trim() });
+        break;
+      }
+      case "toggle": {
+        const text = concatRichText(b.toggle?.rich_text);
+        out.push({ type: "paragraph", richText: text });
+        break;
+      }
       case "heading_1":
         out.push({ type: "heading", level: 1, text: concatRichText(b.heading_1?.rich_text) });
         break;
@@ -31,6 +42,11 @@ export async function normalizeNotionDocument(blocks: any[]): Promise<NotionDocu
       case "code":
         out.push({ type: "code", language: b.code?.language, code: concatRichText(b.code?.rich_text) });
         break;
+      case "bookmark": {
+        const url = b.bookmark?.url as string | undefined;
+        if (url) out.push({ type: "paragraph", richText: url });
+        break;
+      }
       case "quote":
         out.push({ type: "quote", richText: concatRichText(b.quote?.rich_text) });
         break;
@@ -51,4 +67,3 @@ export async function normalizeNotionDocument(blocks: any[]): Promise<NotionDocu
 function concatRichText(rich?: any[]): string {
   return (rich ?? []).map((r) => r.plain_text ?? "").join("");
 }
-
