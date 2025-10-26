@@ -1,7 +1,6 @@
 import Link from "next/link";
 import ImageWithFallback from "@/components/ImageWithFallback";
-import { products } from "@/lib/productData";
-import { getProductCoverPublicUrl } from "@/lib/product/image";
+import { getProductList } from "@/lib/product/actions";
 
 function ProductCard({
   slug,
@@ -62,11 +61,8 @@ function ProductCard({
   );
 }
 
-export default function ProductPage() {
-  const items = products.map((p) => ({
-    ...p,
-    coverUrl: getProductCoverPublicUrl({ imgPath: p.coverPath, slug: p.slug }),
-  }));
+export default async function ProductPage() {
+  const { items } = await getProductList();
 
   return (
     <main className="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-16 space-y-8">
@@ -83,9 +79,9 @@ export default function ProductPage() {
             key={p.slug}
             slug={p.slug}
             title={p.title}
-            description={p.description}
-            stack={p.stack}
-            coverUrl={p.coverUrl}
+            description={p.description || p.category}
+            stack={p.tags}
+            coverUrl={p.headerImageUrl || "/Simplo_gray_main_sub.jpg"}
           />
         ))}
       </div>

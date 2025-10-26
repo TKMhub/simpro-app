@@ -9,7 +9,8 @@
     "lint": "eslint",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev --name init_blog",
-    "blog:import:excel": "node tools/blogPostCreateByExcel/index.js --file tools/blogPostCreateByExcel/blog_posts.csv"
+    "blog:import:excel": "node tools/blogPostCreateByExcel/index.js --file tools/blogPostCreateByExcel/blog_posts.csv",
+    "product:import:excel": "node tools/productPostCreateByExcel/index.js --file tools/productPostCreateByExcel/product_posts.csv"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

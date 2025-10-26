@@ -3,21 +3,23 @@ import { notFound } from "next/navigation";
 import ImageWithFallback from "@/components/ImageWithFallback";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getProductBySlug } from "@/lib/productData";
+import { getProductDetailBySlug } from "@/lib/product/actions";
+import { RenderBlock } from "@/util/common/notion-render";
 
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
-  const p = getProductBySlug(slug);
+  const p = await getProductDetailBySlug(slug);
   if (!p) return { title: "Not Found" };
-  return { title: `${p.title} | Product`, description: p.description };
+  return { title: `${p.header.title} | Product`, description: undefined };
 }
 
 export default async function ProductDetailPage({ params }: Props) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
-  if (!product) return notFound();
+  const data = await getProductDetailBySlug(slug);
+  if (!data) return notFound();
+  const { header: product, notion } = data;
 
   return (
     <main className="mx-auto max-w-3xl px-4 sm:px-6 pb-16">
@@ -29,7 +31,7 @@ export default async function ProductDetailPage({ params }: Props) {
 
       <article className="mt-4 sm:mt-6">
         <h1 className="text-2xl sm:text-3xl font-semibold leading-tight">{product.title}</h1>
-        <p className="text-sm text-muted-foreground mt-2">{product.description}</p>
+        <p className="text-sm text-muted-foreground mt-2">{product.category}</p>
 
         {product.stack?.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-3">
@@ -41,7 +43,7 @@ export default async function ProductDetailPage({ params }: Props) {
 
         <div className="relative mt-6 aspect-[16/9] w-full overflow-hidden rounded-lg border">
           <ImageWithFallback
-            src={product.headerImageUrl}
+            src={product.headerImageUrl || "/Simplo_gray_main_sub.jpg"}
             alt="cover"
             fill
             sizes="(max-width: 768px) 100vw, 768px"
@@ -51,27 +53,26 @@ export default async function ProductDetailPage({ params }: Props) {
           />
         </div>
 
-        <section className="prose dark:prose-invert max-w-none mt-6">
-          <h2>概要</h2>
-          <p>{product.description}</p>
+        {notion.unavailable || notion.blocks.length === 0 ? (
+          <p className="text-sm text-muted-foreground mt-6">表示できるコンテンツがありません。</p>
+        ) : (
+          <div className="prose dark:prose-invert max-w-none mt-6">
+            {notion.blocks.map((b, idx) => (
+              <RenderBlock key={idx} b={b} />
+            ))}
+          </div>
+        )}
 
-          {product.features?.length ? (
-            <>
-              <h3>特徴</h3>
-              <ul>
-                {product.features.map((f) => (
-                  <li key={f}>{f}</li>
-                ))}
-              </ul>
-            </>
-          ) : null}
-        </section>
-
-        {product.siteUrl && (
+        {product.contentLink && (
           <div className="mt-6">
             <Button asChild>
-              <Link href={product.siteUrl} target="_blank" rel="noopener noreferrer">
-                公式サイトを見る
+              <Link 
+                href={product.contentLink}
+                target={product.actionType === 'transition' ? "_self" : "_blank"}
+                rel={product.actionType === 'download' ? "noopener noreferrer" : undefined}
+                download={product.actionType === 'download' ? true : undefined}
+              >
+                {product.actionType === 'download' ? 'ダウンロード' : 'コンテンツへ移動'}
               </Link>
             </Button>
           </div>

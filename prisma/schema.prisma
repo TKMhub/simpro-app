@@ -44,3 +44,43 @@ model BlogPost {
   @@index([slug])
   @@index([tags])
 }
+
+// Product schema (similar to BlogPost with product-specific fields)
+
+enum ProductType {
+  Tool
+  Template
+  Service
+}
+
+enum ProductActionType {
+  transition
+  download
+}
+
+model ProductPost {
+  id              String             @id @default(uuid())
+  title           String
+  slug            String             @unique
+  description     String             @default("")
+  author          String
+  category        String             @default("")
+  type            ProductType
+  tags            String[]           @db.Text
+  status          PostStatus         @default(draft)
+  isPublic        Boolean            @default(false)
+  goodCount       Int                @default(0)
+  headerImagePath String?
+  notionPageId    String             @unique
+  contentLink     String?
+  actionType      ProductActionType  @default(transition)
+  publishedAt     DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@index([category])
+  @@index([status, isPublic])
+  @@index([slug])
+  @@index([tags])
+  @@index([type])
+}
