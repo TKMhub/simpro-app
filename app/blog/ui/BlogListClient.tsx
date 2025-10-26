@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import ImageWithFallback from "@/components/ImageWithFallback";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,13 +19,16 @@ type Props = {
   facets: { categories: string[]; categoryTags: Record<string, string[]> };
 };
 
-export default function BlogListClient({ initialItems, initialTotal, facets }: Props) {
+export default function BlogListClient({ initialItems, initialTotal, initialPage, initialPageSize, facets }: Props) {
   const searchParams = useSearchParams();
   // 絞り込み状態
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedTag, setSelectedTag] = useState<string>("");
   const [query, setQuery] = useState("");
   const [items, setItems] = useState<BlogHeader[]>(initialItems);
+  const [total, setTotal] = useState<number>(initialTotal);
+  const [page, setPage] = useState<number>(initialPage || 1);
+  const [pageSize] = useState<number>(initialPageSize || 15);
   const [isPending, startTransition] = useTransition();
 
   // URLから初期状態を受け取る（将来的な拡張用）。現状は未使用。
@@ -38,22 +41,54 @@ export default function BlogListClient({ initialItems, initialTotal, facets }: P
     setSelectedTag("");
     setQuery("");
     startTransition(async () => {
-      const res = await getBlogList({});
+      const res = await getBlogList({ page: 1, pageSize, sort: "updated", order: "asc", status: "all" });
       setItems(res.items);
+      setTotal(res.total);
+      setPage(1);
     });
   };
 
   // Fetch on filters change
   useEffect(() => {
     startTransition(async () => {
+      const showAll = !query && !selectedCategory && !selectedTag;
       const res = await getBlogList({
         q: query,
         category: selectedCategory || undefined,
         tags: selectedTag ? [selectedTag] : [],
+        page: 1,
+        pageSize,
+        sort: "updated",
+        order: "asc",
+        status: showAll ? "all" : "published",
       });
       setItems(res.items);
+      setTotal(res.total);
+      setPage(1);
     });
   }, [query, selectedCategory, selectedTag]);
+
+  // Fetch on page change
+  const goToPage = (p: number) => {
+    setPage(p);
+    startTransition(async () => {
+      const showAll = !query && !selectedCategory && !selectedTag;
+      const res = await getBlogList({
+        q: query,
+        category: selectedCategory || undefined,
+        tags: selectedTag ? [selectedTag] : [],
+        page: p,
+        pageSize,
+        sort: "updated",
+        order: "asc",
+        status: showAll ? "all" : "published",
+      });
+      setItems(res.items);
+      setTotal(res.total);
+    });
+  };
+
+  const totalPages = Math.max(1, Math.ceil((total || 0) / pageSize));
 
   return (
     <main className="mx-auto max-w-4xl px-4 sm:px-6 pb-16">
@@ -172,6 +207,38 @@ export default function BlogListClient({ initialItems, initialTotal, facets }: P
             </li>
           ))}
         </ul>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="mt-6 flex justify-center items-center gap-2">
+            <button
+              className="px-3 py-1.5 text-sm rounded border disabled:opacity-50"
+              onClick={() => goToPage(Math.max(1, page - 1))}
+              disabled={page <= 1 || isPending}
+            >
+              前へ
+            </button>
+            <div className="flex gap-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                <button
+                  key={p}
+                  className={`px-3 py-1.5 text-sm rounded border ${p === page ? "bg-[var(--primary)] text-white border-[var(--primary)]" : ""}`}
+                  onClick={() => goToPage(p)}
+                  disabled={isPending}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+            <button
+              className="px-3 py-1.5 text-sm rounded border disabled:opacity-50"
+              onClick={() => goToPage(Math.min(totalPages, page + 1))}
+              disabled={page >= totalPages || isPending}
+            >
+              次へ
+            </button>
+          </div>
+        )}
       </section>
     </main>
   );
