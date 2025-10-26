@@ -3,6 +3,8 @@ export type Product = {
   title: string;
   description: string;
   stack: string[];
+  // Optional: custom cover path. If omitted, uses `covers/{slug}.jpg` in Supabase Storage `product` bucket.
+  coverPath?: string;
   headerImageUrl?: string;
   features?: string[];
   siteUrl?: string;
@@ -40,4 +42,3 @@ export const products: Product[] = [
 export function getProductBySlug(slug: string): Product | undefined {
   return products.find((p) => p.slug === slug);
 }
-
