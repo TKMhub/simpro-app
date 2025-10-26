@@ -156,7 +156,9 @@ async function readXlsx(filePath) {
 }
 
 async function readCsv(filePath) {
-  const raw = await fsp.readFile(filePath, 'utf8');
+  let raw = await fsp.readFile(filePath, 'utf8');
+  // Strip UTF-8 BOM if present
+  if (raw.charCodeAt(0) === 0xFEFF) raw = raw.slice(1);
   return parseCsv(raw);
 }
 
@@ -209,8 +211,42 @@ async function main() {
     return;
   }
 
-  // createMany with skipDuplicates respects unique constraints (slug, notionPageId)
-  const res = await prisma.blogPost.createMany({ data: records, skipDuplicates: true });
+  // Deduplicate within this batch by slug / notionPageId
+  const seenSlug = new Set();
+  const seenNotion = new Set();
+  const batch = [];
+  for (const rec of records) {
+    const s = rec.slug;
+    const n = rec.notionPageId;
+    if (seenSlug.has(s) || seenNotion.has(n)) {
+      console.warn(`バッチ内重複によりスキップ: slug=${s} notionPageId=${n}`);
+      continue;
+    }
+    seenSlug.add(s);
+    seenNotion.add(n);
+    batch.push(rec);
+  }
+
+  // Filter out rows that already exist in DB (by slug or notionPageId) for clearer reporting
+  const existing = await prisma.blogPost.findMany({
+    where: { OR: [ { slug: { in: batch.map(r => r.slug) } }, { notionPageId: { in: batch.map(r => r.notionPageId) } } ] },
+    select: { slug: true, notionPageId: true }
+  });
+  const existingSlug = new Set(existing.map(e => e.slug));
+  const existingNotion = new Set(existing.map(e => e.notionPageId));
+  const toCreate = batch.filter(r => !existingSlug.has(r.slug) && !existingNotion.has(r.notionPageId));
+  const preSkipped = batch.length - toCreate.length;
+  if (preSkipped > 0) {
+    console.warn(`既存重複によりスキップ: ${preSkipped} 件（DBに既に存在）`);
+  }
+
+  if (toCreate.length === 0) {
+    console.log('新規作成対象がありません。処理を終了します。');
+    await prisma.$disconnect();
+    return;
+  }
+
+  const res = await prisma.blogPost.createMany({ data: toCreate, skipDuplicates: true });
   console.log(`作成: ${res.count} 件（重複はスキップ）`);
 
   await prisma.$disconnect();
@@ -221,4 +257,3 @@ main().catch(async (err) => {
   try { await prisma.$disconnect(); } catch {}
   process.exit(1);
 });
-

@@ -1,0 +1,21 @@
+title,slug,author,category,tags,status,isPublic,goodCount,headerImagePath,notionPageId,publishedAt
+はじめての記事,hello-world,taku,個人開発,"nextjs,typescript",published,true,5,/blog/covers/nextjs.svg,00000000-0000-0000-0000-000000000001,2025-10-01
+ドラフト記事,draft-post,taku,個人開発,,draft,false,0,,00000000-0000-0000-0000-000000000002,
+Supabaseで作る認証機能,supabase-auth,taku,個人開発,"supabase,auth,prisma",published,true,12,/blog/covers/supabase.png,00000000-0000-0000-0000-000000000003,2025-10-03
+キャリアアップの考え方,career-growth,taku,キャリア,"転職,昇進,マネジメント",published,true,8,/blog/covers/career.png,00000000-0000-0000-0000-000000000004,2025-10-05
+React再入門,react-reboot,taku,スキル,"react,hooks,frontend",published,true,15,/blog/covers/react.svg,00000000-0000-0000-0000-000000000005,2025-10-06
+読書記録：イシューからはじめよ,issue-book,taku,本,"読書,思考法,ビジネス",published,true,10,/blog/covers/books.svg,00000000-0000-0000-0000-000000000006,2025-10-07
+Figmaで作るUIデザイン,figma-ui,taku,デザイン,"figma,ui,ux",published,true,6,/blog/covers/figma.png,00000000-0000-0000-0000-000000000007,2025-10-08
+趣味で始めるカメラ生活,life-with-camera,taku,趣味,"写真,sony,α7",published,true,4,/blog/covers/camera.jpg,00000000-0000-0000-0000-000000000008,2025-10-09
+Next.js で作るブログ,nextjs-blog,taku,個人開発,"nextjs,vercel,blog",published,true,20,/blog/covers/blog.svg,00000000-0000-0000-0000-000000000009,2025-10-10
+マネジメントの基本,management-basics,taku,キャリア,"チーム,リーダー,目標設定",published,true,9,/blog/covers/management.png,00000000-0000-0000-0000-000000000010,2025-10-11
+Excelマクロで自動化,excel-vba,taku,スキル,"vba,excel,業務効率化",published,true,7,/blog/covers/excel.svg,00000000-0000-0000-0000-000000000011,2025-10-12
+最近読んだおすすめ本,book-review,taku,本,"読書,レビュー,技術書",published,true,5,/blog/covers/bookreview.jpg,00000000-0000-0000-0000-000000000012,2025-10-13
+デザインの基本原則,design-principles,taku,デザイン,"色彩,レイアウト,タイポグラフィ",published,true,11,/blog/covers/design.svg,00000000-0000-0000-0000-000000000013,2025-10-14
+休日に作る小さなWebアプリ,weekend-webapp,taku,個人開発,"sideproject,nextjs,supabase",published,true,14,/blog/covers/webapp.svg,00000000-0000-0000-0000-000000000014,2025-10-15
+キャリアの棚卸し,career-reflection,taku,キャリア,"自己分析,転職活動,戦略",published,true,3,/blog/covers/reflection.jpg,00000000-0000-0000-0000-000000000015,2025-10-16
+TypeScriptの型入門,typescript-basics,taku,スキル,"typescript,型,開発効率",published,true,9,/blog/covers/typescript.svg,00000000-0000-0000-0000-000000000016,2025-10-17
+読書ノート：エッセンシャル思考,essentialism,taku,本,"読書,ミニマリズム,効率化",published,true,8,/blog/covers/essentialism.jpg,00000000-0000-0000-0000-000000000017,2025-10-18
+デザイン思考を学ぶ,design-thinking,taku,デザイン,"プロトタイピング,発想法,UX",published,true,10,/blog/covers/designthinking.png,00000000-0000-0000-0000-000000000018,2025-10-19
+趣味で作るArduino作品,arduino-hobby,taku,趣味,"arduino,電子工作,センサー",published,true,5,/blog/covers/arduino.jpg,00000000-0000-0000-0000-000000000019,2025-10-20
+副業で学んだこと,sidejob-lessons,taku,キャリア,"副業,学び,お金",published,true,13,/blog/covers/sidejob.svg,00000000-0000-0000-0000-000000000020,2025-10-21
