@@ -5,10 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { getBlogDetailBySlug } from "@/lib/blog/actions";
 import { RenderBlock } from "@/util/common/notion-render";
 
-type Props = { params: { slug: string } };
+type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props) {
-  const { slug } = params;
+  const { slug } = await params;
   const data = await getBlogDetailBySlug(slug);
   if (!data) return { title: "Not Found" };
   return { title: `${data.header.title} | Blog`, description: undefined };
@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props) {
 // RenderBlock extracted to util/common/notion-render
 
 export default async function BlogDetailPage({ params }: Props) {
-  const { slug } = params;
+  const { slug } = await params;
   const data = await getBlogDetailBySlug(slug);
   if (!data) return notFound();
   const { header, notion } = data;

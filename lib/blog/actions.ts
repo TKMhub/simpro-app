@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db/prisma";
 import { resolveHeaderImageUrl } from "./image";
 import { normalizeNotionDocument } from "./notion-normalize";
 import { fetchNotionBlocks } from "./notion-client";
+import { resolveBlogNotionPageId } from "./notion-resolver";
 import type { BlogHeader, NotionDocument } from "./types";
 import { DEFAULT_HEADER_IMAGE } from "./constants";
 
@@ -139,8 +140,20 @@ export async function getBlogDetailBySlug(slug: string): Promise<{ header: BlogH
 
   let notion;
   try {
-    const rawBlocks = await fetchNotionBlocks(post.notionPageId);
-    notion = await normalizeNotionDocument(rawBlocks);
+    // Resolve the actual Notion page ID.
+    // If `post.notionPageId` is already a UUID, it will be used.
+    // Otherwise, try to find a child page under NOTION_BLOG_ROOT_PAGE_ID by title.
+    const pageId = await resolveBlogNotionPageId({
+      hintIdOrTitle: post.notionPageId,
+      titleCandidates: [post.title],
+    });
+
+    if (!pageId) {
+      notion = { blocks: [], unavailable: true };
+    } else {
+      const rawBlocks = await fetchNotionBlocks(pageId);
+      notion = await normalizeNotionDocument(rawBlocks);
+    }
   } catch (e) {
     // Notion側で取得できない場合は空ドキュメントとして返す
     notion = { blocks: [], unavailable: true };
