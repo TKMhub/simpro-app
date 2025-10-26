@@ -10,6 +10,77 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")   // ← プーラー(6543)でもOK
+  directUrl = env("DIRECT_URL")     // ← 直結(5432)を必ず指定
+}
+
+// Blog schema
+
+enum PostStatus {
+  draft
+  published
+  archived
+}
+
+model BlogPost {
+  id              String      @id @default(uuid())
+  title           String
+  slug            String      @unique
+  author          String
+  category        String      @default("")
+  tags            String[]    @db.Text
+  status          PostStatus  @default(draft)
+  isPublic        Boolean     @default(false)
+  goodCount       Int         @default(0)
+  headerImagePath String?
+  notionPageId    String      @unique
+  publishedAt     DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([category])
+  @@index([status, isPublic])
+  @@index([slug])
+  @@index([tags])
+}
+
+// Product schema (similar to BlogPost with product-specific fields)
+
+enum ProductType {
+  Tool
+  Template
+  Service
+}
+
+enum ProductActionType {
+  transition
+  download
+}
+
+model ProductPost {
+  id              String             @id @default(uuid())
+  title           String
+  slug            String             @unique
+  description     String             @default("")
+  author          String
+  category        String             @default("")
+  type            ProductType
+  tags            String[]           @db.Text
+  status          PostStatus         @default(draft)
+  isPublic        Boolean            @default(false)
+  goodCount       Int                @default(0)
+  headerImagePath String?
+  notionPageId    String             @unique
+  contentLink     String?
+  actionType      ProductActionType  @default(transition)
+  publishedAt     DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@index([category])
+  @@index([status, isPublic])
+  @@index([slug])
+  @@index([tags])
+  @@index([type])
 }

@@ -1,0 +1,103 @@
+import { Client } from "@notionhq/client";
+
+const notion = new Client({ auth: process.env.NOTION_SECRET });
+
+function extractRawNotionId(input?: string | null): string | null {
+  if (!input) return null;
+  const str = String(input).trim();
+  const mHyphen = str.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
+  if (mHyphen) return mHyphen[0].toLowerCase();
+  const m32 = str.match(/[0-9a-f]{32}/i);
+  if (m32) return m32[0].toLowerCase();
+  return null;
+}
+
+function toHyphenatedUuid(id32OrHyphenated: string): string {
+  const compact = id32OrHyphenated.replace(/-/g, "").toLowerCase();
+  return [
+    compact.slice(0, 8),
+    compact.slice(8, 12),
+    compact.slice(12, 16),
+    compact.slice(16, 20),
+    compact.slice(20),
+  ].join("-");
+}
+
+function extractTitleFromPage(obj: unknown): string | null {
+  // Notion page object: properties contains one "title" typed property
+  const props = (obj as { properties?: Record<string, unknown>; child_page?: { title?: unknown } })?.properties ?? {};
+  for (const key of Object.keys(props)) {
+    const p = props[key] as { type?: string; title?: Array<{ plain_text?: string }> };
+    if (p?.type === "title") {
+      const arr = p.title ?? [];
+      const text = arr.map((t) => t?.plain_text ?? "").join("").trim();
+      if (text) return text;
+    }
+  }
+  // Fall back to child_page if present (rare for search result)
+  const childTitle = (obj as { child_page?: { title?: unknown } })?.child_page?.title;
+  return childTitle ? String(childTitle) : null;
+}
+
+export async function resolveBlogNotionPageId(opts: {
+  rootPageId?: string;
+  hintIdOrTitle?: string | null | undefined;
+  titleCandidates?: string[];
+}): Promise<string | null> {
+  const { rootPageId = process.env.NOTION_BLOG_ROOT_PAGE_ID, hintIdOrTitle, titleCandidates = [] } = opts;
+
+  // 1) If hint contains a Notion page id (UUID/32hex or URL), normalize and return it
+  const rawId = extractRawNotionId(hintIdOrTitle ?? undefined);
+  if (rawId) return toHyphenatedUuid(rawId);
+
+  // Build search keys (from hint or titles)
+  const searchKeys: string[] = [];
+  for (const t of [hintIdOrTitle, ...titleCandidates]) {
+    if (t && typeof t === "string" && t.trim()) searchKeys.push(t.trim());
+  }
+  if (searchKeys.length === 0) return null;
+
+  // 2) If we have a root page, first try to find a child page with exact title match
+  if (rootPageId) {
+    const res = await notion.blocks.children.list({ block_id: rootPageId, page_size: 100 });
+    for (const _b of res.results) {
+      const b = _b as { type?: string; id?: string; child_page?: { title?: string } };
+      if (b.type === "child_page") {
+        const title = b.child_page?.title;
+        if (title && searchKeys.includes(title)) {
+          return String(b.id); // Notion uses block id as page id
+        }
+      }
+    }
+  }
+
+  // 3) Fallback: use Notion search API restricted to pages and try exact title match
+  for (const query of searchKeys) {
+    const res = (await (notion as unknown as {
+      search: (params: {
+        query: string;
+        filter: { value: "page"; property: "object" };
+        page_size: number;
+      }) => Promise<unknown>;
+    }).search({
+      query,
+      filter: { value: "page", property: "object" },
+      page_size: 25,
+    })) as { results?: Array<{ object?: string; id?: string } & Record<string, unknown>> };
+    let firstCandidate: string | null = null;
+    for (const r of res.results ?? []) {
+      if (r.object === "page" && r.id) {
+        const title = extractTitleFromPage(r) ?? "";
+        const idHyphen = toHyphenatedUuid(String(r.id));
+        if (!firstCandidate) firstCandidate = idHyphen;
+        if (title === query) {
+          return idHyphen;
+        }
+      }
+    }
+    // If exact match not found, return first candidate (best-effort)
+    if (firstCandidate) return firstCandidate;
+  }
+
+  return null;
+}

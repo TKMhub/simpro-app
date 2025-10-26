@@ -149,7 +149,7 @@ export default function Header() {
           </div>
 
           {/* Center: Search */}
-          <div className="hidden md:block flex-1 max-w-xl">
+          {/* <div className="hidden md:block flex-1 max-w-xl">
             <label htmlFor="global-search" className="sr-only">
               Search
             </label>
@@ -159,7 +159,7 @@ export default function Header() {
               placeholder="Search..."
               className="h-9"
             />
-          </div>
+          </div> */}
 
           {/* Right: Nav */}
           <nav className="ml-auto pr-1 sm:pr-2 hidden sm:flex items-center gap-2">
