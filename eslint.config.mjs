@@ -22,6 +22,13 @@ const eslintConfig = [
       "lib/generated/**",
     ],
   },
+  // Project overrides
+  {
+    rules: {
+      // Allow explicit any where pragmatically needed (e.g., Notion SDK responses)
+      "@typescript-eslint/no-explicit-any": "off",
+    },
+  },
 ];
 
 export default eslintConfig;

@@ -33,9 +33,9 @@ export default async function ProductDetailPage({ params }: Props) {
         <h1 className="text-2xl sm:text-3xl font-semibold leading-tight">{product.title}</h1>
         <p className="text-sm text-muted-foreground mt-2">{product.category}</p>
 
-        {product.stack?.length > 0 && (
+        {product.tags?.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-3">
-            {product.stack.map((t) => (
+            {product.tags.map((t) => (
               <Badge key={t} variant="default" className="rounded-full">{t}</Badge>
             ))}
           </div>

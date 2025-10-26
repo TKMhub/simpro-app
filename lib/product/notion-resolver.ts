@@ -56,10 +56,11 @@ export async function resolveProductNotionPageId(opts: {
   if (rootPageId) {
     const res = await notion.blocks.children.list({ block_id: rootPageId, page_size: 100 });
     for (const b of res.results) {
-      if (b.type === "child_page" && (b as any).child_page?.title) {
-        const title = (b as any).child_page.title as string;
+      const bb: any = b as any;
+      if (bb?.type === "child_page" && bb?.child_page?.title) {
+        const title = String(bb.child_page.title);
         if (searchKeys.includes(title)) {
-          return b.id;
+          return String(bb.id);
         }
       }
     }
@@ -85,4 +86,3 @@ export async function resolveProductNotionPageId(opts: {
 
   return null;
 }
-
