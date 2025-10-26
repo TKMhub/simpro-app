@@ -41,7 +41,7 @@ export default function BlogListClient({ initialItems, initialTotal, initialPage
     setSelectedTag("");
     setQuery("");
     startTransition(async () => {
-      const res = await getBlogList({ page: 1, pageSize, sort: "updated", order: "asc", status: "all" });
+      const res = await getBlogList({ page: 1, pageSize, sort: "updated", order: "desc", status: "all" });
       setItems(res.items);
       setTotal(res.total);
       setPage(1);
@@ -59,7 +59,7 @@ export default function BlogListClient({ initialItems, initialTotal, initialPage
         page: 1,
         pageSize,
         sort: "updated",
-        order: "asc",
+        order: "desc",
         status: showAll ? "all" : "published",
       });
       setItems(res.items);
@@ -80,7 +80,7 @@ export default function BlogListClient({ initialItems, initialTotal, initialPage
         page: p,
         pageSize,
         sort: "updated",
-        order: "asc",
+        order: "desc",
         status: showAll ? "all" : "published",
       });
       setItems(res.items);

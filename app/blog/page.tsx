@@ -7,7 +7,7 @@ export default async function BlogListPage() {
     page: 1,
     pageSize: 15,
     sort: "updated",
-    order: "asc",
+    order: "desc",
     status: "all",
   });
   const facets = await getBlogFacets();
