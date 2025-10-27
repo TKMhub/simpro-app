@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Input } from "@/components/ui/input";
 import ThemeToggle from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import {
@@ -94,7 +93,19 @@ export default function Header() {
                 <SheetHeader className="p-0">
                   <SheetTitle className="sr-only">メニュー</SheetTitle>
                 </SheetHeader>
-                <div className="pt-2">
+                {/* Brand: show Simpro logo at top when menu opens (mobile only) */}
+                <div className="py-2 pl-5">
+                  <Link href="/" className="inline-flex items-center gap-2">
+                    <Image
+                      src="/Simplo_gray_main_sub.svg"
+                      alt="Simpro logo"
+                      width={100}
+                      height={100}
+                      priority
+                    />
+                  </Link>
+                </div>
+                <div>
                   <nav>
                     <ul className="flex flex-col gap-1.5">
                       <li>
