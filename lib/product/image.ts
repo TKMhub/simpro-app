@@ -3,10 +3,16 @@ import fs from "fs";
 import nodePath from "path";
 import { DEFAULT_HEADER_IMAGE } from "@/lib/blog/constants";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_ANON_KEY!
-);
+// Lazily initialize to avoid build-time failure when env vars are missing
+let _sb: any | null = null;
+function getSupabase() {
+  if (_sb) return _sb;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_ANON_KEY;
+  if (!url || !key) return null;
+  _sb = createClient(url, key);
+  return _sb;
+}
 
 /**
  * Resolve public URL for a product cover image.
@@ -50,7 +56,9 @@ export function getProductCoverPublicUrl({
 
   // 1) no path -> try slug based default in storage
   if (!imgPath && slug) {
-    const { data } = supabase.storage
+    const sb = getSupabase();
+    if (!sb) return fallback;
+    const { data } = sb.storage
       .from("product")
       .getPublicUrl(`covers/${slug}.jpg`);
     return data.publicUrl || fallback;
@@ -82,6 +90,8 @@ export function getProductCoverPublicUrl({
   }
 
   // 4) storage key in `product` bucket
-  const { data } = supabase.storage.from("product").getPublicUrl(imgPath);
+  const sb = getSupabase();
+  if (!sb) return fallback;
+  const { data } = sb.storage.from("product").getPublicUrl(imgPath);
   return data.publicUrl || fallback;
 }

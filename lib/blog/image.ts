@@ -3,10 +3,16 @@ import fs from "fs";
 import nodePath from "path";
 import { DEFAULT_HEADER_IMAGE } from "./constants";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_ANON_KEY!
-);
+// Lazily initialize Supabase to avoid build-time crashes when env is absent
+let _sb: any | null = null;
+function getSupabase() {
+  if (_sb) return _sb;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_ANON_KEY;
+  if (!url || !key) return null;
+  _sb = createClient(url, key);
+  return _sb;
+}
 
 function normalizeUnsplashUrl(urlStr: string): string | null {
   try {
@@ -69,8 +75,10 @@ export async function resolveHeaderImageUrl(imgPath?: string | null) {
     }
     return imgPath;
   }
-  // それ以外はSupabase Storageの公開URLに解決
-  const { data } = supabase.storage.from("blog").getPublicUrl(imgPath);
+  // それ以外はSupabase Storageの公開URLに解決（環境変数未設定時はフォールバック）
+  const sb = getSupabase();
+  if (!sb) return DEFAULT_HEADER_IMAGE;
+  const { data } = sb.storage.from("blog").getPublicUrl(imgPath);
   return data.publicUrl || DEFAULT_HEADER_IMAGE;
   // For signed URL:
   // const { data, error } = await supabase.storage.from('blog').createSignedUrl(path, 60 * 60);
