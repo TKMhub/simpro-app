@@ -95,7 +95,7 @@ export default function AboutPage() {
             <div className="p-4 space-y-2">
               <h3 className="font-medium">個人開発（Simpro）</h3>
               <p className="text-[var(--muted-foreground)] text-sm">
-                このサイト「Simpro」についての紹介や個人開発の記録をまとめています。
+                当サイトにて個人開発サービスやツールを公開。”自分が仕事をしていてあったら便利”と思えるものを形にしています。
               </p>
             </div>
           </div>
