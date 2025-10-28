@@ -46,7 +46,7 @@ export default function AboutPage() {
           <div>
             <div className="text-sm text-[var(--muted-foreground)]">Parallel</div>
             <p className="mt-1 leading-relaxed">
-              個人開発では「Simpro」を開発中。Web開発を実践形式で修行中。<br/>
+              個人開発では「Simpro」を開発中。Webアプリケーション開発を実践形式で修行中。<br/>
               Webアプリテンプレートやツールも配布、有意義な情報をお届けできるようなサイトにする予定。
             </p>
           </div>
@@ -59,11 +59,11 @@ export default function AboutPage() {
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="rounded-lg border border-[var(--color-border)] p-4">
             <h3 className="font-medium mb-2">言語</h3>
-            <p className="text-[var(--muted-foreground)]">Java / TypeScript / Python / VBA</p>
+            <p className="text-[var(--muted-foreground)]">Java / JavaScript / TypeScript / VBA</p>
           </div>
           <div className="rounded-lg border border-[var(--color-border)] p-4">
-            <h3 className="font-medium mb-2">フレームワーク</h3>
-            <p className="text-[var(--muted-foreground)]">Next.js / React / Django / Spring</p>
+            <h3 className="font-medium mb-2">フレームワーク・ライブラリ</h3>
+            <p className="text-[var(--muted-foreground)]">Next.js / Vue.js / Spring / TailwindCSS / Shadcn</p>
           </div>
           <div className="rounded-lg border border-[var(--color-border)] p-4">
             <h3 className="font-medium mb-2">クラウド・DB</h3>
@@ -71,7 +71,7 @@ export default function AboutPage() {
           </div>
           <div className="rounded-lg border border-[var(--color-border)] p-4">
             <h3 className="font-medium mb-2">その他</h3>
-            <p className="text-[var(--muted-foreground)]">Shadcn / TailwindCSS / Notion API / OpenAI API</p>
+            <p className="text-[var(--muted-foreground)]">Notion API / OpenAI API</p>
           </div>
         </div>
       </section>
@@ -105,58 +105,59 @@ export default function AboutPage() {
             <div className="relative aspect-[16/9] bg-black/5 dark:bg-white/5">
               {/* 外部画像は素のimgで表示（next/imageのドメイン設定不要） */}
               <Image
-                src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=1200&auto=format&fit=crop"
+                src="/kota.jpg"
                 alt="トイプードルの子犬"
-                className="absolute inset-0 w-full h-full object-cover"
-                loading="lazy"
-                width={128}
-                height={128}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"  // レスポンシブ対応
+                priority
               />
             </div>
             <div className="p-4 space-y-2">
               <h3 className="font-medium">犬と戯れること</h3>
               <p className="text-[var(--muted-foreground)] text-sm">
-                トイプードルを飼っています。まだ赤ちゃんで本当に可愛い（2025年8月当時）。
+                トイプードルを飼っています。まだ生後5ヶ月の赤ちゃんで本当に可愛い。（2025年11月当時）
               </p>
             </div>
           </div>
 
-          {/* デザイン（Instagram） */}
-          <div className="rounded-lg border border-[var(--color-border)] overflow-hidden">
-            <div className="relative aspect-[16/9] bg-black/5 dark:bg-white/5">
-              <Image
-                src="/icons/brand/instagram-gradient.svg"
-                alt="Instagram ロゴデザイン"
-                className="absolute inset-0 m-auto max-h-[70%] object-contain"
-                width={128}
-                height={128}
-              />
-            </div>
-            <div className="p-4 space-y-2">
-              <h3 className="font-medium">デザイン</h3>
-              <p className="text-[var(--muted-foreground)] text-sm">
-                Instagram にデザインしたロゴを掲載しています。
-              </p>
-            </div>
-          </div>
 
           {/* Naruto のフィギュア集め */}
           <div className="rounded-lg border border-[var(--color-border)] overflow-hidden">
             <div className="relative aspect-[16/9] bg-black/5 dark:bg-white/5">
               {/* 汎用的なフィギュア写真を使用 */}
               <Image
-                src="https://images.unsplash.com/photo-1571786256017-aee7a0c009b6?q=80&w=1200&auto=format&fit=crop"
+                src="/naruto.jpg"
                 alt="フィギュアの写真"
-                className="absolute inset-0 w-full h-full object-cover"
-                loading="lazy"
-                width={128}
-                height={128}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"  // レスポンシブ対応
+                priority
               />
             </div>
             <div className="p-4 space-y-2">
-              <h3 className="font-medium">Naruto のフィギュア集め</h3>
+              <h3 className="font-medium">NARUTO-ナルト-のフィギュア集め</h3>
               <p className="text-[var(--muted-foreground)] text-sm">
                 大人になって集め始めました。メインどころをちょろちょろ。ガマ親分、守鶴は渋い。暁もある程度揃えてしまった。
+              </p>
+            </div>
+          </div>
+          {/* デザイン（Instagram） */}
+          <div className="rounded-lg border border-[var(--color-border)] overflow-hidden">
+            <div className="relative aspect-[16/9] bg-black/5 dark:bg-white/5">
+              <Image
+                src="/design.jpg"
+                alt="Instagram ロゴデザイン"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"  // レスポンシブ対応
+                priority
+              />
+            </div>
+            <div className="p-4 space-y-2">
+              <h3 className="font-medium">デザイン</h3>
+              <p className="text-[var(--muted-foreground)] text-sm">
+                Instagram にデザインしたイラストやロゴを掲載しています。Webデザインにも活かしています。いつかそっち系の仕事もしてみたい。
               </p>
             </div>
           </div>
