@@ -64,8 +64,21 @@ function ProductCard({
 export default async function ProductPage() {
   const { items } = await getProductList();
 
+  const typeLabel: Record<"Tool" | "Template" | "Service", string> = {
+    Tool: "ツール",
+    Template: "テンプレート",
+    Service: "サービス",
+  };
+
+  const order: Array<keyof typeof typeLabel> = ["Tool", "Template", "Service"];
+  const grouped = order.map((t) => ({
+    type: t,
+    label: typeLabel[t],
+    items: items.filter((p) => p.type === t),
+  }));
+
   return (
-    <main className="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-16 space-y-8">
+    <main className="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-16 space-y-10">
       <header className="space-y-2">
         <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">Product</h1>
         <p className="text-[var(--muted-foreground)]">
@@ -73,18 +86,25 @@ export default async function ProductPage() {
         </p>
       </header>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr items-stretch">
-        {items.map((p) => (
-          <ProductCard
-            key={p.slug}
-            slug={p.slug}
-            title={p.title}
-            description={p.description || p.category}
-            stack={p.tags}
-            coverUrl={p.headerImageUrl || "/Simplo_gray_main_sub.jpg"}
-          />
-        ))}
-      </div>
+      {grouped.map(({ type, label, items }) => (
+        items.length > 0 && (
+          <section key={type} className="space-y-4">
+            <h2 className="text-xl sm:text-2xl font-semibold">{label}</h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr items-stretch">
+              {items.map((p) => (
+                <ProductCard
+                  key={p.slug}
+                  slug={p.slug}
+                  title={p.title}
+                  description={p.description || p.category}
+                  stack={p.tags}
+                  coverUrl={p.headerImageUrl || "/Simplo_gray_main_sub.jpg"}
+                />
+              ))}
+            </div>
+          </section>
+        )
+      ))}
     </main>
   );
 }

@@ -31,7 +31,15 @@ export default async function ProductDetailPage({ params }: Props) {
 
       <article className="mt-4 sm:mt-6">
         <h1 className="text-2xl sm:text-3xl font-semibold leading-tight">{product.title}</h1>
-        <p className="text-sm text-muted-foreground mt-2">{product.category}</p>
+        {/* Type and category */}
+        <div className="flex items-center gap-2 mt-2">
+          <Badge variant="secondary" className="rounded-full">
+            {product.type === 'Tool' ? 'ツール' : product.type === 'Template' ? 'テンプレート' : 'サービス'}
+          </Badge>
+          {product.category && (
+            <p className="text-sm text-muted-foreground">{product.category}</p>
+          )}
+        </div>
 
         {product.tags?.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-3">
