@@ -135,3 +135,15 @@ html, body {
   transform: translateY(-50%);
   opacity: var(--opacity, 0.9);
 }
+
+/* Simple reveal-on-scroll utility */
+.reveal { opacity: 0; transform: translateY(10px); transition: opacity .6s ease, transform .6s ease; will-change: opacity, transform; }
+.reveal.in { opacity: 1; transform: translateY(0); }
+
+/* Subtle float for avatars/images */
+@keyframes float-slow {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+  100% { transform: translateY(0); }
+}
+.float-slow { animation: float-slow 5s ease-in-out infinite; }

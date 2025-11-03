@@ -17,12 +17,15 @@ export type HeroSectionProps = {
   brandLogoSrc?: string;
   brandLogoAlt?: string;
   bannerText?: string;
+  bannerDescription?: string;
   avatarSrc: string;
   avatarAlt: string;
   name: string;
   handle?: string;
   tagline: string;
   socials?: SocialLink[];
+  primaryCta?: { label: string; href: string };
+  secondaryCta?: { label: string; href: string };
 };
 
 // 互換用の未使用変数は削除（ESLint対策）
@@ -57,12 +60,15 @@ export default function HeroSection(props: HeroSectionProps) {
     brandLogoSrc = "/brand.svg",
     brandLogoAlt = "Brand",
     bannerText,
+    bannerDescription,
     avatarSrc,
     avatarAlt,
     name,
     handle,
     tagline,
     socials = [],
+    primaryCta,
+    secondaryCta,
   } = props;
   return (
     <section className="relative w-full py-4 sm:py-5 md:py-6">
@@ -73,7 +79,8 @@ export default function HeroSection(props: HeroSectionProps) {
           className={cn(
             "relative rounded-3xl",
             // 縦長に調整
-            "h-[220px] sm:h-[260px] md:h-[320px]",
+            // 固定高さだとはみ出すため min-h に変更
+            "min-h-[220px] sm:min-h-[260px] md:min-h-[320px] overflow-hidden",
             // すりガラス
             "backdrop-blur-xl backdrop-saturate-150",
             // カバー色はテーマに依存（light=黒ガラス / dark=白ガラス）
@@ -511,22 +518,84 @@ export default function HeroSection(props: HeroSectionProps) {
               />
             </div>
           </div>
-          <div className="absolute left-5 top-8 sm:left-16 sm:top-10 md:left-20 md:top-10">
-            {/* ブランドロゴ（サイズアップ） */}
-            <Image
-              src={brandLogoSrc}
-              alt={brandLogoAlt}
-              width={1000}
-              height={1000}
-              className="h-12 sm:h-20 md:h-30 w-auto"
-              priority={false}
-            />
-            {/* バナー説明文（背景に応じた文字色） */}
-            {bannerText && (
-              <p className="mt-4 text-base sm:text-lg md:text-xl font-medium text-[var(--cover-foreground)]">
-                {bannerText}
-              </p>
-            )}
+          {/* Content box (gray container) */}
+          {/* モバイルでは通常フローで内包し、高さを親に反映。md以上で絶対配置 */}
+          <div className="flex items-center md:absolute md:inset-0 py-4 md:py-0">
+            <div className="px-5 sm:px-16 md:px-20 w-full">
+              <div className="max-w-xl">
+                <div className="p-4">
+                  {/* ロゴ */}
+                  <div className="flex items-center gap-3">
+                    <Image
+                      src={brandLogoSrc}
+                      alt={brandLogoAlt}
+                      width={600}
+                      height={200}
+                      className="h-10 sm:h-12 md:h-14 w-auto"
+                      priority={false}
+                    />
+                  </div>
+                  {/* 表題 */}
+                  {bannerText && (
+                    <h2 className="mt-3 text-base sm:text-lg md:text-xl font-extrabold tracking-tight">
+                      <span className="bg-gradient-to-r from-blue-500 via-sky-400 to-cyan-300 bg-clip-text text-transparent drop-shadow-[0_1px_8px_rgba(59,130,246,0.22)]">
+                        {bannerText}
+                      </span>
+                    </h2>
+                  )}
+                  {/* ディスクリプション */}
+                  {bannerDescription && (
+                    <p className="mt-2 max-w-none text-sm sm:text-base md:text-base text-white dark:text-[var(--cover-foreground)]">
+                      {bannerDescription}
+                    </p>
+                  )}
+
+                  {/* ボタン */}
+                  {(primaryCta || secondaryCta) && (
+                    <div className="mt-4 mb-8 sm:mb-6 flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:gap-3">
+                      {primaryCta && (
+                        <Link
+                          href={primaryCta.href}
+                          aria-label={primaryCta.label}
+                          className={cn(
+                            "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium w-full sm:w-auto",
+                            // dynamic text for readability
+                            "text-white dark:text-[var(--cover-foreground)]",
+                            // Frosted
+                            "backdrop-blur-xl backdrop-saturate-150 border ring-1 border-white/20 ring-white/10",
+                            // Tinted gradient (more transparent)
+                            "bg-gradient-to-r from-blue-600/40 via-sky-500/35 to-cyan-400/40",
+                            "hover:from-blue-500/45 hover:via-sky-400/40 hover:to-cyan-300/45",
+                            "transition-colors shadow-sm"
+                          )}
+                        >
+                          {primaryCta.label}
+                        </Link>
+                      )}
+                      {secondaryCta && (
+                        <Link
+                          href={secondaryCta.href}
+                          aria-label={secondaryCta.label}
+                          className={cn(
+                            "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium w-full sm:w-auto",
+                            // dynamic text
+                            "text-white dark:text-[var(--cover-foreground)]",
+                            // Frosted
+                            "backdrop-blur-xl backdrop-saturate-150 border ring-1 border-white/20 ring-white/10",
+                            // Slightly different hue and transparency from primary
+                            "bg-gradient-to-r from-cyan-500/38 to-emerald-400/40",
+                            "hover:from-cyan-400/42 hover:to-emerald-300/44",
+                            "transition-colors shadow-sm"
+                          )}
+                        >
+                          {secondaryCta.label}
+                        </Link>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

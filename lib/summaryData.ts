@@ -68,24 +68,30 @@ export async function fetchSummaryData(): Promise<SummaryData> {
   }
 
   // 3) Static About + Link as fallback/auxiliary
+  try {
+    const { aboutData } = await import("@/lib/about/data");
+    items.push(
+      {
+        id: "about-1",
+        section: "about",
+        title: "自己紹介",
+        description: aboutData.intro,
+        cta: { label: "詳細を見る", href: "/about" },
+        image: { src: "/avatar.svg", alt: "プロフィール" },
+        tags: ["Profile"],
+      },
+      {
+        id: "about-2",
+        section: "about",
+        title: "スキルスタック",
+        description: `${aboutData.skills.frameworks.slice(0, 3).join(" / ")} / ${aboutData.skills.languages.slice(0, 3).join(" / ")}`,
+        cta: { label: "スキル", href: "/about#skills" },
+        tags: ["Skills"],
+      },
+    );
+  } catch {}
+  
   items.push(
-    {
-      id: "about-1",
-      section: "about",
-      title: "自己紹介",
-      description: "フロントエンド中心に学習・開発しています。",
-      cta: { label: "詳細を見る", href: "/about" },
-      image: { src: "/avatar.svg", alt: "プロフィール" },
-      tags: ["Profile", "Frontend"],
-    },
-    {
-      id: "about-2",
-      section: "about",
-      title: "スキルスタック",
-      description: "React / Next.js / TypeScript / Tailwind CSS など。",
-      cta: { label: "スキル", href: "/about#skills" },
-      tags: ["React", "Next.js", "TypeScript"],
-    },
     {
       id: "link-1",
       section: "link",

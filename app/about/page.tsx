@@ -1,93 +1,108 @@
 import Image from "next/image";
+import Reveal from "@/components/Reveal";
+import { aboutData } from "@/lib/about/data";
 
 export default function AboutPage() {
   return (
     <main className="mx-auto max-w-4xl px-4 sm:px-6 py-12 sm:py-16 space-y-14">
-      {/* Intro */}
-      <section className="text-center space-y-6">
-        <div className="flex justify-center">
-          <Image
-            src="/taku.jpg"
-            alt="プロフィール画像"
-            width={128}
-            height={128}
-            className="rounded-full shadow-md"
-            priority
-          />
-        </div>
-        <div className="space-y-2">
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">
-            taku / システムエンジニア・ITコンサルタント
-          </h1>
-          <p className="text-[var(--muted-foreground)]">
-            日頃、考えていることや学んだことをこちらに記事にまとめたり、個人開発をしています。<br />
-            可能な限り有意義な情報をお届けできるようにします。
-          </p>
-        </div>
-      </section>
+      {/* Intro (with subtle motion) */}
+      <Reveal>
+        <section className="text-center space-y-6">
+          <div className="flex justify-center">
+            <Image
+              src="/taku.jpg"
+              alt="プロフィール画像"
+              width={128}
+              height={128}
+              className="rounded-full shadow-md float-slow"
+              priority
+            />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">
+              {aboutData.name} / {aboutData.role}
+            </h1>
+            <p className="text-[var(--muted-foreground)]">{aboutData.intro}</p>
+          </div>
+        </section>
+      </Reveal>
 
       {/* Career */}
+      <Reveal>
       <section className="space-y-6">
         <h2 className="text-xl font-semibold">経歴</h2>
         <div className="relative pl-5 border-l border-[var(--color-border)] space-y-6">
-          <div>
-            <div className="text-sm text-[var(--muted-foreground)]">2021〜2023</div>
+          <div className="transition-transform duration-300 will-change-transform hover:-translate-y-0.5">
+            <div className="text-sm text-[var(--muted-foreground)]">
+              2021〜2023
+            </div>
             <p className="mt-1 leading-relaxed">
-              システムエンジニアとして、バックエンドからフロントエンドまで幅広くWebアプリケーション開発に従事。<br/>
-              当時、実務で使用していた技術スタックは、Vue.js / Spring / PostgreSQL / AWS（保守） でした。
+              システムエンジニアとして、バックエンドからフロントエンドまで幅広くWebアプリケーション開発に従事。
+              <br />
+              当時、実務で使用していた技術スタックは、Vue.js / Spring /
+              PostgreSQL / AWS（保守） でした。
             </p>
           </div>
-          <div>
-            <div className="text-sm text-[var(--muted-foreground)]">2023〜現在</div>
+          <div className="transition-transform duration-300 will-change-transform hover:-translate-y-0.5">
+            <div className="text-sm text-[var(--muted-foreground)]">
+              2023〜現在
+            </div>
             <p className="mt-1 leading-relaxed">
               コンサルティングファームに転職。
             </p>
           </div>
-          <div>
-            <div className="text-sm text-[var(--muted-foreground)]">Parallel</div>
+          <div className="transition-transform duration-300 will-change-transform hover:-translate-y-0.5">
+            <div className="text-sm text-[var(--muted-foreground)]">
+              Parallel
+            </div>
             <p className="mt-1 leading-relaxed">
-              個人開発では「Simpro」を開発中。Webアプリケーション開発を実践形式で修行中。<br/>
+              個人開発では「Simpro」を開発中。Webアプリケーション開発を実践形式で修行中。
+              <br />
               Webアプリテンプレートやツールも配布、有意義な情報をお届けできるようなサイトにする予定。
             </p>
           </div>
         </div>
       </section>
+      </Reveal>
 
       {/* Skills */}
+      <Reveal>
       <section id="skills" className="space-y-6">
         <h2 className="text-xl font-semibold">スキル</h2>
         <div className="grid sm:grid-cols-2 gap-4">
-          <div className="rounded-lg border border-[var(--color-border)] p-4">
+          <div className="rounded-lg border border-[var(--color-border)] p-4 transition-transform hover:-translate-y-1">
             <h3 className="font-medium mb-2">言語</h3>
-            <p className="text-[var(--muted-foreground)]">Java / JavaScript / TypeScript / VBA</p>
+            <p className="text-[var(--muted-foreground)]">{aboutData.skills.languages.join(" / ")}</p>
           </div>
-          <div className="rounded-lg border border-[var(--color-border)] p-4">
+          <div className="rounded-lg border border-[var(--color-border)] p-4 transition-transform hover:-translate-y-1">
             <h3 className="font-medium mb-2">フレームワーク・ライブラリ</h3>
-            <p className="text-[var(--muted-foreground)]">Next.js / Vue.js / Spring / TailwindCSS / Shadcn</p>
+            <p className="text-[var(--muted-foreground)]">{aboutData.skills.frameworks.join(" / ")}</p>
           </div>
-          <div className="rounded-lg border border-[var(--color-border)] p-4">
+          <div className="rounded-lg border border-[var(--color-border)] p-4 transition-transform hover:-translate-y-1">
             <h3 className="font-medium mb-2">クラウド・DB</h3>
-            <p className="text-[var(--muted-foreground)]">Supabase / Prisma / Vercel / AWS（修行中）</p>
+            <p className="text-[var(--muted-foreground)]">{aboutData.skills.cloud.join(" / ")}</p>
           </div>
-          <div className="rounded-lg border border-[var(--color-border)] p-4">
+          <div className="rounded-lg border border-[var(--color-border)] p-4 transition-transform hover:-translate-y-1">
             <h3 className="font-medium mb-2">その他</h3>
-            <p className="text-[var(--muted-foreground)]">Notion API / OpenAI API</p>
+            <p className="text-[var(--muted-foreground)]">{aboutData.skills.others.join(" / ")}</p>
           </div>
         </div>
       </section>
+      </Reveal>
 
       {/* Hobby */}
+      <Reveal>
       <section id="hobby" className="space-y-6">
         <h2 className="text-xl font-semibold">趣味</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           {/* 個人開発（Simpro） */}
-          <div className="rounded-lg border border-[var(--color-border)] overflow-hidden">
+          <div className="rounded-lg border border-[var(--color-border)] overflow-hidden transition-transform hover:-translate-y-1">
             <div className="relative aspect-[16/9] bg-black/5 dark:bg-white/5">
               {/* ローカルのブランドロゴを使用 */}
               <Image
                 src="/Simplo_gray_main_sub.svg"
                 alt="Simpro ロゴ"
-                className="absolute inset-0 m-auto max-h-[70%] object-contain"
+                className="absolute inset-0 m-auto max-h-[70%] object-contain float-slow"
                 width={128}
                 height={128}
               />
@@ -101,7 +116,7 @@ export default function AboutPage() {
           </div>
 
           {/* 犬と戯れること */}
-          <div className="rounded-lg border border-[var(--color-border)] overflow-hidden">
+          <div className="rounded-lg border border-[var(--color-border)] overflow-hidden transition-transform hover:-translate-y-1">
             <div className="relative aspect-[16/9] bg-black/5 dark:bg-white/5">
               {/* 外部画像は素のimgで表示（next/imageのドメイン設定不要） */}
               <Image
@@ -109,7 +124,7 @@ export default function AboutPage() {
                 alt="トイプードルの子犬"
                 fill
                 className="object-cover"
-                sizes="(max-width: 768px) 100vw, 50vw"  // レスポンシブ対応
+                sizes="(max-width: 768px) 100vw, 50vw" // レスポンシブ対応
                 priority
               />
             </div>
@@ -121,9 +136,8 @@ export default function AboutPage() {
             </div>
           </div>
 
-
           {/* Naruto のフィギュア集め */}
-          <div className="rounded-lg border border-[var(--color-border)] overflow-hidden">
+          <div className="rounded-lg border border-[var(--color-border)] overflow-hidden transition-transform hover:-translate-y-1">
             <div className="relative aspect-[16/9] bg-black/5 dark:bg-white/5">
               {/* 汎用的なフィギュア写真を使用 */}
               <Image
@@ -131,7 +145,7 @@ export default function AboutPage() {
                 alt="フィギュアの写真"
                 fill
                 className="object-cover"
-                sizes="(max-width: 768px) 100vw, 50vw"  // レスポンシブ対応
+                sizes="(max-width: 768px) 100vw, 50vw" // レスポンシブ対応
                 priority
               />
             </div>
@@ -143,36 +157,28 @@ export default function AboutPage() {
             </div>
           </div>
           {/* デザイン（Instagram） */}
-          <div className="rounded-lg border border-[var(--color-border)] overflow-hidden">
+          <div className="rounded-lg border border-[var(--color-border)] overflow-hidden transition-transform hover:-translate-y-1">
             <div className="relative aspect-[16/9] bg-black/5 dark:bg-white/5">
               <Image
                 src="/design.jpg"
                 alt="Instagram ロゴデザイン"
                 fill
                 className="object-cover"
-                sizes="(max-width: 768px) 100vw, 50vw"  // レスポンシブ対応
+                sizes="(max-width: 768px) 100vw, 50vw" // レスポンシブ対応
                 priority
               />
             </div>
             <div className="p-4 space-y-2">
               <h3 className="font-medium">デザイン</h3>
               <p className="text-[var(--muted-foreground)] text-sm">
-                Instagram にデザインしたイラストやロゴを掲載しています。Webデザインにも活かしています。いつかそっち系の仕事もしてみたい。
+                Instagram
+                にデザインしたイラストやロゴを掲載しています。Webデザインにも活かしています。いつかそっち系の仕事もしてみたい。
               </p>
             </div>
           </div>
         </div>
       </section>
-
-      {/* Mission */}
-      <section className="rounded-2xl overflow-hidden">
-        <div className="bg-gradient-to-r from-blue-500/20 via-blue-500/10 to-blue-700/20 py-14 px-6 text-center">
-          <h2 className="text-2xl font-semibold mb-3">Mission</h2>
-          <p className="text-lg sm:text-xl">
-            複雑な仕組みを“シンプルに使える形”に変換する
-          </p>
-        </div>
-      </section>
+      </Reveal>
     </main>
   );
 }

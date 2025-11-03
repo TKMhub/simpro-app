@@ -1,6 +1,7 @@
 import HeroSection from "./components/HeroSection";
 import LandingSummary from "@/components/LandingSummary";
 import { fetchSummaryData } from "@/lib/summaryData";
+import AboutTeaser from "./components/AboutTeaser";
 
 export default async function LandingPage() {
   const { sections, items } = await fetchSummaryData();
@@ -11,11 +12,14 @@ export default async function LandingPage() {
         brandLogoSrc="/Simplo_gray_main_sub.svg"
         brandLogoAlt="Simplo"
         bannerText="複雑な仕組みを“シンプルに使える形”に変換する。"
+        bannerDescription="技術や業務の複雑さをほどき、誰もが迷わず価値へ到達できるように設計・実装します。現場の課題に即し、最小の操作で最大の成果を。"
         avatarSrc="/taku.jpg"
         avatarAlt="taku"
         name="taku"
         handle="@taku"
         tagline="エンジニア / プログラミング / 個人開発 / コンサル / 読書 / 日常"
+        primaryCta={{ label: "プロダクトを見る", href: "/product" }}
+        secondaryCta={{ label: "記事を読む", href: "/blog" }}
         socials={[
           { type: "x", href: "https://x.com/", label: "X" },
           { type: "instagram", href: "https://instagram.com/", label: "Instagram" },
@@ -23,9 +27,9 @@ export default async function LandingPage() {
           { type: "tiktok", href: "https://tiktok.com/", label: "TikTok" },
         ]}
       />
-
       {/* Title area below: Channel Tabs + Summary Slider */}
       <LandingSummary sections={sections} items={items} />
+      <AboutTeaser />
     </main>
   );
 }
