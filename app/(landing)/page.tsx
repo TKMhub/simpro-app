@@ -1,7 +1,6 @@
 import HeroSection from "./components/HeroSection";
 import LandingSummary from "@/components/LandingSummary";
 import { fetchSummaryData } from "@/lib/summaryData";
-import AboutTeaser from "./components/AboutTeaser";
 
 export default async function LandingPage() {
   const { sections, items } = await fetchSummaryData();
@@ -29,7 +28,6 @@ export default async function LandingPage() {
       />
       {/* Title area below: Channel Tabs + Summary Slider */}
       <LandingSummary sections={sections} items={items} />
-      <AboutTeaser />
     </main>
   );
 }
