@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="career icon">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#3b82f6"/>
+      <stop offset="1" stop-color="#06b6d4"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="112" height="112" rx="20" fill="url(#bg)"/>
+  <!-- person (head + shoulders) centered and a bit smaller -->
+  <g fill="#ffffff" opacity="0.95" transform="translate(64,68)">
+    <circle cx="0" cy="-28" r="16"/>
+    <path d="M-36,24 a36,24 0 0 1 72,0 v8 h-72z"/>
+  </g>
+</svg>

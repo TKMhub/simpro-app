@@ -16,10 +16,11 @@ import type { SummaryItem } from "@/lib/summaryData";
 
 export type SummarySliderProps = {
   items: SummaryItem[];
-  intervalMs?: number; // default 3500
+  // Auto-advance interval in ms. Set <= 0 to disable.
+  intervalMs?: number; // default disabled
 };
 
-export default function SummarySlider({ items, intervalMs = 3500 }: SummarySliderProps) {
+export default function SummarySlider({ items, intervalMs = 0 }: SummarySliderProps) {
   const [api, setApi] = React.useState<CarouselApi | null>(null);
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
   const hoverRef = React.useRef(false);
@@ -35,6 +36,7 @@ export default function SummarySlider({ items, intervalMs = 3500 }: SummarySlide
   const startTimer = React.useCallback(() => {
     clearTimer();
     if (!api) return;
+    if (!intervalMs || intervalMs <= 0) return; // disabled
     timerRef.current = setInterval(() => {
       // Only advance when not hovered and not dragging
       if (!hoverRef.current && !draggingRef.current) {
@@ -77,10 +79,10 @@ export default function SummarySlider({ items, intervalMs = 3500 }: SummarySlide
       >
         <CarouselContent>
           {items.map((item) => (
-            <CarouselItem key={item.id} className="md:basis-1/2 lg:basis-1/3">
+            <CarouselItem key={item.id} className="md:basis-1/2 lg:basis-1/">
               <Card className="h-full hover:shadow-md transition-shadow">
                 <CardHeader>
-                  <CardTitle className="text-base sm:text-lg line-clamp-1">
+                  <CardTitle className="text-base sm:text-lg line-clamp-">
                     {item.title}
                   </CardTitle>
                   {item.description && (
@@ -104,7 +106,6 @@ export default function SummarySlider({ items, intervalMs = 3500 }: SummarySlide
                         src={item.image.src}
                         alt={item.image.alt ?? item.title}
                         fill
-                        sizes="(max-width: 768px) 100vw, 33vw"
                         className="object-cover"
                         priority={false}
                       />

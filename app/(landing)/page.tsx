@@ -16,7 +16,7 @@ export default async function LandingPage() {
         avatarAlt="taku"
         name="taku"
         handle="@taku"
-        tagline="エンジニア / プログラミング / 個人開発 / コンサル / 読書 / 日常"
+        tagline="エンジニア / コンサル / 修行中 / 個人開発 / 読書 / 日常"
         primaryCta={{ label: "プロダクトを見る", href: "/product" }}
         secondaryCta={{ label: "記事を読む", href: "/blog" }}
         socials={[

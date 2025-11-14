@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="skills icon">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#0ea5e9"/>
+      <stop offset="1" stop-color="#6366f1"/>
+    </linearGradient>
+  </defs>
+  <!-- rounded square tile -->
+  <rect x="8" y="8" width="112" height="112" rx="20" fill="url(#bg)"/>
+  <!-- coding symbol: angle brackets and slash, centered and modest size -->
+  <g transform="translate(64,64)">
+    <path d="M-24,-8 L-36,0 L-24,8" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M24,-8 L36,0 L24,8" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M-4,-16 L4,16" fill="none" stroke="#e5e7eb" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  <!-- subtle terminal bar at top -->
+  <rect x="28" y="30" width="72" height="10" rx="5" fill="#ffffff" opacity="0.2"/>
+</svg>
