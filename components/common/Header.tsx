@@ -14,6 +14,7 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { Menu as MenuIcon } from "lucide-react";
+import AuthHeader from "@/app/_components/auth-header";
 
 export default function Header() {
   const [hidden, setHidden] = useState(false);
@@ -150,6 +151,10 @@ export default function Header() {
                       </li>
                     </ul>
                   </nav>
+                  {/* 認証：ログイン/ログアウト（モバイルメニュー下部に配置） */}
+                  <div className="mt-4 px-3">
+                    <AuthHeader />
+                  </div>
                   <div className="mt-3 hidden">
                     {/* Toggle remains in header; keep this hidden to avoid duplication */}
                     <ThemeToggle />
@@ -173,7 +178,7 @@ export default function Header() {
           </div> */}
 
           {/* Right: Nav */}
-          <nav className="ml-auto pr-1 sm:pr-2 hidden sm:flex items-center gap-2">
+          <nav className="ml-auto pr-1 sm:pr-2 hidden sm:flex items-center gap-3">
             <ul className="flex items-center gap-2 sm:gap-3 md:gap-4 text-sm">
               <li>
                 <Link
@@ -209,6 +214,8 @@ export default function Header() {
               </li>
               <ThemeToggle />
             </ul>
+            {/* 認証：ログイン/ログアウト */}
+            <AuthHeader />
           </nav>
         </div>
       </div>
