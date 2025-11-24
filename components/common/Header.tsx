@@ -106,7 +106,7 @@ export default function Header() {
                     />
                   </Link>
                 </div>
-                <div>
+                <div className="flex flex-col">
                   <nav>
                     <ul className="flex flex-col gap-1.5">
                       <li>
@@ -152,8 +152,9 @@ export default function Header() {
                     </ul>
                   </nav>
                   {/* 認証：ログイン/ログアウト（モバイルメニュー下部に配置） */}
-                  <div className="mt-4 px-3">
-                    <AuthHeader />
+                  <div className="grow" />
+                  <div className="mt-4 px-3 pb-3">
+                    <AuthHeader context="sheet" />
                   </div>
                   <div className="mt-3 hidden">
                     {/* Toggle remains in header; keep this hidden to avoid duplication */}

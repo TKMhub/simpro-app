@@ -9,8 +9,14 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { SheetClose } from "@/components/ui/sheet";
 
-export default function AuthHeader() {
+type AuthHeaderProps = {
+  // sheet: show vertical layout and close menu on actions
+  context?: "header" | "sheet";
+};
+
+export default function AuthHeader({ context = "header" }: AuthHeaderProps) {
   const supabase = React.useMemo(() => createClient(), []);
   const [displayName, setDisplayName] = React.useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
@@ -74,29 +80,54 @@ export default function AuthHeader() {
   };
 
   const initials = (displayName ?? "").slice(0, 2).toUpperCase() || "US";
+  const glassBtn =
+    "backdrop-blur-md bg-white/10 border border-white/20 text-white hover:bg-white/20 dark:bg-white/10 dark:text-white/90 dark:hover:bg-white/15 transition-colors";
 
-  return (
-    <div className="flex items-center gap-2">
-      {loading ? (
-        <div className="text-sm text-muted-foreground">…</div>
-      ) : displayName ? (
-        <div className="flex items-center gap-2">
+  if (loading) {
+    return <div className="text-sm text-muted-foreground">…</div>;
+  }
+
+  if (context === "sheet") {
+    // Mobile sheet layout
+    return displayName ? (
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center gap-3">
           <Avatar>
-            {avatarUrl ? (
-              <AvatarImage src={avatarUrl} alt={displayName} />
-            ) : null}
+            {avatarUrl ? <AvatarImage src={avatarUrl} alt={displayName} /> : null}
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
-          <span className="text-sm">{displayName}</span>
-          <Button size="sm" variant="outline" onClick={onSignOut}>
+          <span className="text-sm font-medium">{displayName}</span>
+        </div>
+        <SheetClose asChild>
+          <Button size="sm" className={glassBtn} onClick={onSignOut}>
             ログアウト
           </Button>
-        </div>
-      ) : (
-        <Button asChild size="sm">
+        </SheetClose>
+      </div>
+    ) : (
+      <SheetClose asChild>
+        <Button asChild size="sm" className={glassBtn}>
           <Link href="/login">ログイン</Link>
         </Button>
-      )}
+      </SheetClose>
+    );
+  }
+
+  // Header (desktop) inline layout
+  return displayName ? (
+    <div className="flex items-center gap-2">
+      <Avatar>
+        {avatarUrl ? <AvatarImage src={avatarUrl} alt={displayName} /> : null}
+        <AvatarFallback>{initials}</AvatarFallback>
+      </Avatar>
+      <span className="text-sm">{displayName}</span>
+      <Button size="sm" className={glassBtn} onClick={onSignOut}>
+        ログアウト
+      </Button>
     </div>
+  ) : (
+    <Button asChild size="sm" className={glassBtn}>
+      <Link href="/login">ログイン</Link>
+    </Button>
   );
 }
