@@ -88,7 +88,7 @@ export default function AuthHeader({ context = "header" }: AuthHeaderProps) {
   }
 
   if (context === "sheet") {
-    // Mobile sheet layout
+    // Mobile sheet layout: show avatar only (no username), glass-style buttons
     return displayName ? (
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-3">
@@ -96,10 +96,13 @@ export default function AuthHeader({ context = "header" }: AuthHeaderProps) {
             {avatarUrl ? <AvatarImage src={avatarUrl} alt={displayName} /> : null}
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
-          <span className="text-sm font-medium">{displayName}</span>
         </div>
         <SheetClose asChild>
-          <Button size="sm" className={glassBtn} onClick={onSignOut}>
+          <Button
+            size="sm"
+            className={`${glassBtn} text-black dark:text-black`}
+            onClick={onSignOut}
+          >
             ログアウト
           </Button>
         </SheetClose>
@@ -113,14 +116,13 @@ export default function AuthHeader({ context = "header" }: AuthHeaderProps) {
     );
   }
 
-  // Header (desktop) inline layout
+  // Header (desktop) inline layout: no username
   return displayName ? (
     <div className="flex items-center gap-2">
       <Avatar>
         {avatarUrl ? <AvatarImage src={avatarUrl} alt={displayName} /> : null}
         <AvatarFallback>{initials}</AvatarFallback>
       </Avatar>
-      <span className="text-sm">{displayName}</span>
       <Button size="sm" className={glassBtn} onClick={onSignOut}>
         ログアウト
       </Button>
