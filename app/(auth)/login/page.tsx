@@ -78,12 +78,15 @@ export default function LoginPage() {
                 },
               },
             }}
-            // ログイン完了後の遷移先（必要に応じて変更）
-            redirectTo={typeof window !== "undefined" ? window.location.origin : undefined}
+            // ログイン完了後の遷移先（専用コールバックに統一）
+            redirectTo={
+              typeof window !== "undefined"
+                ? `${window.location.origin}/auth/callback`
+                : undefined
+            }
           />
         </CardContent>
       </Card>
     </div>
   );
 }
-
