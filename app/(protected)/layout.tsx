@@ -11,7 +11,7 @@ export default async function ProtectedLayout({
 }: {
   children: ReactNode;
 }) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   // 現在のユーザー情報を取得（Cookie セッションに基づく）
   const {
@@ -26,4 +26,3 @@ export default async function ProtectedLayout({
   // ログイン済みの場合のみ子コンテンツを表示
   return <>{children}</>;
 }
-
