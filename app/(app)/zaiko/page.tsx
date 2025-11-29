@@ -26,7 +26,7 @@ export default function ZaikoLpPage() {
         <UiHero />
 
         {/* Problem Section */}
-        <SectionBlock className="bg-zinc-50 dark:bg-zinc-900/50">
+        <SectionBlock className="bg-zinc-50 dark:bg-zinc-900/50 text-zinc-900 dark:text-zinc-100">
           <MotionContainer>
             <div className="space-y-6">
               <h2 className="text-xl font-bold text-center">こんな「困った」ありませんか？</h2>
@@ -76,7 +76,7 @@ export default function ZaikoLpPage() {
         </SectionBlock>
 
         {/* Feature Grid */}
-        <SectionBlock id="features" title="便利な機能" className="bg-zinc-50 dark:bg-zinc-900/50">
+        <SectionBlock id="features" title="便利な機能" className="bg-zinc-50 dark:bg-zinc-900/50 text-zinc-900 dark:text-zinc-100">
           <div className="grid grid-cols-2 gap-3">
              {[
                { icon: Zap, label: '簡単入力', desc: 'タップだけで完了' },
@@ -84,7 +84,7 @@ export default function ZaikoLpPage() {
                { icon: Smartphone, label: 'スマホ最適化', desc: '片手でサクサク' },
                { icon: Bell, label: '期限管理', desc: '賞味期限も' },
              ].map((item, i) => (
-               <div key={i} className="flex flex-col items-center text-center p-4 bg-white dark:bg-zinc-800 rounded-xl shadow-sm">
+               <div key={i} className="flex flex-col items-center text-center p-4 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-xl shadow-sm">
                  <item.icon className="w-8 h-8 text-green-500 mb-2" />
                  <h3 className="font-bold text-sm">{item.label}</h3>
                  <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">{item.desc}</p>

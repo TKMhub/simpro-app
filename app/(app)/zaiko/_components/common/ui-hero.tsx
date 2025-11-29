@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ChevronRight, Plus, Settings } from 'lucide-react';
@@ -20,6 +20,12 @@ const MOCK_PREVIEW_ITEMS = [
 ];
 
 export function UiHero() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div className="relative overflow-hidden bg-white dark:bg-black pb-16 pt-12">
       {/* Decorative background elements */}
@@ -54,59 +60,55 @@ export function UiHero() {
           </Button>
         </div>
 
-        {/* Mock UI Preview */}
-        <div className="relative w-full max-w-[280px] mx-auto perspective-1000">
-           {/* Phone Frame */}
-           <div className="relative w-full aspect-[9/19] bg-zinc-900 rounded-[3rem] border-[8px] border-zinc-900 shadow-2xl overflow-hidden ring-1 ring-white/10 transform rotate-[-2deg] md:hover:rotate-0 transition-all duration-500 animate-phone-scroll">
-              {/* Screen */}
-              <div className="absolute inset-0 bg-zinc-50 dark:bg-black rounded-[2.5rem] overflow-hidden flex flex-col select-none pointer-events-none">
-                 
-                 {/* Dynamic Island / Notch Mock */}
-                 <div className="absolute top-0 left-1/2 -translate-x-1/2 h-6 w-24 bg-black rounded-b-xl z-50" />
+        {/* Mock UI Preview - Simplified Layout */}
+        <div className="relative w-full max-w-[320px] mx-auto mt-8">
+           {/* Simple Frame */}
+           {mounted ? (
+             <div className="relative w-full aspect-[9/18] bg-white dark:bg-black rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden">
+                <div className="absolute inset-0 flex flex-col">
+                   {/* Header */}
+                   <div className="relative z-20">
+                     <ZaikoHeader 
+                       title="マイ在庫" 
+                       showBack={false}
+                       rightAction={
+                         <div className="p-2 text-zinc-500">
+                           <Settings className="h-5 w-5" />
+                         </div>
+                       }
+                       className="bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm border-b border-zinc-100 dark:border-zinc-800"
+                     />
+                   </div>
+                   
+                   {/* Content */}
+                   <div className="flex-1 overflow-hidden relative bg-zinc-50 dark:bg-black"> 
+                      <div className="h-full space-y-2 overflow-y-auto no-scrollbar pb-20">
+                         <AlertBanner count={2} className="pointer-events-none mt-2" />
+                         <InventoryFilterChips 
+                           options={ZAIKO_CATEGORIES} 
+                           selectedId="all" 
+                           onChange={() => {}} 
+                           className="sticky top-0 z-10 pointer-events-none" 
+                         />
+                         <div className="px-4 mt-2">
+                            <InventoryList 
+                              items={MOCK_PREVIEW_ITEMS} 
+                              onItemClick={()=>{}} 
+                              onItemEdit={()=>{}} 
+                            />
+                         </div>
+                      </div>
 
-                 {/* Scaled Content Wrapper */}
-                 <div className="w-[133.33%] h-[133.33%] origin-top-left scale-[0.75] flex flex-col h-full">
-                    {/* Header */}
-                    <div className="relative z-20">
-                      <ZaikoHeader 
-                        title="マイ在庫" 
-                        showBack={false}
-                        rightAction={
-                          <div className="p-2 text-zinc-500">
-                            <Settings className="h-5 w-5" />
-                          </div>
-                        }
-                        className="bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm"
-                      />
-                    </div>
-                    
-                    {/* Content */}
-                    <div className="flex-1 overflow-hidden relative"> 
-                       <div className="h-full space-y-2 pb-24 overflow-y-auto no-scrollbar bg-zinc-50 dark:bg-black">
-                          <AlertBanner count={2} className="pointer-events-none mt-2" />
-                          <InventoryFilterChips 
-                            options={ZAIKO_CATEGORIES} 
-                            selectedId="all" 
-                            onChange={() => {}} 
-                            className="sticky top-0 z-10 pointer-events-none" 
-                          />
-                          <div className="px-4 mt-2">
-                             <InventoryList 
-                               items={MOCK_PREVIEW_ITEMS} 
-                               onItemClick={()=>{}} 
-                               onItemEdit={()=>{}} 
-                             />
-                          </div>
-                       </div>
-
-                       {/* Fab Button Mock */}
-                       <div className="absolute bottom-8 right-6 z-30 h-14 w-14 rounded-full bg-green-600 shadow-xl shadow-green-500/30 flex items-center justify-center text-white">
-                          <Plus className="h-7 w-7" />
-                       </div>
-                    </div>
-                 </div>
-              </div>
-           </div>
+                      {/* Fab Button Mock */}
+                      <div className="absolute bottom-6 right-6 z-30 h-14 w-14 rounded-full bg-green-600 shadow-xl shadow-green-500/30 flex items-center justify-center text-white">
+                         <Plus className="h-7 w-7" />
+                      </div>
+                   </div>
+                </div>
+             </div>
+           ) : (
+             <div className="relative w-full aspect-[9/18] bg-zinc-100 dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 animate-pulse" />
+           )}
         </div>
       </div>
     </div>
