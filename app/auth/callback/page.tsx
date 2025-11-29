@@ -12,7 +12,7 @@ export default function AuthCallbackPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const supabase = createClient();
+    createClient();
     // ハッシュに access_token が含まれていると自動でセッション化される。
     // 反映タイミングを少し待ってからトップへ移動。
     const t = setTimeout(() => {

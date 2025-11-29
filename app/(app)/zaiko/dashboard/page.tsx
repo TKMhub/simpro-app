@@ -10,10 +10,20 @@ import { InventoryList } from '../_components/inventory/inventory-list';
 import { AlertBanner } from '../_components/common/alert-banner';
 import { FabAddButton } from '../_components/layout/fab-add-button';
 import { ZaikoBottomSheet } from '../_components/layout/zaiko-bottom-sheet';
-import { ZAIKO_CATEGORIES, ZAIKO_LOCATIONS } from '../_lib/zaiko-constants';
+import { ZAIKO_CATEGORIES, InventoryStatus } from '../_lib/zaiko-constants';
 
 // Mock Data
-const MOCK_ITEMS = [
+type Item = {
+    id: string;
+    name: string;
+    quantity: number;
+    status: InventoryStatus;
+    category: string;
+    iconName: string;
+    location: string;
+};
+
+const MOCK_ITEMS: Item[] = [
   { id: '1', name: 'トイレットペーパー', quantity: 2, status: 'low', category: 'daily', iconName: '🧻', location: 'トイレ棚' },
   { id: '2', name: 'ハンドソープ', quantity: 1, status: 'enough', category: 'hygiene', iconName: '🧼', location: '洗面所' },
   { id: '3', name: '醤油', quantity: 0, status: 'empty', category: 'food', iconName: '🍱', location: 'キッチンパントリー' },
@@ -21,16 +31,6 @@ const MOCK_ITEMS = [
   { id: '5', name: 'マヨネーズ', quantity: 1, status: 'low', category: 'food', iconName: '🥗', location: '冷蔵庫' },
   { id: '6', name: '単3電池', quantity: 8, status: 'enough', category: 'other', iconName: '🔋', location: 'リビング棚' },
 ];
-
-type Item = {
-    id: string;
-    name: string;
-    quantity: number;
-    status: string;
-    category: string;
-    iconName: string;
-    location: string;
-};
 
 export default function ZaikoDashboardPage() {
   const router = useRouter();
@@ -169,4 +169,3 @@ export default function ZaikoDashboardPage() {
     </div>
   );
 }
-

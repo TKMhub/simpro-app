@@ -13,6 +13,7 @@ export default function ZaikoLoginPage() {
 
   const handleLogin = (provider: string) => {
     setIsLoading(true);
+    console.log('Login with', provider);
     // Simulate login
     setTimeout(() => {
       router.push('/zaiko/dashboard');

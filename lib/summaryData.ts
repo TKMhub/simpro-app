@@ -45,6 +45,7 @@ export async function fetchSummaryData(): Promise<SummaryData> {
       });
     }
   } catch (e) {
+    console.error(e);
     // swallow and continue; we will still show other sections
   }
 
@@ -64,6 +65,7 @@ export async function fetchSummaryData(): Promise<SummaryData> {
       });
     }
   } catch (e) {
+    console.error(e);
     // ignore and proceed
   }
 

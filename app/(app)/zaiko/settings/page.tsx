@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Moon, Sun, Bell, Users, LogOut, ChevronRight } from 'lucide-react';
+import { Moon, Bell, Users, LogOut, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { ZaikoHeader } from '../_components/layout/zaiko-header';

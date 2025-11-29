@@ -155,6 +155,7 @@ export async function getBlogDetailBySlug(slug: string): Promise<{ header: BlogH
       notion = await normalizeNotionDocument(rawBlocks);
     }
   } catch (e) {
+    console.error(e);
     // Notion側で取得できない場合は空ドキュメントとして返す
     notion = { blocks: [], unavailable: true };
   }
