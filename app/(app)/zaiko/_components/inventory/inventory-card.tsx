@@ -32,7 +32,7 @@ export function InventoryCard({
     <div
       onClick={onClick}
       className={cn(
-        'group relative flex items-center gap-3 p-4 bg-white dark:bg-zinc-900/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm hover:shadow-md transition-all active:scale-[0.98] cursor-pointer',
+        'group relative flex items-center gap-3 p-4 bg-white dark:bg-zinc-900/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 transition-all active:scale-[0.98] cursor-pointer',
         className
       )}
     >

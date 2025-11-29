@@ -15,7 +15,7 @@ export function FabAddButton({ href = '/zaiko/input', onClick, className }: FabA
     <Button
       size="icon"
       className={cn(
-        "h-14 w-14 rounded-full shadow-xl shadow-green-500/30 bg-green-500 hover:bg-green-600 text-white transition-transform active:scale-90",
+        "h-14 w-14 rounded-full bg-green-600 hover:bg-green-700 text-white transition-transform active:scale-90",
         className
       )}
       onClick={onClick}

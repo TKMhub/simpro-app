@@ -14,7 +14,7 @@ export function AlertBanner({ count, href = '/zaiko/tobuy', className }: AlertBa
 
   return (
     <Link href={href} className={cn("block px-4 py-2", className)}>
-      <div className="flex items-center justify-between rounded-xl bg-orange-50 dark:bg-orange-950/30 border border-orange-100 dark:border-orange-900 p-3 shadow-sm active:scale-[0.98] transition-transform">
+      <div className="flex items-center justify-between rounded-xl bg-orange-50 dark:bg-orange-950/30 border border-orange-100 dark:border-orange-900 p-3 active:scale-[0.98] transition-transform">
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900 text-orange-600 dark:text-orange-300">
             <AlertTriangle className="h-4 w-4" />
