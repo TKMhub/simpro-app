@@ -53,14 +53,14 @@ export function InventoryDetailForm({ defaultValues, onSubmit, isEdit = false }:
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 pb-24">
         
         {/* Icon & Name Section */}
-        <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 space-y-4 shadow-sm">
+        <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 space-y-4">
            <FormField
             control={form.control}
             name="iconName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>アイコン</FormLabel>
-                <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                <div className="-mx-4 px-4 flex gap-2 overflow-x-auto no-scrollbar py-2">
                    {EMOJI_PRESETS.map(emoji => (
                      <button
                        key={emoji}
@@ -98,7 +98,7 @@ export function InventoryDetailForm({ defaultValues, onSubmit, isEdit = false }:
         </div>
 
         {/* Quantity Section */}
-        <div className="bg-white dark:bg-zinc-900 rounded-xl p-6 shadow-sm flex flex-col items-center">
+        <div className="bg-white dark:bg-zinc-900 rounded-xl p-6 flex flex-col items-center">
           <FormLabel className="mb-4 text-zinc-500">現在の在庫数</FormLabel>
           <FormField
             control={form.control}
@@ -113,7 +113,7 @@ export function InventoryDetailForm({ defaultValues, onSubmit, isEdit = false }:
         </div>
 
         {/* Details Section */}
-        <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 space-y-4 shadow-sm">
+        <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 space-y-4">
           <FormField
             control={form.control}
             name="categoryId"
@@ -202,7 +202,7 @@ export function InventoryDetailForm({ defaultValues, onSubmit, isEdit = false }:
         </div>
 
         {/* Memo */}
-        <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 shadow-sm">
+        <div className="bg-white dark:bg-zinc-900 rounded-xl p-4">
            <FormField
             control={form.control}
             name="memo"
@@ -231,4 +231,3 @@ export function InventoryDetailForm({ defaultValues, onSubmit, isEdit = false }:
     </Form>
   );
 }
-
