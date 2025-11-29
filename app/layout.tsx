@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/common/Header";
-import Footer from "@/components/common/Footer";
 import { cookies } from "next/headers";
 
 
@@ -30,10 +28,7 @@ export default async function RootLayout({
               "(function(){try{var m=document.cookie.match(/(?:^|; )theme=([^;]+)/);var cs=m?decodeURIComponent(m[1]):null;var ls=localStorage.getItem('theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var v=cs||ls;var e=v?v==='dark':d;document.documentElement.classList.toggle('dark',e);}catch(e){}})();",
           }}
         />
-        {/* Global Header */}
-        <Header />
-        <div className="pt-16 min-h-[calc(100dvh-6rem)]">{children}</div>
-        <Footer />
+        {children}
       </body>
     </html>
   );
