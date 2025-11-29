@@ -37,6 +37,17 @@ Simproプロジェクトの開発ルールおよび規約です。
 - **ORM**: Prisma (`npx prisma generate`, `npx prisma migrate dev`)
 - **Lint/Format**: ESLint, Prettier
 
-## 5. AI (Cursor) への指示出し
+## 5. データベース・インフラ (Supabase / Prisma)
+
+- **共通インフラの利用**:
+  - Simpro-app内のすべてのアプリケーションは、同一のSupabaseプロジェクトおよび同一のPrisma定義を利用する。
+  - 認証機能（Auth）やSimpro全体で利用するテーブルについては、一般的な命名規則（例: `users`, `profiles` 等）を使用する。
+
+- **テーブル命名規則（個別アプリケーション）**:
+  - 特定のアプリケーション（例: `zaiko`）でのみ使用するテーブルについては、DB上でどのアプリのものか判別できるようにする。
+  - **規則**: `{table_name}_{app_name}`
+  - **例**: Zaikoアプリの品目テーブルの場合 → `item_zaiko`
+
+## 6. AI (Cursor) への指示出し
 - ドキュメント (`docs/`) を積極的にコンテキストとして与える。
 - 実装を変更した際は、対応するドキュメントも更新するよう指示する。
