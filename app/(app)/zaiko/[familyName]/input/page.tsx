@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { ZaikoHeader } from '../../../_components/layout/zaiko-header';
-import { InventoryDetailForm } from '../../../_components/inventory/inventory-detail-form';
+import { ZaikoHeader } from '../../_components/layout/zaiko-header';
+import { InventoryDetailForm } from '../../_components/inventory/inventory-detail-form';
 
 export default function ZaikoFamilyInputPage() {
   const router = useRouter();
