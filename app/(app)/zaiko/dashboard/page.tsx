@@ -20,9 +20,17 @@ const MOCK_ITEMS = [
   { id: '4', name: '洗濯洗剤', quantity: 3, status: 'enough', category: 'cleaning', iconName: '👕', location: 'ランドリーラック' },
   { id: '5', name: 'マヨネーズ', quantity: 1, status: 'low', category: 'food', iconName: '🥗', location: '冷蔵庫' },
   { id: '6', name: '単3電池', quantity: 8, status: 'enough', category: 'other', iconName: '🔋', location: 'リビング棚' },
-] as const;
+];
 
-type Item = typeof MOCK_ITEMS[number];
+type Item = {
+    id: string;
+    name: string;
+    quantity: number;
+    status: string;
+    category: string;
+    iconName: string;
+    location: string;
+};
 
 export default function ZaikoDashboardPage() {
   const router = useRouter();
