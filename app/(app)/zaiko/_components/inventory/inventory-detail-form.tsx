@@ -54,13 +54,13 @@ export function InventoryDetailForm({ defaultValues, onSubmit, isEdit = false }:
         
         {/* Icon & Name Section */}
         <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 space-y-4 shadow-sm">
-           <FormField
+          <FormField
             control={form.control}
             name="iconName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>アイコン</FormLabel>
-                <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                <div className="flex flex-wrap gap-2 p-2 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg max-h-[160px] overflow-y-auto">
                    {EMOJI_PRESETS.map(emoji => (
                      <button
                        key={emoji}
@@ -70,7 +70,7 @@ export function InventoryDetailForm({ defaultValues, onSubmit, isEdit = false }:
                          "flex-shrink-0 h-10 w-10 rounded-full text-xl flex items-center justify-center transition-all",
                          field.value === emoji 
                            ? "bg-green-100 dark:bg-green-900 ring-2 ring-green-500 transform scale-110" 
-                           : "bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200"
+                           : "bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700"
                        )}
                      >
                        {emoji}

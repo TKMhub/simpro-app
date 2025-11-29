@@ -1,23 +1,42 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="green_grad" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#4ade80"/>
-      <stop offset="1" stop-color="#16a34a"/>
+    <!-- ダンボールのベースグラデーション -->
+    <linearGradient id="cardboard_grad" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#E8D5B5"/>
+      <stop offset="1" stop-color="#C8A67B"/>
     </linearGradient>
-    <filter id="shadow" x="0" y="0" width="512" height="512" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
-      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-      <feOffset dy="8"/>
-      <feGaussianBlur stdDeviation="16"/>
-      <feComposite in2="hardAlpha" operator="out"/>
-      <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0"/>
-      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow"/>
-      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape"/>
+    
+    <!-- 質感フィルター: 紙のザラザラ感 -->
+    <filter id="texture">
+      <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch" result="noise"/>
+      <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.15 0" in="noise" result="softNoise"/>
+      <feBlend mode="overlay" in="softNoise" in2="SourceGraphic" result="textured"/>
+    </filter>
+
+    <!-- ドロップシャドウ -->
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#443322" flood-opacity="0.3"/>
     </filter>
   </defs>
+
   <g filter="url(#shadow)">
-    <rect x="32" y="32" width="448" height="448" rx="112" fill="url(#green_grad)"/>
-    <path d="M160 160H352L160 352H352" stroke="white" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- 本体: 質感適用 -->
+    <rect x="32" y="32" width="448" height="448" rx="80" fill="url(#cardboard_grad)" filter="url(#texture)"/>
+    
+    <!-- 段目の縦縞（うっすらと入れてダンボールの断面構造を暗示） -->
+    <mask id="box-mask">
+      <rect x="32" y="32" width="448" height="448" rx="80" fill="white"/>
+    </mask>
+    <g mask="url(#box-mask)" opacity="0.08" style="mix-blend-mode: multiply;">
+       <path d="M0 0 H512" stroke="black" stroke-width="0"/> <!-- dummy for loop -->
+       <!-- 40px間隔のストライプ -->
+       <path d="M52 0V512 M92 0V512 M132 0V512 M172 0V512 M212 0V512 M252 0V512 M292 0V512 M332 0V512 M372 0V512 M412 0V512 M452 0V512" stroke="#5c4033" stroke-width="4"/>
+    </g>
+
+    <!-- Zロゴ（スタンプ風の濃い茶色） -->
+    <path d="M150 150H362L150 362H362" stroke="#5c4033" stroke-width="80" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+    
+    <!-- 緑のテープ（養生テープ風） -->
+    <path d="M340 20 L500 180" stroke="#22c55e" stroke-width="70" opacity="0.6" stroke-linecap="butt" style="mix-blend-mode: multiply;"/>
   </g>
 </svg>
-
