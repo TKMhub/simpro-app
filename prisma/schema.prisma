@@ -84,3 +84,82 @@ model ProductPost {
   @@index([tags])
   @@index([type])
 }
+
+// -----------------------------------------------------------------------------
+// Zaiko Schema
+// -----------------------------------------------------------------------------
+
+model Profile {
+  id           String   @id @default(uuid()) // auth.users.id と同期想定
+  email        String
+  displayName  String?
+  avatarUrl    String?
+  
+  createdFamilies Family[] @relation("CreatedFamilies")
+  memberships     FamilyMember[]
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  @@map("profiles")
+}
+
+model Family {
+  id          String   @id @default(uuid())
+  name        String
+  inviteCode  String   @unique
+  
+  createdBy   String
+  creator     Profile  @relation("CreatedFamilies", fields: [createdBy], references: [id])
+  
+  members     FamilyMember[]
+  items       Item[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("families")
+}
+
+enum FamilyRole {
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+model FamilyMember {
+  id        String     @id @default(uuid())
+  familyId  String
+  userId    String
+  role      FamilyRole @default(EDITOR)
+  
+  family    Family     @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  user      Profile    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  joinedAt  DateTime   @default(now())
+  
+  @@unique([familyId, userId]) // 1ユーザーは1家族に1つだけメンバーレコードを持つ
+  @@map("family_members")
+}
+
+model Item {
+  id          String   @id @default(uuid())
+  familyId    String
+  name        String
+  quantity    Int      @default(1)
+  threshold   Int      @default(1)
+  category    String   @default("日用品") // アプリ側定数と同期
+  location    String?
+  icon        String   @default("box")
+  memo        String?
+  
+  family      Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  
+  createdBy   String?  // Profile.id
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([familyId])
+  @@map("items")
+}
