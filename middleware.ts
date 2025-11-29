@@ -28,6 +28,10 @@ export async function middleware(req: NextRequest) {
   // set/remove が実行されて Cookie が最新化される。
   await supabase.auth.getUser();
 
+  // Add pathname to headers for layout to check
+  const pathname = req.nextUrl.pathname;
+  res.headers.set("x-pathname", pathname);
+
   return res;
 }
 

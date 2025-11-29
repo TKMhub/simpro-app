@@ -42,6 +42,10 @@
   /* Cover-specific glass per requirement: light = black glass, dark = white glass */
   --cover-glass-bg: rgba(0, 0, 0, 0.6);
   --cover-foreground: #f3f4f6; /* near-white for readability on black glass */
+
+  /* Zaiko specific colors */
+  --zaiko-accent: #32D17D;
+  --zaiko-accent-dark: #22C55E;
 }
 
 .dark {
@@ -83,6 +87,10 @@
   /* Cover-specific glass: dark = white glass */
   --cover-glass-bg: rgba(255, 255, 255, 0.7);
   --cover-foreground: #0f172a; /* slate-900 on white glass */
+
+  /* Zaiko specific colors */
+  --zaiko-accent: #32D17D;
+  --zaiko-accent-dark: #22C55E;
 }
 
 /* Set default page colors using tokens to benefit non-Tailwind surfaces */
@@ -139,6 +147,15 @@ html, body {
 /* Simple reveal-on-scroll utility */
 .reveal { opacity: 0; transform: translateY(10px); transition: opacity .6s ease, transform .6s ease; will-change: opacity, transform; }
 .reveal.in { opacity: 1; transform: translateY(0); }
+
+/* Zaiko specific utilities */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
 
 /* Subtle float for avatars/images */
 @keyframes float-slow {

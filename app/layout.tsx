@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
 import { cookies } from "next/headers";
+import { headers } from "next/headers";
 
 
 export const metadata: Metadata = {
@@ -20,6 +21,12 @@ export default async function RootLayout({
   const cookieStore = await cookies();
   const themeCookie = cookieStore.get("theme")?.value; // ← ここは同じ
   const ssrHtmlClass = themeCookie === "dark" ? "dark" : undefined;
+  
+  // Check if current path is Zaiko app (hide Header/Footer for Zaiko)
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") || "";
+  const isZaikoPath = pathname.startsWith("/zaiko");
+
   return (
     <html lang="en" suppressHydrationWarning className={ssrHtmlClass}>
       <body className={`antialiased bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300`}>
@@ -30,10 +37,15 @@ export default async function RootLayout({
               "(function(){try{var m=document.cookie.match(/(?:^|; )theme=([^;]+)/);var cs=m?decodeURIComponent(m[1]):null;var ls=localStorage.getItem('theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var v=cs||ls;var e=v?v==='dark':d;document.documentElement.classList.toggle('dark',e);}catch(e){}})();",
           }}
         />
-        {/* Global Header */}
-        <Header />
-        <div className="pt-16 min-h-[calc(100dvh-6rem)]">{children}</div>
-        <Footer />
+        {!isZaikoPath && (
+          <>
+            {/* Global Header */}
+            <Header />
+            <div className="pt-16 min-h-[calc(100dvh-6rem)]">{children}</div>
+            <Footer />
+          </>
+        )}
+        {isZaikoPath && <>{children}</>}
       </body>
     </html>
   );
