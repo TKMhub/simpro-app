@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Menu, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -43,8 +44,13 @@ export function ZaikoHeader({
           </Button>
         ) : (
           <Link href="/zaiko/dashboard" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-500 text-white">
-              <span className="font-bold text-lg">Z</span>
+            <div className="relative h-8 w-8 shrink-0">
+              <Image 
+                src="/zaiko-logo.svg" 
+                alt="Zaiko Logo" 
+                fill 
+                className="rounded-lg object-cover" 
+              />
             </div>
             {!title && <span className="text-lg font-bold tracking-tight">Zaiko</span>}
           </Link>
