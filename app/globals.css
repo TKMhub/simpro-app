@@ -147,3 +147,25 @@ html, body {
   100% { transform: translateY(0); }
 }
 .float-slow { animation: float-slow 5s ease-in-out infinite; }
+
+/* Utility: Hide scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Scroll Driven Animation for Phone Mock */
+@keyframes phone-rotate {
+  from { transform: rotate(-3deg); }
+  to { transform: rotate(3deg); }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .animate-phone-scroll {
+    animation: phone-rotate auto linear;
+    animation-timeline: scroll(root);
+  }
+}

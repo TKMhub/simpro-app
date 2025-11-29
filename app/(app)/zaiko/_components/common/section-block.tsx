@@ -7,6 +7,7 @@ interface SectionBlockProps {
   children: React.ReactNode;
   className?: string;
   dark?: boolean;
+  id?: string;
 }
 
 export function SectionBlock({
@@ -15,9 +16,11 @@ export function SectionBlock({
   children,
   className,
   dark = false,
+  id,
 }: SectionBlockProps) {
   return (
     <section
+      id={id}
       className={cn(
         'py-12 px-6',
         dark ? 'bg-zinc-900 text-white' : 'bg-white text-zinc-900',

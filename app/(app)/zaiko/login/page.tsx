@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -29,9 +30,14 @@ export default function ZaikoLoginPage() {
       />
 
       <div className="flex-1 flex flex-col items-center justify-center px-6 space-y-8 animate-in slide-in-from-bottom-4 duration-700">
-        <div className="text-center space-y-2">
-           <div className="inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-green-500 text-white shadow-xl shadow-green-200 dark:shadow-green-900/20 mb-4">
-              <span className="font-bold text-4xl">Z</span>
+        <div className="text-center space-y-2 flex flex-col items-center">
+           <div className="relative w-24 h-24 mb-2">
+              <Image 
+                src="/zaiko-logo.svg" 
+                alt="Zaiko Logo" 
+                fill 
+                className="object-contain"
+              />
            </div>
            <h1 className="text-2xl font-bold">おかえりなさい</h1>
            <p className="text-zinc-500 text-sm">

@@ -36,7 +36,7 @@ export default function ZaikoLpPage() {
                   'トイレットペーパーが急に切れて焦る',
                   '家族が使ったのに補充してくれない',
                 ].map((text, i) => (
-                  <li key={i} className="flex items-start gap-3 p-4 bg-white dark:bg-zinc-800 rounded-xl shadow-sm">
+                  <li key={i} className="flex items-start gap-3 p-4 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-xl shadow-sm">
                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 font-bold text-sm">
                       !
                     </span>
@@ -76,7 +76,7 @@ export default function ZaikoLpPage() {
         </SectionBlock>
 
         {/* Feature Grid */}
-        <SectionBlock title="便利な機能" className="bg-zinc-50 dark:bg-zinc-900/50">
+        <SectionBlock id="features" title="便利な機能" className="bg-zinc-50 dark:bg-zinc-900/50">
           <div className="grid grid-cols-2 gap-3">
              {[
                { icon: Zap, label: '簡単入力', desc: 'タップだけで完了' },
