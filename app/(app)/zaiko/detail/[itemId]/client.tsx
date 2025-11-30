@@ -1,36 +1,50 @@
 'use client';
 
-import React from 'react';
+import React, { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ZaikoHeader } from '../../_components/layout/zaiko-header';
 import { InventoryDetailForm } from '../../_components/inventory/inventory-detail-form';
+import { ZaikoItem } from '../../_lib/types';
+import { updateZaikoItem, deleteZaikoItem } from '../../_lib/actions';
 
-export function ZaikoDetailClient({ itemId }: { itemId: string }) {
+export function ZaikoDetailClient({ item }: { item: ZaikoItem }) {
   const router = useRouter();
-
-  // Mock initial data fetch
-  const initialValues = {
-    name: 'トイレットペーパー', // In real app, fetch based on itemId
-    quantity: 2,
-    iconName: '🧻',
-    categoryId: 'daily',
-    threshold: 2,
-    locationId: 'toilet_shelf',
-    memo: 'コストコで買う',
-  };
+  const [, startTransition] = useTransition();
 
   const handleSubmit = (values: any) => {
-    console.log('Updated:', values);
-    router.push('/zaiko/dashboard');
+    startTransition(async () => {
+        try {
+            await updateZaikoItem(item.id, values);
+            router.push('/zaiko/dashboard');
+        } catch(e) {
+            console.error('Failed to update', e);
+        }
+    });
   };
 
   const handleDelete = () => {
     if (confirm('本当に削除しますか？')) {
-      console.log('Deleted:', itemId);
-      router.push('/zaiko/dashboard');
+      startTransition(async () => {
+        try {
+            await deleteZaikoItem(item.id);
+            router.push('/zaiko/dashboard');
+        } catch(e) {
+            console.error('Failed to delete', e);
+        }
+      });
     }
+  };
+
+  const initialValues = {
+    name: item.name,
+    quantity: item.quantity,
+    iconName: item.icon,
+    category: item.category,
+    threshold: item.threshold,
+    location: item.location || '',
+    memo: item.memo || '',
   };
 
   return (
@@ -56,4 +70,3 @@ export function ZaikoDetailClient({ itemId }: { itemId: string }) {
     </div>
   );
 }
-

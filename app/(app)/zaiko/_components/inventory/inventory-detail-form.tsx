@@ -17,8 +17,8 @@ import { cn } from '@/lib/utils';
 const formSchema = z.object({
   name: z.string().min(1, 'アイテム名は必須です'),
   iconName: z.string().min(1),
-  categoryId: z.string().min(1, 'カテゴリを選択してください'),
-  locationId: z.string().optional(),
+  category: z.string().min(1, 'カテゴリを選択してください'),
+  location: z.string().optional(),
   quantity: z.number().min(0),
   threshold: z.number().min(0),
   memo: z.string().optional(),
@@ -40,7 +40,7 @@ export function InventoryDetailForm({ defaultValues, onSubmit, isEdit = false }:
     defaultValues: {
       name: '',
       iconName: '📦',
-      categoryId: '',
+      category: '',
       quantity: 1,
       threshold: 1,
       memo: '',
@@ -116,7 +116,7 @@ export function InventoryDetailForm({ defaultValues, onSubmit, isEdit = false }:
         <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 space-y-4">
           <FormField
             control={form.control}
-            name="categoryId"
+            name="category"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>カテゴリ</FormLabel>
@@ -142,7 +142,7 @@ export function InventoryDetailForm({ defaultValues, onSubmit, isEdit = false }:
 
           <FormField
             control={form.control}
-            name="locationId"
+            name="location"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>保管場所</FormLabel>

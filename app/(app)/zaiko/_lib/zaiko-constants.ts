@@ -27,3 +27,8 @@ export const STATUS_CONFIG = {
   empty: { label: '切れ', color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100', dot: 'bg-red-500' },
 } as const;
 
+export function getInventoryStatus(quantity: number, threshold: number): InventoryStatus {
+  if (quantity === 0) return 'empty';
+  if (quantity <= threshold) return 'low';
+  return 'enough';
+}

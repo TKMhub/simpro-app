@@ -42,8 +42,9 @@ export function UiHero() {
             考える時間ゼロへ
           </h1>
           <p className="text-zinc-500 dark:text-zinc-400 leading-relaxed text-balance max-w-md mx-auto">
-            買い物中に「あれあったっけ？」と悩むのはもう終わり。<br className="hidden sm:block" />
-            家族みんなで、スマートな在庫管理を。
+            買い物中に「あれあったっけ？」と悩むのはもう終わり。<br />
+            家族みんなで、スマートな在庫管理を。<br />
+            まとめ買い在庫の管理も便利に。
           </p>
         </div>
 
