@@ -9,25 +9,31 @@ import { ZaikoItem, ZaikoProfile } from './types';
 // User & Auth
 // -----------------------------------------------------------------------------
 
-export async function getZaikoUser(): Promise<ZaikoProfile | null> {
+// 公開プロフィール (Profile) を取得する
+// ここでは "ZaikoProfile" ではなくプロジェクト共通の "Profile" を扱う
+// (ただし Action名などはZaikoアプリ内での利用を想定して getZaikoUser としているが、
+//  実体は共通 Profile を返している)
+export async function getZaikoUser(): Promise<any | null> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) return null;
 
-  // Find or Create Profile
-  let profile = await prisma.zaikoProfile.findUnique({
+  // Find or Create Common Profile
+  // 注意: ここで参照するテーブルは共通の "Profile"
+  let profile = await prisma.profile.findUnique({
     where: { id: user.id },
   });
 
   if (!profile) {
     try {
-      profile = await prisma.zaikoProfile.create({
+      profile = await prisma.profile.create({
         data: {
           id: user.id,
           email: user.email!,
           displayName: user.user_metadata?.full_name || user.email?.split('@')[0],
           avatarUrl: user.user_metadata?.avatar_url,
+          joinedApps: ['zaiko'], // 初回ログイン時に 'zaiko' を追加
         },
       });
       
@@ -50,6 +56,39 @@ export async function getZaikoUser(): Promise<ZaikoProfile | null> {
       console.error('Failed to create profile:', e);
       return null;
     }
+  } else {
+      // 既存ユーザーだがZaikoは初めての場合
+      if (!profile.joinedApps.includes('zaiko')) {
+          await prisma.profile.update({
+              where: { id: profile.id },
+              data: {
+                  joinedApps: {
+                      push: 'zaiko'
+                  }
+              }
+          });
+          
+          // Zaiko用の初期データ作成
+          const existingFamily = await prisma.zaikoFamilyMember.findFirst({
+              where: { userId: profile.id }
+          });
+          
+          if (!existingFamily) {
+             await prisma.zaikoFamily.create({
+                data: {
+                    name: 'マイ在庫',
+                    inviteCode: Math.random().toString(36).substring(2, 10),
+                    createdBy: profile.id,
+                    members: {
+                        create: {
+                            userId: profile.id,
+                            role: 'ADMIN',
+                        }
+                    }
+                }
+              });
+          }
+      }
   }
 
   return profile;
@@ -184,4 +223,3 @@ export async function getShoppingList() {
     // quantity <= threshold OR quantity === 0
     return items.filter(item => item.quantity <= item.threshold || item.quantity === 0);
 }
-

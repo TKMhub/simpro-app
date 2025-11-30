@@ -86,27 +86,32 @@ model ProductPost {
 }
 
 // -----------------------------------------------------------------------------
-// Zaiko Schema
+// Common Profile Schema
 // -----------------------------------------------------------------------------
 
-// 公開プロフィールテーブル
-// Supabase Auth (auth.users) だけではアプリ固有のユーザー情報（表示名やアバター、関連データへのリレーションなど）を
-// 扱いづらいため、publicスキーマにProfilesテーブルを作成して auth.users と1:1で同期させることが推奨されています。
-// https://supabase.com/docs/guides/auth/managing-user-data#using-a-public-profile-table
-model ZaikoProfile {
+// 全アプリ共有のプロフィールテーブル
+model Profile {
   id           String   @id @default(uuid()) // auth.users.id と同期
   email        String
   displayName  String?
   avatarUrl    String?
   
-  createdFamilies ZaikoFamily[] @relation("CreatedFamilies")
-  memberships     ZaikoFamilyMember[]
+  // ユーザーが利用開始しているアプリのIDリスト (例: ["zaiko", "kakeibo"])
+  joinedApps   String[] @default([])
+
+  // Relations (Zaiko)
+  zaikoCreatedFamilies ZaikoFamily[] @relation("CreatedFamilies")
+  zaikoMemberships     ZaikoFamilyMember[]
   
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   
-  @@map("zaiko_profiles")
+  @@map("profiles")
 }
+
+// -----------------------------------------------------------------------------
+// Zaiko Schema
+// -----------------------------------------------------------------------------
 
 model ZaikoFamily {
   id          String   @id @default(uuid())
@@ -114,7 +119,7 @@ model ZaikoFamily {
   inviteCode  String   @unique
   
   createdBy   String
-  creator     ZaikoProfile  @relation("CreatedFamilies", fields: [createdBy], references: [id])
+  creator     Profile  @relation("CreatedFamilies", fields: [createdBy], references: [id])
   
   members     ZaikoFamilyMember[]
   items       ZaikoItem[]
@@ -138,11 +143,11 @@ model ZaikoFamilyMember {
   role      ZaikoFamilyRole @default(EDITOR)
   
   family    ZaikoFamily     @relation(fields: [familyId], references: [id], onDelete: Cascade)
-  user      ZaikoProfile    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      Profile         @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   joinedAt  DateTime   @default(now())
   
-  @@unique([familyId, userId]) // 1ユーザーは1家族に1つだけメンバーレコードを持つ
+  @@unique([familyId, userId])
   @@map("zaiko_family_members")
 }
 
@@ -159,7 +164,7 @@ model ZaikoItem {
   
   family      ZaikoFamily   @relation(fields: [familyId], references: [id], onDelete: Cascade)
   
-  createdBy   String?  // ZaikoProfile.id
+  createdBy   String?  // Profile.id
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
