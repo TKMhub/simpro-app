@@ -12,11 +12,12 @@ import Link from 'next/link';
 
 export default function ZaikoLoginPage() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isGithubLoading, setIsGithubLoading] = useState(false);
+  const [isEmailLoading, setIsEmailLoading] = useState(false);
   const [email, setEmail] = useState('');
 
   const handleOAuthLogin = async (provider: 'github' | 'google') => {
-    setIsLoading(true);
+    setIsGithubLoading(true);
     const supabase = createClient();
     try {
         const { error } = await supabase.auth.signInWithOAuth({
@@ -28,7 +29,7 @@ export default function ZaikoLoginPage() {
         if (error) throw error;
     } catch (e) {
         console.error(e);
-        setIsLoading(false);
+        setIsGithubLoading(false);
     }
   };
 
@@ -36,7 +37,7 @@ export default function ZaikoLoginPage() {
     e.preventDefault();
     if (!email) return;
     
-    setIsLoading(true);
+    setIsEmailLoading(true);
     const supabase = createClient();
     try {
         const { error } = await supabase.auth.signInWithOtp({
@@ -51,9 +52,11 @@ export default function ZaikoLoginPage() {
         console.error(e);
         alert('ログイン処理に失敗しました');
     } finally {
-        setIsLoading(false);
+        setIsEmailLoading(false);
     }
   };
+
+  const isLoading = isGithubLoading || isEmailLoading;
 
   return (
     <div className="min-h-screen bg-white dark:bg-black flex flex-col">
@@ -88,7 +91,7 @@ export default function ZaikoLoginPage() {
             onClick={() => handleOAuthLogin('github')}
             disabled={isLoading}
           >
-             {isLoading ? (
+             {isGithubLoading ? (
                <Loader2 className="w-5 h-5 animate-spin" />
              ) : (
                <>
@@ -115,13 +118,18 @@ export default function ZaikoLoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="h-12"
+                disabled={isLoading}
             />
             <Button 
                 type="submit"
-                className="w-full h-12 text-base" 
+                className="w-full h-12 text-base bg-green-600 hover:bg-green-700 text-white" 
                 disabled={isLoading || !email}
             >
-                <Mail className="w-4 h-4 mr-2" />
+                {isEmailLoading ? (
+                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                ) : (
+                  <Mail className="w-4 h-4 mr-2" />
+                )}
                 メールアドレスでログイン
             </Button>
           </form>
