@@ -145,7 +145,8 @@ export default function SignupPage() {
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          // Onboardingページへ遷移させる。returnToパラメータでログイン画面を指定
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=/onboarding?returnTo=/login`,
         },
       });
       if (error) throw error;

@@ -94,6 +94,7 @@ model Profile {
   id           String   @id @default(uuid()) // auth.users.id と同期
   email        String
   displayName  String?
+  bio          String?
   avatarUrl    String?
   
   // ユーザーが利用開始しているアプリのIDリスト (例: ["zaiko", "kakeibo"])

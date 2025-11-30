@@ -44,7 +44,8 @@ export default function ZaikoSignupPage() {
         const { error } = await supabase.auth.signInWithOtp({
             email,
             options: {
-                emailRedirectTo: `${window.location.origin}/auth/callback?next=/zaiko/dashboard`,
+                // Onboardingへ誘導し、完了後はZaikoのログインへ戻す
+                emailRedirectTo: `${window.location.origin}/auth/callback?next=/onboarding?returnTo=/zaiko/login`,
             },
         });
         if (error) throw error;

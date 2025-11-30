@@ -37,7 +37,7 @@ export async function middleware(req: NextRequest) {
   // ---------------------------------------------------------------------------
   
   // Zaiko App: /zaiko/dashboard や /zaiko/settings などへのアクセスを保護
-  // /zaiko/login, /zaiko/signup, /zaiko (LP) は除外
+  // /zaiko/login, /zaiko/signup, /zaiko (LP), /onboarding は除外
   if (path.startsWith("/zaiko") && 
       !path.startsWith("/zaiko/login") && 
       !path.startsWith("/zaiko/signup") &&
@@ -47,8 +47,15 @@ export async function middleware(req: NextRequest) {
       // 未認証ユーザーはZaikoのLPへリダイレクト
       const url = req.nextUrl.clone();
       url.pathname = "/zaiko";
-      // ログイン後に元のページに戻れるようにしたい場合はパラメータを付ける手もあるが
-      // 今回の要望は「LPを表示する」なので単純なリダイレクト
+      return NextResponse.redirect(url);
+    }
+  }
+
+  // Onboarding Page: 認証必須
+  if (path.startsWith("/onboarding")) {
+    if (!user) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/login";
       return NextResponse.redirect(url);
     }
   }

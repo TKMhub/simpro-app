@@ -5,16 +5,14 @@ import { prisma } from "@/lib/db/prisma";
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/";
+  let next = searchParams.get("next") ?? "/";
   const error = searchParams.get("error");
 
   // ログイン失敗時のリダイレクト先決定ロジック
   const getErrorRedirectUrl = () => {
-    // nextが /zaiko で始まる場合は Zaikoのログイン画面へ
     if (next.startsWith('/zaiko')) {
       return `${origin}/zaiko/login?error=auth`;
     }
-    // それ以外はメインのログイン画面へ
     return `${origin}/login?error=auth`;
   };
 
@@ -28,7 +26,6 @@ export async function GET(request: Request) {
     const { error: sessionError } = await supabase.auth.exchangeCodeForSession(code);
     
     if (!sessionError) {
-      // セッション取得成功後、Profileテーブルの同期を行う
       const { data: { user } } = await supabase.auth.getUser();
 
       if (user) {
@@ -38,30 +35,47 @@ export async function GET(request: Request) {
             where: { id: user.id },
           });
 
-          // ログイン元がZaikoかどうかを判定 (URLが /zaiko で始まる場合)
-          const isZaikoLogin = next.startsWith('/zaiko');
+          // Zaikoコンテキストかどうか
+          // nextパラメータ自体に returnTo が含まれているか、またはパス自体が /zaiko から始まっているか
+          const isZaikoContext = next.startsWith('/zaiko') || next.includes('returnTo=/zaiko');
           const appTag = 'zaiko';
 
           if (!existingProfile) {
-            // 新規作成
+            // =========================================================
+            // 新規ユーザー登録 (OAuth, Email 共通)
+            // =========================================================
             const newProfile = await prisma.profile.create({
               data: {
                 id: user.id,
                 email: user.email!,
+                // 表示名はOnboardingで設定してもらうため、ここでは一旦メールアドレスのローカルパートなどを仮置き
+                // あるいは空でも良いが、スキーマ上String?なのでnull可
                 displayName: user.user_metadata?.full_name || user.email?.split('@')[0],
                 avatarUrl: user.user_metadata?.avatar_url,
-                joinedApps: isZaikoLogin ? [appTag] : [],
+                joinedApps: isZaikoContext ? [appTag] : [],
               },
             });
             
-            // Zaikoログインなら初期データも作成
-            if (isZaikoLogin) {
+            // Zaiko用の初期データ作成
+            if (isZaikoContext) {
                await createZaikoInitialData(newProfile.id);
             }
 
+            // 新規ユーザーの場合、必ずOnboardingへリダイレクトして表示名などを確認させる
+            // もし既に next が onboarding ならそのまま、そうでなければ強制的に onboarding へ
+            if (!next.includes('/onboarding')) {
+                // 元の行き先を returnTo に退避
+                const returnTo = next === '/' ? '/login' : next; // loginに戻すのが一般的か、dashboardに行くか。Onboarding後は再ログインフローなので /login が適切
+                next = `/onboarding?returnTo=${encodeURIComponent(returnTo)}`;
+            }
+
           } else {
-            // 既存ユーザー: Zaikoからのログインで、未登録ならタグ追加
-            if (isZaikoLogin && !existingProfile.joinedApps.includes(appTag)) {
+            // =========================================================
+            // 既存ユーザー
+            // =========================================================
+            
+            // Zaikoからのログインで、未登録ならタグ追加
+            if (isZaikoContext && !existingProfile.joinedApps.includes(appTag)) {
               await prisma.profile.update({
                 where: { id: user.id },
                 data: {
@@ -76,12 +90,11 @@ export async function GET(request: Request) {
 
         } catch (e) {
           console.error("Failed to sync profile:", e);
-          // プロフィール作成に失敗してもログイン自体は成功させる（後でリトライ等の考慮が必要だが一旦通す）
         }
       }
 
-      // ログイン成功時は指定されたURLへリダイレクト
-      const forwardedHost = request.headers.get("x-forwarded-host"); // load balancer support
+      // 最終的なリダイレクト
+      const forwardedHost = request.headers.get("x-forwarded-host");
       const isLocal = origin.includes("localhost");
       
       let redirectUrl = `${origin}${next}`;
@@ -93,13 +106,10 @@ export async function GET(request: Request) {
     }
   }
 
-  // エラー時やコードがない場合
   return NextResponse.redirect(getErrorRedirectUrl());
 }
 
-// Zaiko用の初期データ作成ヘルパー
 async function createZaikoInitialData(userId: string) {
-    // 既に作成済みか確認
     const existingMember = await prisma.zaikoFamilyMember.findFirst({
         where: { userId }
     });
