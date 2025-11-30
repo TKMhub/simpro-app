@@ -7,6 +7,7 @@
 // - TailwindCSS + shadcn/ui のカードで中央寄せ
 
 import * as React from "react";
+import Link from "next/link";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { createClient } from "@/lib/supabase/client";
@@ -16,7 +17,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
   // クライアント用 Supabase
@@ -26,9 +29,9 @@ export default function LoginPage() {
     <div className="min-h-[calc(100dvh-8rem)] flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>ログイン / サインアップ</CardTitle>
+          <CardTitle>ログイン</CardTitle>
           <CardDescription>
-            GitHub / Google（整備中） またはメールのマジックリンクでログインできます。
+            GitHub / Google またはメールのマジックリンクでログインできます。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -47,22 +50,10 @@ export default function LoginPage() {
                   button_label: "ログイン",
                   link_text: "ログイン",
                 },
-                sign_up: {
-                  email_label: "メールアドレス",
-                  email_input_placeholder: "you@example.com",
-                  password_label: "パスワード",
-                  button_label: "サインアップ",
-                  link_text: "サインアップ",
-                },
                 magic_link: {
                   email_input_label: "メールアドレス",
                   email_input_placeholder: "you@example.com",
                   button_label: "マジックリンクを送信",
-                },
-                forgotten_password: {
-                  email_label: "メールアドレス",
-                  email_input_placeholder: "you@example.com",
-                  button_label: "パスワードをリセット",
                 },
               },
             }}
@@ -78,6 +69,7 @@ export default function LoginPage() {
                 },
               },
             }}
+            showLinks={false}
             // ログイン完了後の遷移先（専用コールバックに統一）
             redirectTo={
               typeof window !== "undefined"
@@ -86,6 +78,11 @@ export default function LoginPage() {
             }
           />
         </CardContent>
+        <CardFooter className="flex justify-center">
+             <Button variant="link" asChild>
+                 <Link href="/signup">アカウントをお持ちでない方は新規登録</Link>
+             </Button>
+        </CardFooter>
       </Card>
     </div>
   );

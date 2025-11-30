@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { CheckCircle2, Zap, Share2, Bell, ShoppingCart, Smartphone } from 'lucide-react';
@@ -8,8 +9,16 @@ import { UiHero } from './_components/common/ui-hero';
 import { SectionBlock } from './_components/common/section-block';
 import { FeatureCard } from './_components/common/feature-card';
 import { MotionContainer } from './_components/common/motion-container';
+import { createClient } from '@/lib/supabase/server';
 
-export default function ZaikoLpPage() {
+export default async function ZaikoLpPage() {
+  const supabase = await createClient();
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (session) {
+    redirect('/zaiko/dashboard');
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-black pb-20">
       <ZaikoHeader 
@@ -132,4 +141,3 @@ export default function ZaikoLpPage() {
     </div>
   );
 }
-

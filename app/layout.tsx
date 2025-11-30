@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { cookies } from "next/headers";
+import { Toaster } from "@/components/ui/sonner";
+import { AuthErrorListener } from "@/components/auth/auth-error-listener";
 
 
 export const metadata: Metadata = {
@@ -29,6 +31,8 @@ export default async function RootLayout({
           }}
         />
         {children}
+        <Toaster />
+        <AuthErrorListener />
       </body>
     </html>
   );

@@ -2,19 +2,20 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Loader2, Mail, Github } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ZaikoHeader } from '../_components/layout/zaiko-header';
 import { createClient } from '@/lib/supabase/client';
-import Link from 'next/link';
 
-export default function ZaikoLoginPage() {
+export default function ZaikoSignupPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
 
+  // OAuthはログインと同じ（アカウントがなければ作成される）
   const handleOAuthLogin = async (provider: 'github' | 'google') => {
     setIsLoading(true);
     const supabase = createClient();
@@ -32,13 +33,14 @@ export default function ZaikoLoginPage() {
     }
   };
 
-  const handleEmailLogin = async (e: React.FormEvent) => {
+  const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
     
     setIsLoading(true);
     const supabase = createClient();
     try {
+        // signInWithOtp はユーザーが存在しなければ作成する＝新規登録と同じ挙動
         const { error } = await supabase.auth.signInWithOtp({
             email,
             options: {
@@ -46,10 +48,10 @@ export default function ZaikoLoginPage() {
             },
         });
         if (error) throw error;
-        alert('ログイン用のリンクをメールで送信しました。確認してください。');
+        alert('登録確認用のリンクをメールで送信しました。メールを確認して登録を完了してください。');
     } catch (e) {
         console.error(e);
-        alert('ログイン処理に失敗しました');
+        alert('登録処理に失敗しました');
     } finally {
         setIsLoading(false);
     }
@@ -58,7 +60,7 @@ export default function ZaikoLoginPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-black flex flex-col">
       <ZaikoHeader
-        title="ログイン"
+        title="新規登録"
         showBack
         onBack={() => router.back()}
         rightAction={<div className="w-8" />}
@@ -74,14 +76,42 @@ export default function ZaikoLoginPage() {
                 className="object-contain"
               />
            </div>
-           <h1 className="text-2xl font-bold">おかえりなさい</h1>
+           <h1 className="text-2xl font-bold">はじめまして</h1>
            <p className="text-zinc-500 text-sm">
-             Zaikoアカウントにログインして<br />
-             家族との共有を始めましょう
+             アカウントを作成して<br />
+             快適な在庫管理を始めましょう
            </p>
         </div>
 
         <div className="w-full space-y-3">
+          <form onSubmit={handleEmailSignup} className="space-y-3">
+            <Input 
+                type="email" 
+                placeholder="メールアドレス" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="h-12"
+            />
+            <Button 
+                type="submit"
+                className="w-full h-12 text-base bg-green-600 hover:bg-green-700 text-white" 
+                disabled={isLoading || !email}
+            >
+                <Mail className="w-4 h-4 mr-2" />
+                メールアドレスで登録
+            </Button>
+          </form>
+
+          <div className="relative py-4">
+            <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-zinc-200 dark:border-zinc-800" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white dark:bg-black px-2 text-zinc-500">外部アカウントで登録</span>
+            </div>
+          </div>
+
           <Button 
             className="w-full h-12 text-base relative" 
             variant="outline"
@@ -93,51 +123,25 @@ export default function ZaikoLoginPage() {
              ) : (
                <>
                  <Github className="absolute left-4 w-5 h-5" />
-                 GitHubで続ける
+                 GitHubで登録
                </>
              )}
           </Button>
-          
-          <div className="relative py-4">
-            <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-zinc-200 dark:border-zinc-800" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white dark:bg-black px-2 text-zinc-500">Or continue with</span>
-            </div>
-          </div>
-
-          <form onSubmit={handleEmailLogin} className="space-y-3">
-            <Input 
-                type="email" 
-                placeholder="メールアドレス" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="h-12"
-            />
-            <Button 
-                type="submit"
-                className="w-full h-12 text-base" 
-                disabled={isLoading || !email}
-            >
-                <Mail className="w-4 h-4 mr-2" />
-                メールアドレスでログイン
-            </Button>
-          </form>
         </div>
 
         <div className="text-center">
             <Button variant="link" asChild className="text-zinc-500">
-                <Link href="/zaiko/signup">アカウントをお持ちでない方はこちら</Link>
+                <Link href="/zaiko/login">すでにアカウントをお持ちの方はこちら</Link>
             </Button>
         </div>
 
         <p className="text-xs text-center text-zinc-400">
+          登録することで、<br />
           利用規約 および プライバシーポリシー に<br />
-          同意した上でログインしてください。
+          同意したものとみなされます。
         </p>
       </div>
     </div>
   );
 }
+

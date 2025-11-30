@@ -5,7 +5,7 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 // - アクセストークンの期限切れ時にリフレッシュ
 // - Cookie に最新セッションを反映
 export async function middleware(req: NextRequest) {
-  const res = NextResponse.next({ request: { headers: req.headers } });
+  let res = NextResponse.next({ request: { headers: req.headers } });
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
@@ -16,6 +16,7 @@ export async function middleware(req: NextRequest) {
         return req.cookies.get(name)?.value;
       },
       set(name: string, value: string, options: CookieOptions) {
+        // レスポンスオブジェクトのcookiesを変更するために必要
         res.cookies.set({ name, value, ...options });
       },
       remove(name: string, options: CookieOptions) {
@@ -24,9 +25,37 @@ export async function middleware(req: NextRequest) {
     },
   });
 
-  // ここでユーザー取得を呼ぶことで、期限切れのトークンがある場合は更新され、
-  // set/remove が実行されて Cookie が最新化される。
-  await supabase.auth.getUser();
+  // ユーザー認証の確認
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const path = req.nextUrl.pathname;
+
+  // ---------------------------------------------------------------------------
+  // Protected Routes Redirect (Unauthorized Access)
+  // ---------------------------------------------------------------------------
+  
+  // Zaiko App: /zaiko/dashboard や /zaiko/settings などへのアクセスを保護
+  // /zaiko/login, /zaiko/signup, /zaiko (LP) は除外
+  if (path.startsWith("/zaiko") && 
+      !path.startsWith("/zaiko/login") && 
+      !path.startsWith("/zaiko/signup") &&
+      path !== "/zaiko"
+  ) {
+    if (!user) {
+      // 未認証ユーザーはZaikoのLPへリダイレクト
+      const url = req.nextUrl.clone();
+      url.pathname = "/zaiko";
+      // ログイン後に元のページに戻れるようにしたい場合はパラメータを付ける手もあるが
+      // 今回の要望は「LPを表示する」なので単純なリダイレクト
+      return NextResponse.redirect(url);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Simpro App Root: 必要に応じて保護を追加 (例: /dashboard)
+  // ---------------------------------------------------------------------------
 
   return res;
 }
@@ -37,4 +66,3 @@ export const config = {
     "/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt)$).*)",
   ],
 };
-
