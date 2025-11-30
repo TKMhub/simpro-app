@@ -60,16 +60,19 @@ export default function OnboardingPage() {
 
                 if (uploadError) {
                     console.error('Upload error:', uploadError);
-                    alert('画像のアップロードに失敗しました');
-                    setIsLoading(false);
-                    return;
+                    const continueWithoutAvatar = confirm('画像のアップロードに失敗しました（サーバー設定等の問題の可能性があります）。画像なしで登録を続けますか？');
+                    if (!continueWithoutAvatar) {
+                        setIsLoading(false);
+                        return;
+                    }
+                    // 失敗時は avatarUrl は空のまま続行
+                } else {
+                    const { data: { publicUrl } } = supabase.storage
+                        .from('avatars')
+                        .getPublicUrl(fileName);
+                    
+                    avatarUrl = publicUrl;
                 }
-
-                const { data: { publicUrl } } = supabase.storage
-                    .from('avatars')
-                    .getPublicUrl(fileName);
-                
-                avatarUrl = publicUrl;
             }
         }
 
