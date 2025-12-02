@@ -12,7 +12,6 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")   // ← プーラー(6543)でもOK
-  directUrl = env("DIRECT_URL")     // ← 直結(5432)を必ず指定
 }
 
 // Blog schema
