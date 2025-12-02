@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Calculator, Trophy, BarChart3 } from 'lucide-react';
+import { ArrowRight, Calculator, Trophy, BarChart3, Link2, Crown, Settings2 } from 'lucide-react';
 
 export default function JuiceLandingPage() {
   return (
@@ -29,15 +29,18 @@ export default function JuiceLandingPage() {
           </div>
           
           <div className="mt-8 space-y-4">
-            <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-5xl">
-              勝負の行方は、<br />
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+              勝負の行方は、
+              <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
                 ジュース
               </span>
               が決める。
             </h1>
-            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-sm mx-auto">
-              負けた方がおごる。その一瞬の熱狂と貸し借りを、スマートに記録しよう。
+            <p className="text-base text-slate-600 dark:text-slate-300 max-w-sm mx-auto">
+              ライバルとの勝負、ジュースポイントで記録して
+              <br />
+              どちらが勝ち越しているか可視化しよう。
             </p>
           </div>
 
@@ -64,17 +67,32 @@ export default function JuiceLandingPage() {
           <FeatureCard 
             icon={<Trophy className="w-8 h-8 text-yellow-500" />}
             title="勝負する"
-            description="スポーツ、ゲーム、じゃんけん。あらゆる勝負の結果が決まったら..."
+            description="ボードゲーム、スポーツ、なんでもOK。あらゆる勝負の結果を記録しよう。"
           />
           <FeatureCard 
             icon={<Calculator className="w-8 h-8 text-cyan-500" />}
             title="記録する"
-            description="「誰が」「誰に」「何を」おごるのか。計算機のようにサクッと入力。"
+            description="「誰が」「誰に」何ポイント差をつけたか。計算機のようにサクッと入力。"
           />
           <FeatureCard 
             icon={<BarChart3 className="w-8 h-8 text-purple-500" />}
             title="可視化する"
-            description="どちらが勝ち越しているか一目瞭然。次回の勝負へのモチベーションに。"
+            description="ジュースの本数で勝ち越し状況が明らかに。次の勝負がもっと熱くなる。"
+          />
+          <FeatureCard
+            icon={<Link2 className="w-8 h-8 text-emerald-500" />}
+            title="グループ"
+            description="専用URLを発行して友達を招待。グループを作って勝負を記録しよう。"
+          />
+          <FeatureCard
+            icon={<Crown className="w-8 h-8 text-amber-500" />}
+            title="ランキング"
+            description="グループ内の総合ランキングを自動で集計。誰が一番勝ち越しているか一目瞭然。"
+          />
+          <FeatureCard
+            icon={<Settings2 className="w-8 h-8 text-rose-500" />}
+            title="カスタムルール"
+            description="順位ごとのポイントを自由に設定可能。ゲームの特性に合わせてルールをカスタマイズ。"
           />
         </div>
       </section>

@@ -1,30 +1,46 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
-import { Plus, TrendingUp, TrendingDown, History, User } from 'lucide-react';
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import { Plus, History, User, Users, Share2 } from 'lucide-react';
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
+
+// --- Mock Data ---
+const summary = {
+  totalGames: 25,
+  totalPlayers: 4,
+   myBalance: 7,
+};
+
+const recentHistory = [
+  { id: 1, date: '2023/12/02', players: 4, myRank: 1, point: 2 },
+  { id: 2, date: '2023/12/01', players: 4, myRank: 3, point: -1 },
+  { id: 3, date: '2023/11/28', players: 2, myRank: 2, point: -1 },
+  { id: 4, date: '2023/11/25', players: 3, myRank: 1, point: 2 },
+];
+
+// Data for "Who owes whom"
+const totalBalanceData = [
+  { name: '自分', Taro: 5, Jiro: 2, Saburo: 0 },
+  { name: 'Taro', 自分: -5, Jiro: -3, Saburo: 1 },
+  { name: 'Jiro', 自分: -2, Taro: 3, Saburo: -1 },
+  { name: 'Saburo', 自分: 0, Taro: -1, Jiro: 1 },
+];
+
+const dailyBalanceData = [
+   { name: '自分', Taro: 1, Jiro: 0, Saburo: 1 },
+   { name: 'Taro', 自分: -1, Jiro: 1, Saburo: 0 },
+   { name: 'Jiro', 自分: 0, Taro: -1, Saburo: -1 },
+   { name: 'Saburo', 自分: -1, Taro: 0, Jiro: 1 },
+];
+// --- End Mock Data ---
+
 
 export default function DashboardPage() {
-  // Mock Data
-  const summary = {
-    won: 12,
-    lost: 5,
-    balance: 7,
-  };
+  const [view, setView] = useState('total'); // 'total' or 'daily'
 
-  const recentHistory = [
-    { id: 1, date: '2023/12/01', opponent: 'Ken', item: 'ジュース', amount: 1, result: 'win' },
-    { id: 2, date: '2023/11/28', opponent: 'Taro', item: 'ランチ', amount: 1, result: 'lose' },
-    { id: 3, date: '2023/11/25', opponent: 'Ken', item: 'コーヒー', amount: 2, result: 'win' },
-    { id: 4, date: '2023/11/20', opponent: 'Jiro', item: 'ジュース', amount: 1, result: 'win' },
-  ];
-
-  const chartData = [
-    { name: 'Ken', balance: 3 },
-    { name: 'Taro', balance: -1 },
-    { name: 'Jiro', balance: 1 },
-    { name: 'Sato', balance: 4 },
-  ];
+  const chartData = view === 'total' ? totalBalanceData : dailyBalanceData;
+  const otherPlayers = totalBalanceData.map(p => p.name).filter(name => name !== '自分');
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950 pb-24">
@@ -36,8 +52,14 @@ export default function DashboardPage() {
           </h1>
           <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Dashboard</p>
         </div>
-        <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700">
-          <User className="w-5 h-5 text-slate-400" />
+        <div className="flex items-center space-x-2">
+          <button className="flex items-center space-x-2 text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-3 py-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+            <Share2 className="w-4 h-4" />
+            <span>Share</span>
+          </button>
+          <button className="text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white px-3 py-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+            Login / Sign Up
+          </button>
         </div>
       </header>
 
@@ -46,36 +68,35 @@ export default function DashboardPage() {
         <section className="grid grid-cols-2 gap-4">
           <div className="col-span-2 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-3xl p-6 text-white shadow-lg shadow-cyan-500/20 relative overflow-hidden">
             <div className="relative z-10">
-              <p className="text-cyan-100 text-sm font-bold uppercase tracking-wider mb-1">Net Balance</p>
+              <p className="text-cyan-100 text-sm font-bold uppercase tracking-wider mb-1">My Net Balance</p>
               <div className="flex items-baseline space-x-2">
-                <span className="text-5xl font-black">+{summary.balance}</span>
+                <span className="text-5xl font-black">{summary.myBalance > 0 ? '+' : ''}{summary.myBalance}</span>
                 <span className="text-xl font-bold opacity-80">本</span>
               </div>
               <p className="mt-2 text-sm opacity-90 font-medium">
                 あなたは現在、勝ち越しています！
               </p>
             </div>
-            {/* Decor */}
             <div className="absolute right-0 top-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-10 -mt-10 blur-2xl"></div>
           </div>
 
           <div className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-between">
-            <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-3 text-green-600 dark:text-green-400">
-              <TrendingUp className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800/30 flex items-center justify-center mb-3 text-slate-500 dark:text-slate-400">
+              <History className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-slate-500 text-xs font-bold uppercase">Total Won</p>
-              <p className="text-2xl font-black text-slate-900 dark:text-white">{summary.won}</p>
+              <p className="text-slate-500 text-xs font-bold uppercase">Total Games</p>
+              <p className="text-2xl font-black text-slate-900 dark:text-white">{summary.totalGames}</p>
             </div>
           </div>
 
           <div className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-between">
-            <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-3 text-red-500 dark:text-red-400">
-              <TrendingDown className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800/30 flex items-center justify-center mb-3 text-slate-500 dark:text-slate-400">
+              <Users className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-slate-500 text-xs font-bold uppercase">Total Lost</p>
-              <p className="text-2xl font-black text-slate-900 dark:text-white">{summary.lost}</p>
+              <p className="text-slate-500 text-xs font-bold uppercase">Players</p>
+              <p className="text-2xl font-black text-slate-900 dark:text-white">{summary.totalPlayers}</p>
             </div>
           </div>
         </section>
@@ -83,32 +104,26 @@ export default function DashboardPage() {
         {/* Chart Section */}
         <section>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-slate-800 dark:text-white">対戦相手別収支</h2>
+            <h2 className="text-lg font-bold text-slate-800 dark:text-white">対戦相手別バランス</h2>
+            <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-full text-xs font-bold">
+              <button onClick={() => setView('total')} className={`px-3 py-1 rounded-full ${view === 'total' ? 'bg-white dark:bg-slate-900 text-slate-800 dark:text-white shadow-sm' : 'text-slate-500'}`}>Total</button>
+              <button onClick={() => setView('daily')} className={`px-3 py-1 rounded-full ${view === 'daily' ? 'bg-white dark:bg-slate-900 text-slate-800 dark:text-white shadow-sm' : 'text-slate-500'}`}>Daily</button>
+            </div>
           </div>
           <div className="h-64 bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-100 dark:border-slate-800 shadow-sm">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                <XAxis 
-                  dataKey="name" 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fill: '#94a3b8', fontSize: 12 }} 
-                  dy={10}
-                />
-                <YAxis 
-                  hide 
-                />
+              <BarChart data={chartData} margin={{ top: 20 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(226, 232, 240, 0.5)" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} dy={10} />
+                <YAxis hide />
                 <Tooltip 
-                  cursor={{ fill: 'transparent' }}
-                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                  cursor={{ fill: 'rgba(241, 245, 249, 0.5)' }}
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: 'rgba(255, 255, 255, 0.8)', backdropFilter: 'blur(4px)' }}
                 />
-                <Bar 
-                  dataKey="balance" 
-                  fill="#06b6d4" 
-                  radius={[6, 6, 6, 6]} 
-                  barSize={32}
-                />
+                <Legend wrapperStyle={{ paddingTop: '20px' }}/>
+                {otherPlayers.map((player, index) => (
+                  <Bar key={player} dataKey={player} stackId="a" fill={['#06b6d4', '#ec4899', '#f59e0b'][index % 3]} radius={[0, 0, 0, 0]} />
+                ))}
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -129,14 +144,16 @@ export default function DashboardPage() {
             {recentHistory.map((log) => (
               <div key={log.id} className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
                 <div className="flex items-center space-x-4">
-                  <div className={`w-2 h-12 rounded-full ${log.result === 'win' ? 'bg-cyan-500' : 'bg-slate-300 dark:bg-slate-700'}`}></div>
+                  <div className={`w-12 h-12 rounded-lg flex flex-col items-center justify-center ${log.point > 0 ? 'bg-cyan-50 dark:bg-cyan-900/30' : 'bg-slate-100 dark:bg-slate-800'}`}>
+                    <span className="text-xs font-bold text-slate-400">{log.myRank}位</span>
+                  </div>
                   <div>
-                    <p className="font-bold text-slate-900 dark:text-white">{log.item} x{log.amount}</p>
-                    <p className="text-xs text-slate-400 font-medium">vs {log.opponent} • {log.date}</p>
+                    <p className="font-bold text-slate-900 dark:text-white">{log.players}人対戦</p>
+                    <p className="text-xs text-slate-400 font-medium">{log.date}</p>
                   </div>
                 </div>
-                <div className={`font-black text-lg ${log.result === 'win' ? 'text-cyan-500' : 'text-slate-400'}`}>
-                  {log.result === 'win' ? '+' : '-'}{log.amount}
+                <div className={`font-black text-lg ${log.point > 0 ? 'text-cyan-500' : 'text-slate-400'}`}>
+                  {log.point > 0 ? '+' : ''}{log.point}
                 </div>
               </div>
             ))}

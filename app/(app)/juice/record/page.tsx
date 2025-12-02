@@ -1,28 +1,50 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowLeft, Minus, Plus, Save, Coffee, Beer, Utensils, Zap } from 'lucide-react';
+import { ArrowLeft, Save, GripVertical, Crown } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+const initialPlayers = [
+  { id: 1, name: '自分', rank: 1, points: 2 },
+  { id: 2, name: 'Taro', rank: 2, points: 1 },
+  { id: 3, name: 'Jiro', rank: 3, points: -1 },
+  { id: 4, name: 'Saburo', rank: 4, points: -2 },
+];
+
+const rankSettings = [
+  { rank: 1, points: 2 },
+  { rank: 2, points: 1 },
+  { rank: 3, points: -1 },
+  { rank: 4, points: -2 },
+];
+
 export default function RecordPage() {
   const router = useRouter();
-  const [winner, setWinner] = useState('自分');
-  const [loser, setLoser] = useState('相手');
-  const [item, setItem] = useState('ジュース');
-  const [quantity, setQuantity] = useState(1);
+  const [players, setPlayers] = useState(initialPlayers);
 
-  const presets = [
-    { name: 'ジュース', icon: <Zap className="w-4 h-4" /> },
-    { name: 'コーヒー', icon: <Coffee className="w-4 h-4" /> },
-    { name: 'ランチ', icon: <Utensils className="w-4 h-4" /> },
-    { name: 'ビール', icon: <Beer className="w-4 h-4" /> },
-  ];
+  const handleRankChange = (playerId, newRank) => {
+    const updatedPlayers = players.map(p => {
+      if (p.rank === newRank) {
+        // Swap ranks
+        const originalPlayer = players.find(op => op.id === playerId);
+        return { ...p, rank: originalPlayer.rank };
+      }
+      if (p.id === playerId) {
+        return { ...p, rank: newRank };
+      }
+      return p;
+    }).map(p => {
+      // Update points based on new rank
+      const setting = rankSettings.find(s => s.rank === p.rank);
+      return { ...p, points: setting ? setting.points : 0 };
+    });
+
+    setPlayers(updatedPlayers.sort((a, b) => a.rank - b.rank));
+  };
 
   const handleSave = () => {
-    // Phase 1: Just mock the save and redirect
-    // In Phase 2, we will save to localStorage or DB
-    console.log({ winner, loser, item, quantity });
+    console.log({ players });
     router.push('/juice/dashboard');
   };
 
@@ -33,91 +55,38 @@ export default function RecordPage() {
         <Link href="/juice/dashboard" className="p-2 -ml-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200">
           <ArrowLeft className="w-6 h-6" />
         </Link>
-        <h1 className="ml-2 text-lg font-bold text-slate-800 dark:text-white">記録する</h1>
+        <h1 className="ml-2 text-lg font-bold text-slate-800 dark:text-white">勝敗を記録</h1>
       </header>
 
       <main className="flex-1 p-6 space-y-8 pb-32">
-        {/* Players Section */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between space-x-4">
-            <div className="flex-1 space-y-2">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">WINNER (もらう人)</label>
-              <input
-                type="text"
-                value={winner}
-                onChange={(e) => setWinner(e.target.value)}
-                className="w-full text-lg font-bold p-3 rounded-xl bg-white dark:bg-slate-800 border-2 border-transparent focus:border-cyan-400 focus:outline-none shadow-sm text-slate-900 dark:text-white transition-colors"
-              />
-            </div>
-            <div className="pt-6 text-slate-300 dark:text-slate-700">
-              <ArrowRightIcon />
-            </div>
-            <div className="flex-1 space-y-2">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">LOSER (おごる人)</label>
-              <input
-                type="text"
-                value={loser}
-                onChange={(e) => setLoser(e.target.value)}
-                className="w-full text-lg font-bold p-3 rounded-xl bg-white dark:bg-slate-800 border-2 border-transparent focus:border-red-400 focus:outline-none shadow-sm text-slate-900 dark:text-white transition-colors"
-              />
-            </div>
+        <section>
+          <div className="flex justify-between items-center mb-3">
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Players & Ranks</label>
+            <button className="text-xs font-bold text-cyan-500">Add Player</button>
           </div>
-        </section>
-
-        {/* Item Section */}
-        <section className="space-y-3">
-          <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">WHAT (賭けたもの)</label>
-          <div className="grid grid-cols-2 gap-3">
-            {presets.map((preset) => (
-              <button
-                key={preset.name}
-                onClick={() => setItem(preset.name)}
-                className={`flex items-center justify-center space-x-2 py-3 px-4 rounded-xl font-bold transition-all ${
-                  item === preset.name
-                    ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/30 scale-105'
-                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
-                }`}
-              >
-                {preset.icon}
-                <span>{preset.name}</span>
-              </button>
+          <div className="space-y-3">
+            {players.map((player) => (
+              <PlayerCard key={player.id} player={player} onRankChange={handleRankChange} playerCount={players.length} />
             ))}
           </div>
-          <input
-            type="text"
-            value={item}
-            onChange={(e) => setItem(e.target.value)}
-            placeholder="その他..."
-            className="w-full mt-2 p-3 rounded-xl bg-transparent border-2 border-slate-200 dark:border-slate-800 focus:border-cyan-400 focus:outline-none text-slate-900 dark:text-white placeholder:text-slate-400 font-medium"
-          />
+        </section>
+        
+        <section>
+           <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 block">Point Allocation</label>
+           <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-100 dark:border-slate-800">
+             <div className="space-y-2">
+              {rankSettings.map(setting => (
+                <div key={setting.rank} className="flex justify-between items-center text-sm">
+                  <span className="text-slate-500 dark:text-slate-400 font-medium">{setting.rank}位</span>
+                  <span className={`font-bold ${setting.points > 0 ? 'text-cyan-500' : 'text-slate-400'}`}>
+                    {setting.points > 0 ? '+' : ''}{setting.points} pt
+                  </span>
+                </div>
+              ))}
+             </div>
+           </div>
         </section>
 
-        {/* Quantity Section */}
-        <section className="space-y-4">
-          <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">AMOUNT (数量)</label>
-          <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 flex items-center justify-between">
-            <button
-              onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors active:scale-95"
-            >
-              <Minus className="w-8 h-8" />
-            </button>
-            
-            <div className="flex items-baseline space-x-2">
-              <span className="text-6xl font-black text-slate-900 dark:text-white tracking-tighter">
-                {quantity}
-              </span>
-              <span className="text-xl font-bold text-slate-400">本/個</span>
-            </div>
-
-            <button
-              onClick={() => setQuantity(quantity + 1)}
-              className="w-16 h-16 rounded-full bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center text-cyan-600 dark:text-cyan-400 hover:bg-cyan-200 dark:hover:bg-cyan-900/50 transition-colors active:scale-95"
-            >
-              <Plus className="w-8 h-8" />
-            </button>
-          </div>
-        </section>
       </main>
 
       {/* Floating Save Button */}
@@ -136,11 +105,32 @@ export default function RecordPage() {
   );
 }
 
-function ArrowRightIcon() {
+function PlayerCard({ player, onRankChange, playerCount }) {
+  const rankColor = {
+    1: 'text-amber-400',
+    2: 'text-slate-400',
+    3: 'text-orange-400'
+  }
+
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M5 12h14" />
-      <path d="m12 5 7 7-7 7" />
-    </svg>
-  )
+    <div className="flex items-center bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+      <GripVertical className="w-5 h-5 text-slate-300 dark:text-slate-600 mr-3 cursor-grab active:cursor-grabbing" />
+      <div className="flex-1 flex items-center">
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg ${rankColor[player.rank] || 'text-slate-500'}`}>
+          {player.rank === 1 ? <Crown className="w-6 h-6 text-amber-400" /> : player.rank}
+        </div>
+        <input 
+          type="text"
+          value={player.name}
+          // onChange handler needed here to make it editable
+          className="ml-4 font-bold text-slate-800 dark:text-white bg-transparent focus:outline-none"
+        />
+      </div>
+      <div className="flex items-center space-x-2">
+         <span className={`font-black text-lg ${player.points > 0 ? 'text-cyan-500' : 'text-slate-400'}`}>
+           {player.points > 0 ? '+' : ''}{player.points}
+         </span>
+      </div>
+    </div>
+  );
 }
