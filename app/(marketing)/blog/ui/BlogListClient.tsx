@@ -66,7 +66,7 @@ export default function BlogListClient({ initialItems, initialTotal, initialPage
       setTotal(res.total);
       setPage(1);
     });
-  }, [query, selectedCategory, selectedTag]);
+  }, [query, selectedCategory, selectedTag, pageSize]);
 
   // Fetch on page change
   const goToPage = (p: number) => {

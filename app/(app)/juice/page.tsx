@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Calculator, Trophy, BarChart3, Link2, Crown, Settings2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';

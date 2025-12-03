@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { Loader2, Mail, Github, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -113,7 +112,6 @@ function Meteors() {
 // Signup Page
 // -----------------------------------------------------------------------------
 export default function SignupPage() {
-  const router = useRouter();
   const [isGithubLoading, setIsGithubLoading] = useState(false);
   const [isEmailLoading, setIsEmailLoading] = useState(false);
   const [email, setEmail] = useState("");

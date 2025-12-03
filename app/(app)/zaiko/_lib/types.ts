@@ -1,12 +1,12 @@
-import { ZaikoItem, ZaikoProfile, ZaikoFamily, ZaikoFamilyMember } from '@/lib/generated/prisma';
+import { ZaikoItem, Profile, ZaikoFamily, ZaikoFamilyMember } from '@/lib/generated/prisma';
 
-export type { ZaikoItem, ZaikoProfile, ZaikoFamily, ZaikoFamilyMember };
+export type { ZaikoItem, Profile as ZaikoProfile, ZaikoFamily, ZaikoFamilyMember };
 
 export type ZaikoItemWithFamily = ZaikoItem & {
   family: ZaikoFamily;
 };
 
 export type ZaikoMemberWithProfile = ZaikoFamilyMember & {
-  user: ZaikoProfile;
+  user: Profile;
 };
 

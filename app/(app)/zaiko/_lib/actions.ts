@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
-import { ZaikoItem, ZaikoProfile } from './types';
+import { ZaikoItem } from './types';
 
 // -----------------------------------------------------------------------------
 // User & Auth

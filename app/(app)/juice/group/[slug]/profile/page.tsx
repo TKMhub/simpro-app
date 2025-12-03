@@ -9,7 +9,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const params = useParams<{ slug: string }>();
   const [nickname, setNickname] = useState('自分');
-  const [avatar, setAvatar] = useState(null);
+  const [avatar, setAvatar] = useState<string | null>(null);
 
   const handleSave = () => {
     console.log({ nickname, avatar });
@@ -17,11 +17,13 @@ export default function ProfilePage() {
     router.push(`/juice/group/${params.slug}`);
   };
 
-  const handleAvatarChange = (e) => {
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        setAvatar(event.target.result);
+        if (event.target?.result) {
+          setAvatar(event.target.result as string);
+        }
       };
       reader.readAsDataURL(e.target.files[0]);
     }

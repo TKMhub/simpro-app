@@ -35,7 +35,7 @@ export default function RecordPage() {
   }, [rankSettings, players]);
 
   
-  const handlePointSettingChange = (rank, newPoints) => {
+  const handlePointSettingChange = (rank: number, newPoints: number) => {
     const updatedSettings = rankSettings.map(setting =>
       setting.rank === rank ? { ...setting, points: newPoints } : setting
     );
@@ -110,8 +110,8 @@ export default function RecordPage() {
   );
 }
 
-function PlayerCard({ player }) {
-  const rankColor = {
+function PlayerCard({ player }: { player: { id: number; name: string; rank: number; points: number } }) {
+  const rankColor: Record<number, string> = {
     1: 'text-amber-400',
     2: 'text-slate-400',
     3: 'text-orange-400'

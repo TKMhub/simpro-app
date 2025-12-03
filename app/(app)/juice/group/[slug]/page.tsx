@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { Plus, History, Users, Share2 } from 'lucide-react';
-import Image from 'next/image';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 
 // --- Mock Data ---
