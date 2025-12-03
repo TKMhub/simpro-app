@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { Plus, History, Users, Share2 } from 'lucide-react';
@@ -40,6 +40,15 @@ const dailyBalanceData = [
 export default function GroupPage() {
   const params = useParams<{ slug: string }>();
   const [view, setView] = useState('total'); // 'total' or 'daily'
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
 
   const chartData = view === 'total' ? totalBalanceData : dailyBalanceData;
   const otherPlayers = totalBalanceData.map(p => p.name).filter(name => name !== '自分');
@@ -58,7 +67,7 @@ export default function GroupPage() {
           <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
             Juice<span className="text-cyan-500">.</span>
           </h1>
-          <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Group ID: {params.slug}</p>
+          {/* <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Group ID: {params.slug}</p> */}
         </div>
         <div className="flex items-center space-x-2">
           <button 

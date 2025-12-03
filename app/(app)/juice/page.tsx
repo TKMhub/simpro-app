@@ -9,7 +9,11 @@ export default function JuiceLandingPage() {
 
   const handleStart = () => {
     // UUIDと5桁のランダムな数字（連番の代わり）を生成
-    const uuid = crypto.randomUUID();
+    // crypto.randomUUIDが環境によって使えない場合があるため、簡易的な代替手段を使用
+    const uuid = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function' 
+      ? crypto.randomUUID() 
+      : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
     const randomNumber = Math.floor(10000 + Math.random() * 90000);
     const slug = `${uuid}-${randomNumber}`;
 
