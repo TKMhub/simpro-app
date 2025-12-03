@@ -1,58 +1,56 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, Save, GripVertical, Crown } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 const initialPlayers = [
-  { id: 1, name: '自分', rank: 1, points: 2 },
-  { id: 2, name: 'Taro', rank: 2, points: 1 },
-  { id: 3, name: 'Jiro', rank: 3, points: -1 },
-  { id: 4, name: 'Saburo', rank: 4, points: -2 },
+  { id: 1, name: '自分', rank: 1, points: 0 },
+  { id: 2, name: 'Taro', rank: 2, points: 0 },
+  { id: 3, name: 'Jiro', rank: 3, points: 0 },
+  { id: 4, name: 'Saburo', rank: 4, points: 0 },
 ];
 
-const rankSettings = [
+const initialRankSettings = [
   { rank: 1, points: 2 },
   { rank: 2, points: 1 },
   { rank: 3, points: -1 },
   { rank: 4, points: -2 },
 ];
 
-export default function RecordPage() {
+export default function RecordPage({ params }: { params: { slug: string } }) {
   const router = useRouter();
   const [players, setPlayers] = useState(initialPlayers);
+  const [rankSettings, setRankSettings] = useState(initialRankSettings);
 
-  const handleRankChange = (playerId, newRank) => {
-    const updatedPlayers = players.map(p => {
-      if (p.rank === newRank) {
-        // Swap ranks
-        const originalPlayer = players.find(op => op.id === playerId);
-        return { ...p, rank: originalPlayer.rank };
-      }
-      if (p.id === playerId) {
-        return { ...p, rank: newRank };
-      }
-      return p;
-    }).map(p => {
-      // Update points based on new rank
-      const setting = rankSettings.find(s => s.rank === p.rank);
-      return { ...p, points: setting ? setting.points : 0 };
+  useEffect(() => {
+    // Recalculate points whenever rankSettings change
+    const updatedPlayers = players.map(player => {
+      const setting = rankSettings.find(s => s.rank === player.rank);
+      return { ...player, points: setting ? setting.points : 0 };
     });
+    setPlayers(updatedPlayers);
+  }, [rankSettings, players]);
 
-    setPlayers(updatedPlayers.sort((a, b) => a.rank - b.rank));
+  
+  const handlePointSettingChange = (rank, newPoints) => {
+    const updatedSettings = rankSettings.map(setting =>
+      setting.rank === rank ? { ...setting, points: newPoints } : setting
+    );
+    setRankSettings(updatedSettings);
   };
 
   const handleSave = () => {
-    console.log({ players });
-    router.push('/juice/dashboard');
+    console.log({ players, rankSettings });
+    router.push(`/juice/group/${params.slug}`);
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Header */}
       <header className="flex items-center px-4 py-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10">
-        <Link href="/juice/dashboard" className="p-2 -ml-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200">
+        <Link href={`/juice/group/${params.slug}`} className="p-2 -ml-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200">
           <ArrowLeft className="w-6 h-6" />
         </Link>
         <h1 className="ml-2 text-lg font-bold text-slate-800 dark:text-white">勝敗を記録</h1>
@@ -66,7 +64,7 @@ export default function RecordPage() {
           </div>
           <div className="space-y-3">
             {players.map((player) => (
-              <PlayerCard key={player.id} player={player} onRankChange={handleRankChange} playerCount={players.length} />
+              <PlayerCard key={player.id} player={player} />
             ))}
           </div>
         </section>
@@ -78,9 +76,15 @@ export default function RecordPage() {
               {rankSettings.map(setting => (
                 <div key={setting.rank} className="flex justify-between items-center text-sm">
                   <span className="text-slate-500 dark:text-slate-400 font-medium">{setting.rank}位</span>
-                  <span className={`font-bold ${setting.points > 0 ? 'text-cyan-500' : 'text-slate-400'}`}>
-                    {setting.points > 0 ? '+' : ''}{setting.points} pt
-                  </span>
+                  <div className="flex items-center">
+                    <input
+                      type="number"
+                      value={setting.points}
+                      onChange={(e) => handlePointSettingChange(setting.rank, parseInt(e.target.value, 10) || 0)}
+                      className="w-16 text-right font-bold bg-slate-100 dark:bg-slate-800 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-slate-800 dark:text-white"
+                    />
+                    <span className="font-bold w-6 text-right pr-1">pt</span>
+                  </div>
                 </div>
               ))}
              </div>
@@ -105,7 +109,7 @@ export default function RecordPage() {
   );
 }
 
-function PlayerCard({ player, onRankChange, playerCount }) {
+function PlayerCard({ player }) {
   const rankColor = {
     1: 'text-amber-400',
     2: 'text-slate-400',
@@ -122,7 +126,7 @@ function PlayerCard({ player, onRankChange, playerCount }) {
         <input 
           type="text"
           value={player.name}
-          // onChange handler needed here to make it editable
+          readOnly // For now, the name is not editable in this component
           className="ml-4 font-bold text-slate-800 dark:text-white bg-transparent focus:outline-none"
         />
       </div>

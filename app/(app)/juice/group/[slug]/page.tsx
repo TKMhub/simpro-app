@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Plus, History, User, Users, Share2 } from 'lucide-react';
+import { Plus, History, Users, Share2 } from 'lucide-react';
+import Image from 'next/image';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 
 // --- Mock Data ---
@@ -36,11 +37,17 @@ const dailyBalanceData = [
 // --- End Mock Data ---
 
 
-export default function DashboardPage() {
+export default function GroupPage({ params }: { params: { slug: string } }) {
   const [view, setView] = useState('total'); // 'total' or 'daily'
 
   const chartData = view === 'total' ? totalBalanceData : dailyBalanceData;
   const otherPlayers = totalBalanceData.map(p => p.name).filter(name => name !== '自分');
+
+  const handleShare = () => {
+    // In a real app, this would copy the URL to the clipboard
+    // For example: navigator.clipboard.writeText(window.location.href);
+    alert('Group URL copied to clipboard! (mock)');
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950 pb-24">
@@ -50,15 +57,22 @@ export default function DashboardPage() {
           <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
             Juice<span className="text-cyan-500">.</span>
           </h1>
-          <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Dashboard</p>
+          <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Group ID: {params.slug}</p>
         </div>
         <div className="flex items-center space-x-2">
-          <button className="flex items-center space-x-2 text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-3 py-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+          <button 
+            onClick={handleShare}
+            className="flex items-center space-x-2 text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-3 py-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+          >
             <Share2 className="w-4 h-4" />
             <span>Share</span>
           </button>
-          <button className="text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white px-3 py-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-            Login / Sign Up
+          <button className="flex items-center space-x-2 text-sm font-bold bg-white dark:bg-slate-900 pr-3 pl-2 py-1 rounded-full border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+            <div className="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
+              {/* In a real app, this would be an Image component with the user's avatar */}
+              <span className="text-xs">👤</span>
+            </div>
+            <span className="text-slate-800 dark:text-white">自分</span>
           </button>
         </div>
       </header>
@@ -164,7 +178,7 @@ export default function DashboardPage() {
       {/* FAB */}
       <div className="fixed bottom-6 right-6">
         <Link 
-          href="/juice/record" 
+          href={`/juice/group/${params.slug}/record`}
           className="w-16 h-16 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full shadow-xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-200"
         >
           <Plus className="w-8 h-8" />

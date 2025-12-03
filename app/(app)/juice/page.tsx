@@ -46,7 +46,7 @@ export default function JuiceLandingPage() {
 
           <div className="mt-10">
             <Link 
-              href="/juice/dashboard" 
+              href="/juice/group/a1b2c3d4" 
               className="group inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full shadow-lg hover:shadow-cyan-500/50 hover:scale-105 active:scale-95 ring-offset-2 focus:ring-2 ring-cyan-400"
             >
               今すぐ始める
