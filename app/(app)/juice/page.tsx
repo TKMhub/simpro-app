@@ -3,8 +3,20 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Calculator, Trophy, BarChart3, Link2, Crown, Settings2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function JuiceLandingPage() {
+  const router = useRouter();
+
+  const handleStart = () => {
+    // UUIDと5桁のランダムな数字（連番の代わり）を生成
+    const uuid = crypto.randomUUID();
+    const randomNumber = Math.floor(10000 + Math.random() * 90000);
+    const slug = `${uuid}-${randomNumber}`;
+
+    router.push(`/juice/group/${slug}`);
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Hero Section */}
@@ -45,13 +57,13 @@ export default function JuiceLandingPage() {
           </div>
 
           <div className="mt-10">
-            <Link 
-              href="/juice/group/a1b2c3d4" 
+            <button 
+              onClick={handleStart}
               className="group inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full shadow-lg hover:shadow-cyan-500/50 hover:scale-105 active:scale-95 ring-offset-2 focus:ring-2 ring-cyan-400"
             >
               今すぐ始める
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            </button>
             <p className="mt-4 text-xs text-slate-400">ログイン不要・完全無料</p>
           </div>
         </div>

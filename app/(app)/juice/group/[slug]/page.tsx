@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { Plus, History, Users, Share2 } from 'lucide-react';
 import Image from 'next/image';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
@@ -37,7 +38,8 @@ const dailyBalanceData = [
 // --- End Mock Data ---
 
 
-export default function GroupPage({ params }: { params: { slug: string } }) {
+export default function GroupPage() {
+  const params = useParams<{ slug: string }>();
   const [view, setView] = useState('total'); // 'total' or 'daily'
 
   const chartData = view === 'total' ? totalBalanceData : dailyBalanceData;
@@ -67,13 +69,13 @@ export default function GroupPage({ params }: { params: { slug: string } }) {
             <Share2 className="w-4 h-4" />
             <span>Share</span>
           </button>
-          <button className="flex items-center space-x-2 text-sm font-bold bg-white dark:bg-slate-900 pr-3 pl-2 py-1 rounded-full border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+          <Link href={`/juice/group/${params.slug}/profile`} className="flex items-center space-x-2 text-sm font-bold bg-white dark:bg-slate-900 pr-3 pl-2 py-1 rounded-full border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
             <div className="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
               {/* In a real app, this would be an Image component with the user's avatar */}
               <span className="text-xs">👤</span>
             </div>
             <span className="text-slate-800 dark:text-white">自分</span>
-          </button>
+          </Link>
         </div>
       </header>
 

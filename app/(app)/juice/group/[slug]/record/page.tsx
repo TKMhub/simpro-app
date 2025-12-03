@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Save, GripVertical, Crown } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 
 const initialPlayers = [
   { id: 1, name: '自分', rank: 1, points: 0 },
@@ -19,8 +19,9 @@ const initialRankSettings = [
   { rank: 4, points: -2 },
 ];
 
-export default function RecordPage({ params }: { params: { slug: string } }) {
+export default function RecordPage() {
   const router = useRouter();
+  const params = useParams<{ slug: string }>();
   const [players, setPlayers] = useState(initialPlayers);
   const [rankSettings, setRankSettings] = useState(initialRankSettings);
 
