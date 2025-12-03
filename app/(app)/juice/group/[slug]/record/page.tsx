@@ -27,12 +27,14 @@ export default function RecordPage() {
 
   useEffect(() => {
     // Recalculate points whenever rankSettings change
-    const updatedPlayers = players.map(player => {
-      const setting = rankSettings.find(s => s.rank === player.rank);
-      return { ...player, points: setting ? setting.points : 0 };
+    setPlayers(prevPlayers => {
+      const updatedPlayers = prevPlayers.map(player => {
+        const setting = rankSettings.find(s => s.rank === player.rank);
+        return { ...player, points: setting ? setting.points : 0 };
+      });
+      return updatedPlayers;
     });
-    setPlayers(updatedPlayers);
-  }, [rankSettings, players]);
+  }, [rankSettings]);
 
   
   const handlePointSettingChange = (rank: number, newPoints: number) => {
