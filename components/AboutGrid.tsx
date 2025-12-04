@@ -35,7 +35,7 @@ export default function AboutGrid() {
       title: "趣味",
       description:
         "個人開発（Simpro）や犬、NARUTOフィギュア、ロゴ・イラスト制作など。",
-      image: { src: "/Simplo_gray_main_sub.jpg", alt: "Simpro ロゴ" },
+      image: { src: "/Simplo_gray_main_sub.svg", alt: "Simpro ロゴ" },
       imageFit: "contain" as const,
       cta: { label: "趣味", href: "/about#hobby" },
     },

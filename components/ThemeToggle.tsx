@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Moon, Sun } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 function setHtmlDarkClass(enabled: boolean) {
   const root = document.documentElement;
@@ -13,6 +15,7 @@ export default function ThemeToggle() {
 
   useEffect(() => {
     // Initialize from cookie, then localStorage (matches server and no-flash script)
+    // System preference is intentionally ignored as per requirements
     let initial = false;
     try {
       if (typeof document !== "undefined") {
@@ -44,33 +47,32 @@ export default function ThemeToggle() {
 
   if (isDark === null) {
     return (
-      <button
-        aria-label="Toggle theme"
-        className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-[var(--border)] bg-transparent text-[var(--foreground)]/70"
+      <Button
+        variant="ghost"
+        size="icon"
         disabled
-      />
+        className="w-9 h-9"
+      >
+        <span className="sr-only">Loading theme</span>
+      </Button>
     );
   }
 
   return (
-    <button
+    <Button
+      variant="ghost"
+      size="icon"
       onClick={() => setIsDark((v) => !v)}
       aria-label="Toggle theme"
       title={isDark ? "Switch to light" : "Switch to dark"}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-[var(--border)] bg-transparent text-[var(--foreground)]/80 hover:text-[var(--foreground)] hover:bg-[var(--hover-surface)] transition-colors"
+      className="w-9 h-9 transition-colors"
     >
       {isDark ? (
-        // Sun icon
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
-          <path d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z"/>
-          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-        </svg>
+        <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
       ) : (
-        // Moon icon
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z" />
-        </svg>
+        <Moon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
       )}
-    </button>
+      <span className="sr-only">Toggle theme</span>
+    </Button>
   );
 }
