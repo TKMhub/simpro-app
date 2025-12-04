@@ -102,6 +102,10 @@ model Profile {
   // Relations (Zaiko)
   zaikoCreatedFamilies ZaikoFamily[] @relation("CreatedFamilies")
   zaikoMemberships     ZaikoFamilyMember[]
+
+  // Relations (Juice)
+  juiceCreatedProjects JuiceProject[]
+  juiceMemberships     JuiceMember[]
   
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -171,4 +175,74 @@ model ZaikoItem {
   
   @@index([familyId])
   @@map("zaiko_items")
+}
+
+// -----------------------------------------------------------------------------
+// Juice Schema
+// -----------------------------------------------------------------------------
+
+model JuiceProject {
+  id          String        @id @default(uuid())
+  slug        String        @unique
+  name        String        @default("New Group")
+  
+  ownerId     String
+  owner       Profile       @relation(fields: [ownerId], references: [id])
+  
+  members     JuiceMember[]
+  matches     JuiceMatch[]
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("juice_projects")
+}
+
+model JuiceMember {
+  id          String        @id @default(uuid())
+  projectId   String
+  project     JuiceProject  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  // Link to global profile if registered user
+  userId      String?
+  user        Profile?      @relation(fields: [userId], references: [id])
+
+  // Local profile for this group (or fallback if no user)
+  name        String
+  avatarUrl   String?
+  
+  matchResults JuiceMatchResult[]
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@unique([projectId, userId])
+  @@map("juice_members")
+}
+
+model JuiceMatch {
+  id          String             @id @default(uuid())
+  projectId   String
+  project     JuiceProject       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  results     JuiceMatchResult[]
+  
+  playedAt    DateTime           @default(now())
+  createdAt   DateTime           @default(now())
+
+  @@map("juice_matches")
+}
+
+model JuiceMatchResult {
+  id        String      @id @default(uuid())
+  matchId   String
+  match     JuiceMatch  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  
+  memberId  String
+  member    JuiceMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  
+  rank      Int
+  points    Int
+  
+  @@map("juice_match_results")
 }
