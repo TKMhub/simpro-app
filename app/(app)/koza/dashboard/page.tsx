@@ -1,18 +1,28 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { ArrowUpRight, TrendingUp, Wallet, Landmark } from "lucide-react";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend } from 'recharts';
+import { ArrowUpRight, TrendingUp, Wallet, Landmark, ArrowDownRight } from "lucide-react";
 
-// Mock Data
+// Mock Data (Assets)
 const trendData = [
   { month: '2023-10', amount: 1200 },
   { month: '2023-11', amount: 1250 },
-  { month: '2023-12', amount: 1400 }, // Bonus
+  { month: '2023-12', amount: 1400 },
   { month: '2024-01', amount: 1380 },
   { month: '2024-02', amount: 1420 },
   { month: '2024-03', amount: 1450 },
   { month: '2024-04', amount: 1540 },
+];
+
+// Mock Data (Income/Expense)
+const balanceData = [
+  { month: '10月', income: 45, expense: 30, balance: 15 },
+  { month: '11月', income: 45, expense: 35, balance: 10 },
+  { month: '12月', income: 90, expense: 50, balance: 40 }, // Bonus
+  { month: '1月', income: 45, expense: 45, balance: 0 },
+  { month: '2月', income: 45, expense: 32, balance: 13 },
+  { month: '3月', income: 45, expense: 38, balance: 7 },
 ];
 
 const allocationData = [
@@ -24,14 +34,14 @@ const allocationData = [
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-10 pb-20">
       <div>
         <h1 className="text-3xl font-bold text-emerald-950 font-serif">Dashboard</h1>
         <p className="text-stone-500 mt-2">資産状況の概要と推移</p>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
         <Card className="bg-white border-emerald-100 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-stone-500">総資産</CardTitle>
@@ -71,16 +81,18 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Trend Chart */}
-        <Card className="col-span-2 border-emerald-100 shadow-sm">
+      {/* Main Charts Area */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {/* Trend Chart (Asset Growth) */}
+        <Card className="col-span-1 lg:col-span-2 border-emerald-100 shadow-sm">
           <CardHeader>
             <CardTitle className="text-emerald-900">資産推移</CardTitle>
             <CardDescription>過去6ヶ月間の総資産推移 (単位: 万円)</CardDescription>
           </CardHeader>
           <CardContent className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={trendData}>
+              <AreaChart data={trendData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#10b981" stopOpacity={0.2}/>
@@ -117,21 +129,21 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Allocation Chart */}
+        {/* Allocation Chart (Portfolio) */}
         <Card className="col-span-1 border-emerald-100 shadow-sm">
           <CardHeader>
             <CardTitle className="text-emerald-900">ポートフォリオ</CardTitle>
             <CardDescription>資産種別内訳</CardDescription>
           </CardHeader>
-          <CardContent className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
+          <CardContent className="h-[300px] flex flex-col justify-center">
+            <ResponsiveContainer width="100%" height={200}>
               <PieChart>
                 <Pie
                   data={allocationData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
+                  innerRadius={50}
+                  outerRadius={70}
                   paddingAngle={5}
                   dataKey="value"
                 >
@@ -156,7 +168,31 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Income/Expense Analysis */}
+      <Card className="border-emerald-100 shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-emerald-900">月次収支推移</CardTitle>
+          <CardDescription>収入・支出・収支差額の推移 (単位: 万円)</CardDescription>
+        </CardHeader>
+        <CardContent className="h-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={balanceData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="month" axisLine={false} tickLine={false} />
+              <YAxis axisLine={false} tickLine={false} />
+              <Tooltip 
+                cursor={{fill: 'transparent'}}
+                contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #e5e7eb' }}
+              />
+              <Legend iconType="circle" />
+              <Bar dataKey="income" name="収入" fill="#059669" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="expense" name="支出" fill="#ef4444" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="balance" name="収支差" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
     </div>
   );
 }
-

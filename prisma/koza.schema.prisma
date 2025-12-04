@@ -14,8 +14,9 @@ model Account {
   id        String   @id @default(cuid())
   name      String
   type      AccountType
-  ownerId   String
-  owner     User     @relation(fields: [ownerId], references: [id])
+  ownerId   String?
+  ownerName String?  // 任意の所有者名（夫、妻、長男など）
+  owner     User?    @relation(fields: [ownerId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   balances  Balance[]
@@ -43,3 +44,14 @@ model Balance {
   @@unique([accountId, year, month])
 }
 
+model Income {
+  id        String   @id @default(cuid())
+  year      Int
+  month     Int
+  category  String   // 給与、賞与、その他
+  amount    Float
+  ownerName String?  // 誰の収入か
+  memo      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
