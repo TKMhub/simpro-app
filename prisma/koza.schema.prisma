@@ -1,0 +1,45 @@
+// This is a specific schema file for the "Koza" module.
+// In a real usage, these models should be merged into the main prisma/schema.prisma
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  role      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  accounts  Account[]
+}
+
+model Account {
+  id        String   @id @default(cuid())
+  name      String
+  type      AccountType
+  ownerId   String
+  owner     User     @relation(fields: [ownerId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  balances  Balance[]
+}
+
+enum AccountType {
+  BANK
+  SECURITIES
+  IDECO
+  GOLD
+  GOODS
+}
+
+model Balance {
+  id         String   @id @default(cuid())
+  accountId  String
+  account    Account  @relation(fields: [accountId], references: [id])
+  year       Int
+  month      Int
+  amount     Float
+  memo       String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([accountId, year, month])
+}
+
