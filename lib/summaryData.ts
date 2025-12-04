@@ -3,13 +3,17 @@ export type Section = {
   label: string;
 };
 
+export type ProductCategory = "app" | "template" | "tool" | "other";
+
 export type SummaryItem = {
   id: string;
   section: Section["id"];
+  category?: ProductCategory; // For product section
   title: string;
   description?: string;
   cta?: { label: string; href: string };
   image?: { src: string; alt?: string };
+  imageFit?: "contain" | "cover";
   tags?: string[];
 };
 
@@ -22,12 +26,38 @@ export type SummaryData = {
 export async function fetchSummaryData(): Promise<SummaryData> {
   const sections: Section[] = [
     { id: "about", label: "about" },
-    { id: "blog", label: "blog" },
     { id: "product", label: "product" },
+    { id: "blog", label: "blog" },
     { id: "link", label: "link" },
   ];
 
   const items: SummaryItem[] = [];
+
+  // 0) Product - Apps
+  items.push(
+    {
+      id: "app-juice",
+      section: "product",
+      category: "app",
+      title: "Juice",
+      description: "勝負の行方は、ジュースが決める。ライバルとの勝負を記録して、勝ち越し状況を可視化するアプリ。",
+      cta: { label: "アプリを開く", href: "/juice" },
+      image: { src: "/juice-logo.svg", alt: "Juice Logo" },
+      imageFit: "contain",
+      tags: ["App", "Utility"],
+    },
+    {
+      id: "app-zaiko",
+      section: "product",
+      category: "app",
+      title: "Zaiko",
+      description: "在庫管理のストレスをゼロに。家の在庫状況が一目瞭然、家族で共有できる在庫管理アプリ。",
+      cta: { label: "アプリを開く", href: "/zaiko" },
+      image: { src: "/zaiko-logo.svg", alt: "Zaiko Logo" },
+      imageFit: "contain",
+      tags: ["App", "Lifestyle"],
+    }
+  );
 
   // 1) Blog (from Supabase via Prisma)
   try {
@@ -57,6 +87,7 @@ export async function fetchSummaryData(): Promise<SummaryData> {
       items.push({
         id: `product-${p.id}`,
         section: "product",
+        category: "template", // Default to template for now, logic can be refined
         title: p.title,
         description: p.description || undefined,
         cta: { label: p.actionType === "download" ? "ダウンロード" : "詳しく", href: p.contentLink ?? `/product/${p.slug}` },
