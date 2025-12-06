@@ -2,8 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { aboutData } from "@/lib/about/data";
 
 export default function AboutGrid() {
@@ -47,17 +45,17 @@ export default function AboutGrid() {
         {items.map((item) => (
           <div key={item.id} className="group relative h-full flex flex-col overflow-hidden rounded-2xl bg-white/60 dark:bg-slate-950/60 backdrop-blur-md border border-slate-200/60 dark:border-slate-800/60 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-slate-300/80 dark:hover:border-slate-700/80 hover:-translate-y-1">
             <div className="relative w-full aspect-[2/1] bg-slate-50/50 dark:bg-slate-900/50 overflow-hidden border-b border-slate-100/50 dark:border-slate-800/50">
-                {item.image?.src && (
-                  <Image
-                    src={item.image.src}
-                    alt={item.image.alt ?? item.title}
-                    fill
+            {item.image?.src && (
+                      <Image
+                        src={item.image.src}
+                        alt={item.image.alt ?? item.title}
+                        fill
                     className="object-contain p-8 transition-transform duration-500 group-hover:scale-105"
-                    priority={false}
-                    unoptimized={item.image.src.toLowerCase().endsWith('.svg')}
-                  />
+                        priority={false}
+                        unoptimized={item.image.src.toLowerCase().endsWith('.svg')}
+                      />
                 )}
-            </div>
+                    </div>
             <div className="flex flex-col flex-1 p-5">
               <div className="flex-1 space-y-3">
                 <h3 className="font-bold text-lg leading-tight text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">
@@ -70,7 +68,7 @@ export default function AboutGrid() {
                 )}
               </div>
               <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800/50 flex items-center justify-end">
-                {item.cta?.href && (
+              {item.cta?.href && (
                   <Link 
                     href={item.cta.href} 
                     className="inline-flex items-center text-sm font-semibold text-blue-600/90 dark:text-blue-400/90 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
@@ -81,7 +79,7 @@ export default function AboutGrid() {
                       <polyline points="12 5 19 12 12 19"></polyline>
                     </svg>
                   </Link>
-                )}
+              )}
               </div>
             </div>
           </div>
