@@ -185,8 +185,8 @@ model JuiceProject {
   slug        String        @unique
   name        String        @default("New Group")
   
-  ownerId     String
-  owner       Profile       @relation(fields: [ownerId], references: [id])
+  ownerId     String?
+  owner       Profile?       @relation(fields: [ownerId], references: [id])
   
   members     JuiceMember[]
   matches     JuiceMatch[]

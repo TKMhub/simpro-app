@@ -64,30 +64,40 @@ export async function getJuiceProject(slug: string): Promise<JuiceProjectData | 
     return project;
   }
 
-  // If not found, create one (Auto-creation logic for simplicity)
-  // For production, we might want to require an authenticated user to be the owner.
-  // Here, we try to use the current user as owner if logged in, otherwise fail or use a system user.
-  
+  // If not found, create one
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
-    // If no user, we can't create a project because ownerId is required by schema.
-    // For now, return null to indicate not found.
-    return null;
-  }
+  let ownerId: string | undefined = undefined;
+  const membersCreate = [];
 
-  // Ensure Profile exists for the user
-  let profile = await prisma.profile.findUnique({ where: { id: user.id } });
-  if (!profile) {
-    // Should exist if auth is working, but just in case
-    profile = await prisma.profile.create({
-      data: {
-        id: user.id,
-        email: user.email!,
-        displayName: user.user_metadata.full_name || 'User',
-      }
+  if (user) {
+    ownerId = user.id;
+    // Ensure Profile exists for the user
+    let profile = await prisma.profile.findUnique({ where: { id: user.id } });
+    if (!profile) {
+      profile = await prisma.profile.create({
+        data: {
+          id: user.id,
+          email: user.email!,
+          displayName: user.user_metadata.full_name || 'User',
+        }
+      });
+    }
+    
+    membersCreate.push({
+       userId: user.id,
+       name: profile.displayName || 'Me',
+       avatarUrl: profile.avatarUrl,
     });
+  } else {
+      // 未ログインの場合、作成者をゲストメンバーとして追加
+      // NOTE: このメンバーとクライアントを紐付ける仕組みが別途必要だが、
+      // ここではとりあえずプロジェクト作成を優先する。
+      membersCreate.push({
+          name: 'Owner (You)',
+          // userId is null
+      });
   }
 
   try {
@@ -95,13 +105,9 @@ export async function getJuiceProject(slug: string): Promise<JuiceProjectData | 
       data: {
         slug,
         name: `${slug}'s Group`,
-        ownerId: user.id,
+        ownerId: ownerId ?? null,
         members: {
-          create: {
-             userId: user.id,
-             name: profile.displayName || 'Me',
-             avatarUrl: profile.avatarUrl,
-          }
+          create: membersCreate
         }
       },
       include: {
@@ -127,7 +133,9 @@ export async function addMember(projectId: string, name: string) {
         name,
       },
     });
-    revalidatePath('/juice/group/[slug]'); // We don't have slug here easily, need to pass or invalidate broad
+    // We can't easily revalidate specific path without slug, 
+    // but usually this is called from a client component that can refresh.
+    // Or we should pass slug to this action.
     return { success: true, member };
   } catch (error) {
     console.error('Failed to add member:', error);
@@ -275,4 +283,3 @@ export async function joinAsCurrentUser(projectId: string, slug: string) {
      return { success: false, error };
   }
 }
-
