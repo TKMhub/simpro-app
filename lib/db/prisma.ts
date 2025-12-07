@@ -1,15 +1,26 @@
 import { PrismaClient } from "@/lib/generated/prisma";
+import { PrismaPg } from "@prisma/adapter-pg";
+import pkg from "pg";
 
-// Reuse Prisma client in dev to avoid exhausting connection limits
-const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
+const { Pool } = pkg;
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
+const adapter = new PrismaPg(pool);
 
 export const prisma =
-  globalForPrisma.prisma ?? new PrismaClient({ 
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    adapter,
     log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
-    datasourceUrl: process.env.DATABASE_URL,
   });
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
 }
-
