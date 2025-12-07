@@ -32,9 +32,12 @@ function loadEnv() {
 loadEnv();
 
 export default defineConfig({
-  schema: "prisma/schema.prisma",
+  // Prisma スキーマファイルの場所
+  schema: 'prisma/schema.prisma',
+
+  // datasource 設定（必須）
   datasource: {
-    url: process.env.DATABASE_URL,
-    directUrl: process.env.DIRECT_URL,
+    url: process.env.DATABASE_URL!,
+    shadowDatabaseUrl: process.env.SHADOW_DATABASE_URL!,
   },
-});
+})
