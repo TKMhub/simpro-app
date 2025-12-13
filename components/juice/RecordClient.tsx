@@ -1,11 +1,22 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Save, GripVertical, Crown, Plus } from 'lucide-react';
+import { ArrowLeft, Save, GripVertical, Crown, Plus, Pencil } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { JuiceProjectData, addMember, recordMatch } from '@/lib/juice/actions';
+import { JuiceProjectData, addMember, recordMatch, updateMemberProfile } from '@/lib/juice/actions';
 import { toast } from 'sonner';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 // Re-using the types from the action or defining local ones for UI state
 type PlayerUI = {
@@ -45,15 +56,33 @@ export default function RecordClient({ project }: Props) {
 
   const [rankSettings, setRankSettings] = useState(initialRankSettings);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Game title state
+  const [gameTitle, setGameTitle] = useState('');
+
+  // New member dialog state
+  const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
+  const [newMemberName, setNewMemberName] = useState('');
+  const [isAddingMember, setIsAddingMember] = useState(false);
+
+  // Edit member dialog state
+  const [isEditMemberOpen, setIsEditMemberOpen] = useState(false);
+  const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
+  const [editingMemberName, setEditingMemberName] = useState('');
+  const [isUpdatingMember, setIsUpdatingMember] = useState(false);
 
   useEffect(() => {
     // Initial setup: Take up to 4 members
-    const initial = project.members.slice(0, 4).map((m, index) => ({
-      id: m.id,
-      name: m.name,
-      rank: index + 1,
-      points: 0, // Will be calculated
-    }));
+    const initial = project.members.slice(0, 4).map((m, index) => {
+      const rank = index + 1;
+      const setting = initialRankSettings.find(s => s.rank === rank);
+      return {
+        id: m.id,
+        name: m.name,
+        rank,
+        points: setting ? setting.points : 0, // Initial calculation
+      };
+    });
     setActivePlayers(initial);
   }, [project.members]);
 
@@ -95,26 +124,82 @@ export default function RecordClient({ project }: Props) {
     setActivePlayers(newPlayers);
   };
 
-  const handleAddMember = async () => {
-    const name = prompt('新しいメンバーの名前を入力してください');
-    if (!name) return;
+  const handleSubmitNewMember = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMemberName.trim()) return;
+    
+    setIsAddingMember(true);
+    try {
+      // Call server action to add member
+      const res = await addMember(project.id, newMemberName);
+      
+      if (res.success && res.member) {
+        toast.success(`${newMemberName}を追加しました`);
+        // Add to active players
+        setActivePlayers(prev => {
+          const newRank = prev.length + 1;
+          // Use current rankSettings state, fallback to initial if not found (though rankSettings should be up to date)
+          // We can't easily access the latest state in this callback unless we use a functional update that reads it, 
+          // but rankSettings is a separate state.
+          // However, since rankSettings is in the closure of this function (which is recreated on render), 
+          // it might be slightly stale if handleSubmitNewMember isn't recreated.
+          // But handleSubmitNewMember is not wrapped in useCallback, so it should have the latest rankSettings.
+          
+          const setting = rankSettings.find(s => s.rank === newRank);
+          
+          return [
+            ...prev,
+            {
+              id: res.member!.id,
+              name: res.member!.name,
+              rank: newRank,
+              points: setting ? setting.points : 0 
+            }
+          ];
+        });
+        setNewMemberName('');
+        setIsAddMemberOpen(false);
+      } else {
+        toast.error('メンバー追加に失敗しました');
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('エラーが発生しました');
+    } finally {
+      setIsAddingMember(false);
+    }
+  };
 
-    // Call server action to add member
-    const res = await addMember(project.id, name);
-    if (res.success && res.member) {
-      toast.success(`${name}を追加しました`);
-      // Add to active players
-      setActivePlayers(prev => [
-        ...prev,
-        {
-          id: res.member!.id,
-          name: res.member!.name,
-          rank: prev.length + 1,
-          points: 0 // Will be calc'd by effect
+  const openEditMemberDialog = (id: string, currentName: string) => {
+    setEditingMemberId(id);
+    setEditingMemberName(currentName);
+    setIsEditMemberOpen(true);
+  };
+
+  const handleUpdateMemberName = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingMemberName.trim() || !editingMemberId) return;
+
+    setIsUpdatingMember(true);
+    try {
+        const res = await updateMemberProfile(editingMemberId, project.slug, editingMemberName, null);
+        if (res.success) {
+            toast.success('名前を変更しました');
+            
+            // Update local state
+            setActivePlayers(prev => prev.map(p => 
+                p.id === editingMemberId ? { ...p, name: editingMemberName } : p
+            ));
+            
+            setIsEditMemberOpen(false);
+        } else {
+            toast.error('名前の変更に失敗しました');
         }
-      ]);
-    } else {
-      toast.error('メンバー追加に失敗しました');
+    } catch (error) {
+        console.error(error);
+        toast.error('エラーが発生しました');
+    } finally {
+        setIsUpdatingMember(false);
     }
   };
 
@@ -123,13 +208,16 @@ export default function RecordClient({ project }: Props) {
     const member = project.members.find(m => m.id === memberId);
     if (!member) return;
     
+    const newRank = activePlayers.length + 1;
+    const setting = rankSettings.find(s => s.rank === newRank);
+
     setActivePlayers(prev => [
       ...prev,
       {
         id: member.id,
         name: member.name,
-        rank: prev.length + 1,
-        points: 0
+        rank: newRank,
+        points: setting ? setting.points : 0
       }
     ]);
   };
@@ -145,7 +233,7 @@ export default function RecordClient({ project }: Props) {
         points: p.points,
       }));
 
-      const res = await recordMatch(project.id, project.slug, new Date(), results);
+      const res = await recordMatch(project.id, project.slug, new Date(), results, gameTitle);
       
       if (res.success) {
         toast.success('記録しました！');
@@ -176,13 +264,48 @@ export default function RecordClient({ project }: Props) {
 
       <main className="flex-1 p-6 space-y-8 pb-32">
         <section>
+          <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Game Title</label>
+          <Input
+            value={gameTitle}
+            onChange={(e) => setGameTitle(e.target.value)}
+            placeholder="ゲーム名 (例: マリオカート、サッカー)"
+            className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800"
+          />
+        </section>
+
+        <section>
           <div className="flex justify-between items-center mb-3">
             <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Players & Ranks</label>
             <div className="flex gap-2">
-                 {/* Only show "Add New" if simpler. Or maybe a dropdown for existing. */}
-                 <button onClick={handleAddMember} className="text-xs font-bold text-cyan-500 flex items-center gap-1">
-                    <Plus className="w-3 h-3" /> 新規追加
-                 </button>
+                 <Dialog open={isAddMemberOpen} onOpenChange={setIsAddMemberOpen}>
+                   <DialogTrigger asChild>
+                     <button className="text-xs font-bold text-cyan-500 flex items-center gap-1">
+                        <Plus className="w-3 h-3" /> 新規追加
+                     </button>
+                   </DialogTrigger>
+                   <DialogContent className="sm:max-w-[425px]">
+                     <DialogHeader>
+                       <DialogTitle>新規メンバー追加</DialogTitle>
+                     </DialogHeader>
+                     <form onSubmit={handleSubmitNewMember} className="grid gap-4 py-4">
+                       <div className="grid gap-2">
+                         <Label htmlFor="name">名前</Label>
+                         <Input
+                           id="name"
+                           value={newMemberName}
+                           onChange={(e) => setNewMemberName(e.target.value)}
+                           placeholder="メンバー名を入力..."
+                           autoFocus
+                         />
+                       </div>
+                       <DialogFooter>
+                         <Button type="submit" disabled={isAddingMember || !newMemberName.trim()}>
+                           {isAddingMember ? '追加中...' : '追加'}
+                         </Button>
+                       </DialogFooter>
+                     </form>
+                   </DialogContent>
+                 </Dialog>
             </div>
           </div>
           
@@ -199,7 +322,13 @@ export default function RecordClient({ project }: Props) {
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg ${player.rank === 1 ? 'text-amber-400' : 'text-slate-500'}`}>
                     {player.rank === 1 ? <Crown className="w-6 h-6 text-amber-400" /> : player.rank}
                   </div>
-                  <span className="ml-4 font-bold text-slate-800 dark:text-white">{player.name}</span>
+                  <span className="ml-4 font-bold text-slate-800 dark:text-white mr-2">{player.name}</span>
+                  <button 
+                    onClick={() => openEditMemberDialog(player.id, player.name)}
+                    className="text-slate-300 hover:text-slate-500 p-1"
+                  >
+                    <Pencil className="w-3 h-3" />
+                  </button>
                 </div>
                 <div className="flex items-center space-x-2">
                    <span className={`font-black text-lg ${player.points > 0 ? 'text-cyan-500' : 'text-slate-400'}`}>
@@ -268,6 +397,32 @@ export default function RecordClient({ project }: Props) {
           </button>
         </div>
       </div>
+
+      {/* Edit Member Dialog */}
+      <Dialog open={isEditMemberOpen} onOpenChange={setIsEditMemberOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>メンバー名の変更</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleUpdateMemberName} className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="edit-name">名前</Label>
+              <Input
+                id="edit-name"
+                value={editingMemberName}
+                onChange={(e) => setEditingMemberName(e.target.value)}
+                placeholder="メンバー名を入力..."
+                autoFocus
+              />
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={isUpdatingMember || !editingMemberName.trim()}>
+                {isUpdatingMember ? '変更中...' : '変更'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

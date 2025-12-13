@@ -60,8 +60,8 @@ function SheetContent({
         className={cn(
           "data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
           // Frosted glass on mobile; fall back to theme background on sm+
-          "backdrop-blur-xl backdrop-saturate-150 bg-white/65 text-neutral-900 shadow-2xl border border-white/20",
-          "sm:backdrop-blur-none sm:backdrop-saturate-100 sm:bg-background sm:text-foreground sm:border-transparent",
+          "bg-white dark:bg-slate-900 text-foreground shadow-2xl",
+          "sm:border-transparent",
           side === "right" &&
             "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm",
           side === "left" &&

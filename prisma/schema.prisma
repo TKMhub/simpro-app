@@ -224,6 +224,8 @@ model JuiceMatch {
   projectId   String
   project     JuiceProject       @relation(fields: [projectId], references: [id], onDelete: Cascade)
   
+  gameTitle   String?            // Optional game title (e.g. "Soccer", "Mario Kart")
+  
   results     JuiceMatchResult[]
   
   playedAt    DateTime           @default(now())

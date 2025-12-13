@@ -193,8 +193,13 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
                       <span className="text-xs font-bold text-slate-400">{rank}位</span>
                     </div>
                     <div>
-                      <p className="font-bold text-slate-900 dark:text-white">{match.results.length}人対戦</p>
-                      <p className="text-xs text-slate-400 font-medium">{new Date(match.playedAt).toLocaleDateString()}</p>
+                      <p className="font-bold text-slate-900 dark:text-white">
+                        {match.gameTitle || `${match.results.length}人対戦`}
+                      </p>
+                      <p className="text-xs text-slate-400 font-medium">
+                        {new Date(match.playedAt).toLocaleDateString()}
+                        {match.gameTitle && <span className="ml-2 text-slate-300">({match.results.length}人)</span>}
+                      </p>
                     </div>
                   </div>
                   <div className={`font-black text-lg ${point > 0 ? 'text-cyan-500' : 'text-slate-400'}`}>

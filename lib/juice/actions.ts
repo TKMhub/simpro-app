@@ -95,7 +95,7 @@ export async function getJuiceProject(slug: string): Promise<JuiceProjectData | 
       // NOTE: このメンバーとクライアントを紐付ける仕組みが別途必要だが、
       // ここではとりあえずプロジェクト作成を優先する。
       membersCreate.push({
-          name: 'Owner (You)',
+          name: '自分',
           // userId is null
       });
   }
@@ -150,13 +150,15 @@ export async function recordMatch(
   projectId: string, 
   slug: string, 
   playedAt: Date, 
-  results: { memberId: string; rank: number; points: number }[]
+  results: { memberId: string; rank: number; points: number }[],
+  gameTitle?: string
 ) {
   try {
     await prisma.juiceMatch.create({
       data: {
         projectId,
         playedAt,
+        gameTitle,
         results: {
           create: results.map(r => ({
             memberId: r.memberId,
