@@ -19,6 +19,7 @@ export type JuiceProjectData = {
   matches: {
     id: string;
     playedAt: Date;
+    gameTitle?: string | null;
     results: {
       memberId: string;
       rank: number;
@@ -236,7 +237,7 @@ export async function getJuiceProject(slug: string): Promise<JuiceProjectData | 
 /**
  * Add a new member to the project.
  */
-export async function addMember(projectId: string, name: string) {
+export async function addMember(projectId: string, slug: string, name: string) {
   try {
     const member = await prisma.juiceMember.create({
       data: {
@@ -244,12 +245,26 @@ export async function addMember(projectId: string, name: string) {
         name,
       },
     });
-    // We can't easily revalidate specific path without slug, 
-    // but usually this is called from a client component that can refresh.
-    // Or we should pass slug to this action.
+    revalidatePath(`/juice/group/${slug}`);
     return { success: true, member };
   } catch (error) {
     console.error('Failed to add member:', error);
+    return { success: false, error };
+  }
+}
+
+/**
+ * Remove a member from the project.
+ */
+export async function removeMember(memberId: string, slug: string) {
+  try {
+    await prisma.juiceMember.delete({
+      where: { id: memberId },
+    });
+    revalidatePath(`/juice/group/${slug}`);
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to remove member:', error);
     return { success: false, error };
   }
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Save, GripVertical, Crown, Plus, Pencil } from 'lucide-react';
+import { ArrowLeft, Save, GripVertical, Crown, Plus, Pencil, Users, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { JuiceProjectData, addMember, recordMatch, updateMemberProfile } from '@/lib/juice/actions';
@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Re-using the types from the action or defining local ones for UI state
 type PlayerUI = {
@@ -64,6 +65,9 @@ export default function RecordClient({ project }: Props) {
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
   const [newMemberName, setNewMemberName] = useState('');
   const [isAddingMember, setIsAddingMember] = useState(false);
+
+  // Select members dialog state
+  const [isSelectMembersOpen, setIsSelectMembersOpen] = useState(false);
 
   // Edit member dialog state
   const [isEditMemberOpen, setIsEditMemberOpen] = useState(false);
@@ -131,7 +135,7 @@ export default function RecordClient({ project }: Props) {
     setIsAddingMember(true);
     try {
       // Call server action to add member
-      const res = await addMember(project.id, newMemberName);
+      const res = await addMember(project.id, project.slug, newMemberName);
       
       if (res.success && res.member) {
         toast.success(`${newMemberName}を追加しました`);
@@ -203,11 +207,13 @@ export default function RecordClient({ project }: Props) {
     }
   };
 
-  // Select an existing member not currently in the game
   const handleAddExistingMember = (memberId: string) => {
     const member = project.members.find(m => m.id === memberId);
     if (!member) return;
     
+    // Avoid duplicates
+    if (activePlayers.find(p => p.id === memberId)) return;
+
     const newRank = activePlayers.length + 1;
     const setting = rankSettings.find(s => s.rank === newRank);
 
@@ -220,6 +226,19 @@ export default function RecordClient({ project }: Props) {
         points: setting ? setting.points : 0
       }
     ]);
+  };
+
+  const handleRemovePlayer = (memberId: string) => {
+    setActivePlayers(prev => prev.filter(p => p.id !== memberId));
+  };
+
+  const handleToggleMember = (memberId: string) => {
+      const isActive = activePlayers.some(p => p.id === memberId);
+      if (isActive) {
+          handleRemovePlayer(memberId);
+      } else {
+          handleAddExistingMember(memberId);
+      }
   };
 
   const handleSave = async () => {
@@ -277,9 +296,50 @@ export default function RecordClient({ project }: Props) {
           <div className="flex justify-between items-center mb-3">
             <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Players & Ranks</label>
             <div className="flex gap-2">
+                 <Dialog open={isSelectMembersOpen} onOpenChange={setIsSelectMembersOpen}>
+                   <DialogTrigger asChild>
+                     <button className="text-xs font-bold text-slate-400 hover:text-cyan-500 flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md transition-colors">
+                        <Users className="w-3 h-3" /> 参加メンバー選択
+                     </button>
+                   </DialogTrigger>
+                   <DialogContent className="sm:max-w-[425px]">
+                     <DialogHeader>
+                       <DialogTitle>参加メンバーの選択</DialogTitle>
+                     </DialogHeader>
+                     <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto">
+                        <p className="text-sm text-slate-500">
+                            チェックが入っているメンバーのみ、今回の対戦記録とポイント変動が保存されます。
+                        </p>
+                        <div className="space-y-2">
+                            {project.members.map(member => {
+                                const isChecked = activePlayers.some(p => p.id === member.id);
+                                return (
+                                    <div key={member.id} className="flex items-center space-x-2 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800">
+                                        <Checkbox 
+                                            id={`member-${member.id}`} 
+                                            checked={isChecked}
+                                            onCheckedChange={() => handleToggleMember(member.id)}
+                                        />
+                                        <label 
+                                            htmlFor={`member-${member.id}`}
+                                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex-1 cursor-pointer"
+                                        >
+                                            {member.name}
+                                        </label>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                     </div>
+                     <DialogFooter>
+                       <Button onClick={() => setIsSelectMembersOpen(false)}>完了</Button>
+                     </DialogFooter>
+                   </DialogContent>
+                 </Dialog>
+
                  <Dialog open={isAddMemberOpen} onOpenChange={setIsAddMemberOpen}>
                    <DialogTrigger asChild>
-                     <button className="text-xs font-bold text-cyan-500 flex items-center gap-1">
+                     <button className="text-xs font-bold text-cyan-500 flex items-center gap-1 bg-cyan-50 dark:bg-cyan-900/20 px-2 py-1 rounded-md hover:bg-cyan-100 dark:hover:bg-cyan-900/40 transition-colors">
                         <Plus className="w-3 h-3" /> 新規追加
                      </button>
                    </DialogTrigger>
@@ -334,6 +394,13 @@ export default function RecordClient({ project }: Props) {
                    <span className={`font-black text-lg ${player.points > 0 ? 'text-cyan-500' : 'text-slate-400'}`}>
                      {player.points > 0 ? '+' : ''}{player.points}
                    </span>
+                   <button 
+                     onClick={() => handleRemovePlayer(player.id)}
+                     className="ml-2 text-slate-200 hover:text-red-400 p-1"
+                     title="この対戦から除外（不参加）"
+                   >
+                     <X className="w-4 h-4" />
+                   </button>
                 </div>
               </div>
             ))}

@@ -1,11 +1,41 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Plus, History, Users, Share2, Check } from 'lucide-react';
+import { Plus, History, Users, Share2, Check, ChevronDown, User, Trash2, Pencil } from 'lucide-react';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-import { JuiceProjectData, joinAsCurrentUser } from '@/lib/juice/actions';
+import { JuiceProjectData, joinAsCurrentUser, addMember, removeMember, updateMemberProfile } from '@/lib/juice/actions';
 import { toast } from 'sonner';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 type Props = {
   project: JuiceProjectData;
@@ -14,6 +44,101 @@ type Props = {
 
 export default function DashboardClient({ project, currentUserEmail }: Props) {
   const [copied, setCopied] = useState(false);
+  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
+  
+  // Member Management State
+  const [isManageMembersOpen, setIsManageMembersOpen] = useState(false);
+  const [newMemberName, setNewMemberName] = useState('');
+  const [isAddingMember, setIsAddingMember] = useState(false);
+  
+  // Edit member state
+  const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
+  const [editingMemberName, setEditingMemberName] = useState('');
+  const [isUpdatingMember, setIsUpdatingMember] = useState(false);
+  const [isEditMemberDialogOpen, setIsEditMemberDialogOpen] = useState(false);
+
+  // Load saved member selection on mount
+  useEffect(() => {
+    const saved = localStorage.getItem(`juice_member_${project.id}`);
+    if (saved) {
+      // Verify saved ID still exists in project
+      if (project.members.find(m => m.id === saved)) {
+        setSelectedMemberId(saved);
+      }
+    }
+  }, [project.id, project.members]);
+
+  const handleMemberSelect = (memberId: string) => {
+    setSelectedMemberId(memberId);
+    localStorage.setItem(`juice_member_${project.id}`, memberId);
+    toast.success('表示プレイヤーを切り替えました');
+  };
+
+  const handleAddMember = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMemberName.trim()) return;
+
+    setIsAddingMember(true);
+    try {
+      const res = await addMember(project.id, project.slug, newMemberName);
+      if (res.success) {
+        toast.success(`${newMemberName}を追加しました`);
+        setNewMemberName('');
+      } else {
+        toast.error('メンバー追加に失敗しました');
+      }
+    } catch (error) {
+        console.error(error);
+        toast.error('エラーが発生しました');
+    } finally {
+        setIsAddingMember(false);
+    }
+  };
+
+  const handleRemoveMember = async (memberId: string) => {
+    try {
+        const res = await removeMember(memberId, project.slug);
+        if (res.success) {
+            toast.success('メンバーを削除しました');
+            if (selectedMemberId === memberId) {
+                setSelectedMemberId(null);
+                localStorage.removeItem(`juice_member_${project.id}`);
+            }
+        } else {
+            toast.error('削除に失敗しました');
+        }
+    } catch (error) {
+        console.error(error);
+        toast.error('エラーが発生しました');
+    }
+  };
+
+  const openEditMemberDialog = (member: { id: string, name: string }) => {
+      setEditingMemberId(member.id);
+      setEditingMemberName(member.name);
+      setIsEditMemberDialogOpen(true);
+  };
+
+  const handleUpdateMemberName = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!editingMemberName.trim() || !editingMemberId) return;
+
+      setIsUpdatingMember(true);
+      try {
+          const res = await updateMemberProfile(editingMemberId, project.slug, editingMemberName, null);
+          if (res.success) {
+              toast.success('名前を変更しました');
+              setIsEditMemberDialogOpen(false);
+          } else {
+              toast.error('名前の変更に失敗しました');
+          }
+      } catch (error) {
+          console.error(error);
+          toast.error('エラーが発生しました');
+      } finally {
+          setIsUpdatingMember(false);
+      }
+  };
 
   // --- Data Processing ---
   
@@ -37,14 +162,19 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
     };
   });
 
-  // Identify "Me" (current user or first member as fallback/demo)
-  // Logic: If currentUserEmail matches a member's linked user, that's "Me".
-  // Otherwise, we might rely on a cookie or local storage ID in a real "no-login" app.
-  // For this version, we'll try to find the member linked to the current user, or just pick the first one if not found to avoid crashing.
-  // In a real scenario, we'd have a "Select who you are" modal if not logged in.
-  const myMember = memberStats.find(m => m.userId && m.userId === currentUserEmail) || 
-                   memberStats.find(m => m.name === '自分') || 
-                   memberStats[0];
+  // Identify "Me" based on selection, or fallback to smart detection
+  const myMember = selectedMemberId 
+    ? memberStats.find(m => m.id === selectedMemberId) 
+    : (memberStats.find(m => m.userId && m.userId === currentUserEmail) || 
+       memberStats.find(m => m.name === '自分') || 
+       memberStats[0]);
+
+  // Update selection state if fallback was used
+  useEffect(() => {
+    if (!selectedMemberId && myMember) {
+        setSelectedMemberId(myMember.id);
+    }
+  }, [selectedMemberId, myMember]);
 
   const myBalance = myMember ? myMember.totalPoints : 0;
   
@@ -92,22 +222,51 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
             <span>{copied ? 'Copied' : 'Share'}</span>
           </button>
           
-          {myMember ? (
-            <Link href={`/juice/group/${project.slug}/profile`} className="flex items-center space-x-2 text-sm font-bold bg-white dark:bg-slate-900 pr-3 pl-2 py-1 rounded-full border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-              <div className="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
-                {myMember.avatarUrl ? (
-                   <img src={myMember.avatarUrl} alt={myMember.name} className="w-full h-full object-cover" />
-                ) : (
-                   <span className="text-xs">👤</span>
-                )}
-              </div>
-              <span className="text-slate-800 dark:text-white truncate max-w-[80px]">{myMember.name}</span>
-            </Link>
-          ) : (
-            <button onClick={handleJoin} className="text-xs font-bold bg-cyan-500 text-white px-3 py-2 rounded-full hover:bg-cyan-600">
-              参加する
-            </button>
-          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center space-x-2 text-sm font-bold bg-white dark:bg-slate-900 pr-3 pl-2 py-1 rounded-full border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors outline-none focus:ring-2 focus:ring-cyan-500/20">
+                <div className="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
+                  {myMember?.avatarUrl ? (
+                     <img src={myMember.avatarUrl} alt={myMember.name} className="w-full h-full object-cover" />
+                  ) : (
+                     <User className="w-3 h-3 text-slate-500" />
+                  )}
+                </div>
+                <span className="text-slate-800 dark:text-white truncate max-w-[80px]">{myMember?.name || 'Select'}</span>
+                <ChevronDown className="w-3 h-3 text-slate-400" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>表示プレイヤー切り替え</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {memberStats.map(member => (
+                <DropdownMenuItem 
+                  key={member.id} 
+                  onClick={() => handleMemberSelect(member.id)}
+                  className="flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
+                        {member.avatarUrl ? (
+                            <img src={member.avatarUrl} alt={member.name} className="w-full h-full object-cover" />
+                        ) : (
+                            <span className="text-[10px]">👤</span>
+                        )}
+                    </div>
+                    <span>{member.name}</span>
+                  </div>
+                  {myMember?.id === member.id && <Check className="w-4 h-4 text-cyan-500" />}
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuSeparator />
+              <Link href={`/juice/group/${project.slug}/profile`}>
+                <DropdownMenuItem className="text-xs text-slate-500 cursor-pointer">
+                   <Users className="w-3 h-3 mr-2" />
+                   プロフィール設定へ
+                </DropdownMenuItem>
+              </Link>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 
@@ -138,7 +297,10 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+          <div 
+            onClick={() => setIsManageMembersOpen(true)}
+            className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-between cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+          >
             <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800/30 flex items-center justify-center mb-3 text-slate-500 dark:text-slate-400">
               <Users className="w-5 h-5" />
             </div>
@@ -216,6 +378,112 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
           </div>
         </section>
       </main>
+
+      {/* Member Management Dialog */}
+      <Dialog open={isManageMembersOpen} onOpenChange={setIsManageMembersOpen}>
+        <DialogContent className="sm:max-w-[425px] max-h-[80vh] overflow-y-auto bg-white dark:bg-slate-900">
+          <DialogHeader>
+            <DialogTitle>メンバー管理</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-4">
+            {/* Add New Member */}
+            <form onSubmit={handleAddMember} className="flex gap-2">
+                <Input
+                    value={newMemberName}
+                    onChange={(e) => setNewMemberName(e.target.value)}
+                    placeholder="新しいメンバー名..."
+                    className="flex-1"
+                />
+                <Button type="submit" disabled={isAddingMember || !newMemberName.trim()} size="icon">
+                    <Plus className="w-4 h-4" />
+                </Button>
+            </form>
+
+            <div className="space-y-2">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">メンバー一覧 ({project.members.length})</p>
+                <div className="space-y-2">
+                    {project.members.map(member => (
+                        <div key={member.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                            <div className="flex items-center gap-3 overflow-hidden">
+                                <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
+                                    {member.avatarUrl ? (
+                                        <img src={member.avatarUrl} alt={member.name} className="w-full h-full object-cover rounded-full" />
+                                    ) : (
+                                        <User className="w-4 h-4 text-slate-500" />
+                                    )}
+                                </div>
+                                <span className="font-bold truncate">{member.name}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <Button 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    className="h-8 w-8 text-slate-400 hover:text-cyan-500"
+                                    onClick={() => openEditMemberDialog(member)}
+                                >
+                                    <Pencil className="w-4 h-4" />
+                                </Button>
+                                
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-500">
+                                            <Trash2 className="w-4 h-4" />
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent className="bg-white dark:bg-slate-900">
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>メンバー削除</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                {member.name} を削除してもよろしいですか？<br />
+                                                これまでの対戦履歴からも削除されます。
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>キャンセル</AlertDialogCancel>
+                                            <AlertDialogAction onClick={() => handleRemoveMember(member.id)} className="bg-red-500 hover:bg-red-600">
+                                                削除
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+          </div>
+          <DialogFooter>
+             <Button variant="outline" onClick={() => setIsManageMembersOpen(false)}>閉じる</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Member Name Dialog (Nested) */}
+      <Dialog open={isEditMemberDialogOpen} onOpenChange={setIsEditMemberDialogOpen}>
+        <DialogContent className="sm:max-w-[425px] bg-white dark:bg-slate-900">
+            <DialogHeader>
+                <DialogTitle>名前の変更</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleUpdateMemberName} className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                    <Label htmlFor="edit-name-dash">名前</Label>
+                    <Input
+                        id="edit-name-dash"
+                        value={editingMemberName}
+                        onChange={(e) => setEditingMemberName(e.target.value)}
+                        placeholder="メンバー名を入力..."
+                        autoFocus
+                    />
+                </div>
+                <DialogFooter>
+                    <Button type="submit" disabled={isUpdatingMember || !editingMemberName.trim()}>
+                        {isUpdatingMember ? '変更中...' : '変更'}
+                    </Button>
+                </DialogFooter>
+            </form>
+        </DialogContent>
+      </Dialog>
 
       {/* FAB */}
       <div className="fixed bottom-6 right-6">
