@@ -30,7 +30,13 @@ export default async function ProductDetailPage({ params }: Props) {
       </nav>
 
       <article className="mt-4 sm:mt-6">
-        <h1 className="text-2xl sm:text-3xl font-semibold leading-tight">{product.title}</h1>
+        {slug === 'juice' ? (
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+            Juice<span className="text-cyan-500">.</span>
+          </h1>
+        ) : (
+          <h1 className="text-2xl sm:text-3xl font-semibold leading-tight">{product.title}</h1>
+        )}
         {/* Type and category */}
         <div className="flex items-center gap-2 mt-2">
           <Badge variant="secondary" className="rounded-full">

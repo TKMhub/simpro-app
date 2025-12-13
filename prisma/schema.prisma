@@ -187,6 +187,9 @@ model JuiceProject {
   
   // Auto-incrementing ID for shorter URLs (optional but safer for unique checks)
   shortId     Int           @default(autoincrement()) @unique
+  
+  // Optional password protection
+  passwordHash String?
 
   ownerId     String?
   owner       Profile?       @relation(fields: [ownerId], references: [id])

@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Plus, History, Users, Share2, Check, ChevronDown, User, Trash2, Pencil } from 'lucide-react';
+import { Plus, History, Users, Share2, Check, ChevronDown, User, Trash2, Pencil, Lock, Key } from 'lucide-react';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-import { JuiceProjectData, addMember, removeMember, updateMemberProfile } from '@/lib/juice/actions';
+import { JuiceProjectData, addMember, removeMember, updateMemberProfile, setProjectPassword, verifyProjectPassword } from '@/lib/juice/actions';
 import { toast } from 'sonner';
 import {
   DropdownMenu,
@@ -20,6 +20,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -55,6 +56,97 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
   const [editingMemberName, setEditingMemberName] = useState('');
   const [isUpdatingMember, setIsUpdatingMember] = useState(false);
   const [isEditMemberDialogOpen, setIsEditMemberDialogOpen] = useState(false);
+
+  // Password Protection State
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [isSettingPassword, setIsSettingPassword] = useState(false);
+  const [isVerified, setIsVerified] = useState(!project.hasPassword); // Automatically verified if no password
+  const [verifyPasswordInput, setVerifyPasswordInput] = useState('');
+  const [isVerifying, setIsVerifying] = useState(false);
+
+  // Check auth cookie on mount (client-side verify if needed, but server component usually handles initial auth check)
+  // For this implementation, we will use a simple client-side gate for the UI if hasPassword is true.
+  // In a real app, Middleware is better.
+  useEffect(() => {
+      // Avoid running effect if already verified or project has no password
+      if (!project.hasPassword) {
+          // Check if we already showed the toast for this session/project to avoid double toast
+          // Using a session storage flag or just ref
+          const hasShownToast = sessionStorage.getItem(`juice_pass_toast_${project.id}`);
+          if (!hasShownToast) {
+              // Initial popup for password setting if not set
+              // Use a small timeout to not block rendering
+              const timer = setTimeout(() => {
+                  toast('セキュリティ設定', {
+                      description: 'パスワードを設定して、プロジェクトを保護することをお勧めします。',
+                      action: {
+                          label: '設定する',
+                          onClick: () => setIsPasswordDialogOpen(true),
+                      },
+                      duration: 8000,
+                  });
+                  sessionStorage.setItem(`juice_pass_toast_${project.id}`, 'true');
+              }, 1000);
+              return () => clearTimeout(timer);
+          }
+          return;
+      }
+
+      if (project.hasPassword && !isVerified) {
+          const checkAuth = async () => {
+              // Simplification: We'll implement a 'checkProjectAuth' action.
+              const { checkProjectAuth } = await import('@/lib/juice/actions');
+              const isAuth = await checkProjectAuth(project.id);
+              setIsVerified(isAuth);
+          };
+          checkAuth();
+      }
+  }, [project.hasPassword, project.id, isVerified]);
+
+  const handleSetPassword = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!passwordInput.trim()) return;
+      
+      setIsSettingPassword(true);
+      try {
+          const res = await setProjectPassword(project.id, passwordInput);
+          if (res.success) {
+              toast.success('パスワードを設定しました');
+              setIsPasswordDialogOpen(false);
+              setPasswordInput('');
+              setIsVerified(true); // Creator is authenticated
+              // Ideally refresh page to update project.hasPassword prop, but router.refresh() works too
+              // router.refresh(); // We need useRouter
+          } else {
+              toast.error('設定に失敗しました');
+          }
+      } catch (e) {
+          toast.error('エラーが発生しました');
+      } finally {
+          setIsSettingPassword(false);
+      }
+  };
+
+  const handleVerifyPassword = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!verifyPasswordInput.trim()) return;
+
+      setIsVerifying(true);
+      try {
+          const res = await verifyProjectPassword(project.id, verifyPasswordInput);
+          if (res.success) {
+              toast.success('認証されました');
+              setIsVerified(true);
+          } else {
+              toast.error('パスワードが間違っています');
+          }
+      } catch (e) {
+          toast.error('エラーが発生しました');
+      } finally {
+          setIsVerifying(false);
+      }
+  };
 
   // Load saved member selection on mount
   useEffect(() => {
@@ -193,6 +285,41 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  if (project.hasPassword && !isVerified) {
+      return (
+          <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-950 p-6">
+              <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-xl border border-slate-100 dark:border-slate-800 text-center">
+                  <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <Lock className="w-8 h-8 text-slate-400" />
+                  </div>
+                  <h1 className="text-2xl font-black text-slate-900 dark:text-white mb-2">
+                      Password Protected
+                  </h1>
+                  <p className="text-slate-500 text-sm mb-8">
+                      このグループにアクセスするにはパスワードが必要です。
+                  </p>
+                  
+                  <form onSubmit={handleVerifyPassword} className="space-y-4">
+                      <Input
+                          type="password"
+                          placeholder="Password"
+                          value={verifyPasswordInput}
+                          onChange={(e) => setVerifyPasswordInput(e.target.value)}
+                          className="text-center text-lg"
+                      />
+                      <Button 
+                          type="submit" 
+                          className="w-full h-12 text-lg font-bold rounded-xl"
+                          disabled={isVerifying || !verifyPasswordInput}
+                      >
+                          {isVerifying ? 'Verifying...' : 'Unlock'}
+                      </Button>
+                  </form>
+              </div>
+          </div>
+      );
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950 pb-24">
       {/* Header */}
@@ -211,6 +338,41 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
             {copied ? <Check className="w-4 h-4 text-green-500" /> : <Share2 className="w-4 h-4" />}
             <span>{copied ? 'Copied' : 'Share'}</span>
           </button>
+
+          <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
+            <DialogTrigger asChild>
+                <button className="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                    {project.hasPassword ? <Lock className="w-4 h-4" /> : <Key className="w-4 h-4" />}
+                </button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px] bg-white dark:bg-slate-900">
+                <DialogHeader>
+                    <DialogTitle>パスワード設定</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleSetPassword} className="space-y-4 py-4">
+                    <p className="text-sm text-slate-500">
+                        {project.hasPassword 
+                            ? '新しいパスワードを設定すると、以前のパスワードは無効になります。' 
+                            : 'パスワードを設定すると、URLを知っているユーザーでもパスワードを入力しないとアクセスできなくなります。'}
+                    </p>
+                    <div className="space-y-2">
+                        <Label htmlFor="new-password">パスワード</Label>
+                        <Input
+                            id="new-password"
+                            type="password"
+                            value={passwordInput}
+                            onChange={(e) => setPasswordInput(e.target.value)}
+                            placeholder="新しいパスワード"
+                        />
+                    </div>
+                    <DialogFooter>
+                        <Button type="submit" disabled={isSettingPassword || !passwordInput.trim()}>
+                            {isSettingPassword ? '設定中...' : '保存'}
+                        </Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+          </Dialog>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

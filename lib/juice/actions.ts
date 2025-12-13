@@ -3,6 +3,8 @@
 import { prisma } from '@/lib/db/prisma';
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
+import bcrypt from 'bcryptjs';
+import { cookies } from 'next/headers';
 
 // --- Types ---
 
@@ -10,6 +12,7 @@ export type JuiceProjectData = {
   id: string;
   slug: string;
   name: string;
+  hasPassword?: boolean; // Added
   members: {
     id: string;
     name: string;
@@ -149,88 +152,193 @@ export async function createNewProject() {
         return { success: false, error: e };
     }
 }
+// 以前の getJuiceProject を削除し、一つにまとめる
+// ... (他の関数はそのまま)
+
 export async function getJuiceProject(slug: string): Promise<JuiceProjectData | null> {
-  // Try to find existing project
-  const project = await prisma.juiceProject.findUnique({
-    where: { slug },
-    include: {
-      members: {
-        orderBy: { createdAt: 'asc' },
-      },
-      matches: {
-        orderBy: { playedAt: 'desc' },
-        take: 20, // Limit recent history
-        include: {
-          results: true,
+    // Try to find existing project
+    const project = await prisma.juiceProject.findUnique({
+      where: { slug },
+      include: {
+        members: {
+          orderBy: { createdAt: 'asc' },
+        },
+        matches: {
+          orderBy: { playedAt: 'desc' },
+          take: 20, // Limit recent history
+          include: {
+            results: true,
+          },
         },
       },
-    },
-  });
-
-  if (project) {
-    return project;
-  }
-
-  // If not found, create one
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  let ownerId: string | undefined = undefined;
-  const membersCreate = [];
-
-  if (user) {
-    ownerId = user.id;
-    // Ensure Profile exists for the user
-    let profile = await prisma.profile.findUnique({ where: { id: user.id } });
-    if (!profile) {
-      profile = await prisma.profile.create({
-        data: {
-          id: user.id,
-          email: user.email!,
-          displayName: user.user_metadata.full_name || 'User',
-        }
-      });
+    });
+  
+    if (project) {
+      return {
+          ...project,
+          hasPassword: !!project.passwordHash
+      };
     }
-    
-    membersCreate.push({
-       userId: user.id,
-       name: profile.displayName || 'Me',
-       avatarUrl: profile.avatarUrl,
-    });
-  } else {
-      // 未ログインの場合、作成者をゲストメンバーとして追加
-      // NOTE: このメンバーとクライアントを紐付ける仕組みが別途必要だが、
-      // ここではとりあえずプロジェクト作成を優先する。
-      membersCreate.push({
-          name: '自分',
-          // userId is null
-      });
-  }
-
-  try {
-    const newProject = await prisma.juiceProject.create({
-      data: {
-        slug,
-        name: `${slug}'s Group`, // Will be updated to shortId-based name if needed
-        ownerId: ownerId ?? null,
-        members: {
-          create: membersCreate
-        }
-      },
-      include: {
-        members: true,
-        matches: { include: { results: true } },
+  
+    // If not found, create one
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+  
+    let ownerId: string | undefined = undefined;
+    const membersCreate = [];
+  
+    if (user) {
+      ownerId = user.id;
+      // Ensure Profile exists for the user
+      let profile = await prisma.profile.findUnique({ where: { id: user.id } });
+      if (!profile) {
+        profile = await prisma.profile.create({
+          data: {
+            id: user.id,
+            email: user.email!,
+            displayName: user.user_metadata.full_name || 'User',
+          }
+        });
       }
-    });
+      
+      membersCreate.push({
+         userId: user.id,
+         name: profile.displayName || 'Me',
+         avatarUrl: profile.avatarUrl,
+      });
+    } else {
+        // 未ログインの場合、作成者をゲストメンバーとして追加
+        membersCreate.push({
+            name: '自分',
+        });
+    }
+  
+    try {
+      // Create project to get auto-incremented shortId
+      const tempSlug = `temp-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+      
+      const project = await prisma.juiceProject.create({
+        data: {
+          slug: tempSlug,
+          name: 'New Group',
+          ownerId: ownerId ?? null,
+          members: {
+            create: membersCreate
+          }
+        },
+        include: {
+          members: true,
+          matches: { include: { results: true } },
+        }
+      });
+  
+      let shortId = project.shortId;
+          
+      // Reload if undefined
+      if (shortId === undefined) {
+          const reloaded = await prisma.juiceProject.findUnique({
+              where: { id: project.id },
+              select: { shortId: true }
+          }) as { shortId: number } | null;
+          
+          if (reloaded) {
+              shortId = reloaded.shortId;
+          }
+      }
 
-    // Update name to use shortId if available (optional aesthetic)
-    // newProject.shortId is available after creation
-    
-    return newProject;
-  } catch (e) {
-    console.error("Failed to create project", e);
-    return null;
-  }
+      if (shortId === undefined) {
+          console.warn("shortId missing after creation, using random fallback");
+          shortId = Math.floor(Math.random() * 1000000);
+      }
+
+      const idPart = shortId.toString(36); 
+      const newSlug = `g-${idPart}`; 
+      
+      await prisma.juiceProject.update({
+          where: { id: project.id },
+          data: {
+              slug: newSlug,
+              name: `${newSlug.toUpperCase()}`,
+          }
+      });
+  
+      return {
+          ...project,
+          slug: newSlug, // Return the new slug
+          name: `${newSlug.toUpperCase()}`,
+          hasPassword: false
+      };
+    } catch (e) {
+      console.error("Failed to create project", e);
+      return null;
+    }
+}
+
+/**
+ * Set or Update Project Password
+ */
+export async function setProjectPassword(projectId: string, password: string) {
+    try {
+        const passwordHash = await bcrypt.hash(password, 10);
+        await prisma.juiceProject.update({
+            where: { id: projectId },
+            data: { passwordHash }
+        });
+        
+        // Auto-authenticate creator
+        const cookieStore = await cookies();
+        cookieStore.set(`juice_auth_${projectId}`, 'true', { 
+            httpOnly: true, 
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 60 * 60 * 24 * 30 // 30 days
+        });
+
+        return { success: true };
+    } catch (e) {
+        console.error(e);
+        return { success: false, error: e };
+    }
+}
+
+/**
+ * Verify Project Password
+ */
+export async function verifyProjectPassword(projectId: string, password: string) {
+    try {
+        const project = await prisma.juiceProject.findUnique({
+            where: { id: projectId },
+            select: { passwordHash: true }
+        });
+
+        if (!project || !project.passwordHash) {
+             return { success: false, error: 'Password not set' };
+        }
+
+        const isValid = await bcrypt.compare(password, project.passwordHash);
+        if (isValid) {
+            const cookieStore = await cookies();
+            cookieStore.set(`juice_auth_${projectId}`, 'true', { 
+                httpOnly: true, 
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 60 * 60 * 24 * 30 // 30 days
+            });
+            return { success: true };
+        } else {
+            return { success: false, error: 'Incorrect password' };
+        }
+    } catch (e) {
+        console.error(e);
+        return { success: false, error: e };
+    }
+}
+
+/**
+ * Check if user is authenticated for project (Server-side check)
+ */
+export async function checkProjectAuth(projectId: string) {
+    const cookieStore = await cookies();
+    const auth = cookieStore.get(`juice_auth_${projectId}`);
+    return auth?.value === 'true';
 }
 
 /**

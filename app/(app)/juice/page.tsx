@@ -30,6 +30,15 @@ export default function JuiceLandingPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      {/* Header */}
+      <header className="px-6 py-6 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50 flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+            Juice<span className="text-cyan-500">.</span>
+          </h1>
+        </div>
+      </header>
+
       {/* Hero Section */}
       <section className="flex-1 flex flex-col items-center justify-center p-6 text-center space-y-8 relative overflow-hidden">
         {/* Background Decorative Elements */}
