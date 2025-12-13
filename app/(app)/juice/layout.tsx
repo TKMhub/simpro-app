@@ -2,8 +2,8 @@ import React from 'react';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Juice - 勝敗をジュースで精算',
-  description: '負けた方がジュースをおごる。そんな日常の勝負を楽しく記録するアプリ。',
+  title: 'Juice - 勝敗をジュースで見える化',
+  description: '日常の勝負を楽しく記録するアプリ。獲得したジュースの数で競い合おう。',
 };
 
 export default function JuiceLayout({
