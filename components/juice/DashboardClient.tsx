@@ -427,7 +427,7 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
         <section className="grid grid-cols-2 gap-4">
           <div className="col-span-2 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-3xl p-6 text-white shadow-lg shadow-cyan-500/20 relative overflow-hidden">
             <div className="relative z-10">
-              <p className="text-cyan-100 text-sm font-bold uppercase tracking-wider mb-1">My Net Balance</p>
+              <p className="text-cyan-100 text-sm font-bold uppercase tracking-wider mb-1">TOTAL</p>
               <div className="flex items-baseline space-x-2">
                 <span className="text-5xl font-black">{myBalance > 0 ? '+' : ''}{myBalance}</span>
                 <span className="text-xl font-bold opacity-80">本</span>
