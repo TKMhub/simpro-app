@@ -1,3 +1,5 @@
+import React from "react";
+
 export type Section = {
   id: "about" | "blog" | "product" | "link";
   label: string;
@@ -10,6 +12,9 @@ export type SummaryItem = {
   section: Section["id"];
   category?: ProductCategory; // For product section
   title: string;
+  titleComponent?: React.ReactNode;
+  hoverColorClass?: string;
+  ctaColorClass?: string;
   description?: string;
   cta?: { label: string; href: string };
   image?: { src: string; alt?: string };
@@ -40,6 +45,9 @@ export async function fetchSummaryData(): Promise<SummaryData> {
       section: "product",
       category: "app",
       title: "Juice",
+      titleComponent: <>Juice<span className="text-cyan-500">.</span></>,
+      hoverColorClass: "group-hover:text-cyan-500 dark:group-hover:text-cyan-400",
+      ctaColorClass: "text-cyan-600/90 dark:text-cyan-400/90 hover:text-cyan-700 dark:hover:text-cyan-300",
       description: "勝負の行方は、ジュースが決める。ライバルとの勝負を記録して、勝ち越し状況を可視化するアプリ。",
       cta: { label: "アプリを開く", href: "/juice" },
       image: { src: "/juice-logo.svg", alt: "Juice Logo" },

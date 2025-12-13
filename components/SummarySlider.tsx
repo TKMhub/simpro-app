@@ -109,8 +109,8 @@ export default function SummarySlider({ items, intervalMs = 0 }: SummarySliderPr
                 <div className="flex flex-col flex-1 p-5">
                   <div className="flex-1 space-y-3">
                     <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-bold text-lg leading-tight text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">
-                        {item.title}
+                      <h3 className={`font-bold text-lg leading-tight text-slate-800 dark:text-slate-200 transition-colors line-clamp-1 ${item.hoverColorClass ?? "group-hover:text-blue-600 dark:group-hover:text-blue-400"}`}>
+                        {item.titleComponent ?? item.title}
                       </h3>
                     </div>
                     
@@ -138,7 +138,7 @@ export default function SummarySlider({ items, intervalMs = 0 }: SummarySliderPr
                     {item.cta?.href && (
                       <Link 
                         href={item.cta.href} 
-                        className="inline-flex items-center text-sm font-semibold text-blue-600/90 dark:text-blue-400/90 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                        className={`inline-flex items-center text-sm font-semibold transition-colors ${item.ctaColorClass ?? "text-blue-600/90 dark:text-blue-400/90 hover:text-blue-700 dark:hover:text-blue-300"}`}
                       >
                         {item.cta.label ?? "View Details"}
                         <svg className="ml-1 w-4 h-4 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
