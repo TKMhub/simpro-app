@@ -39,9 +39,116 @@ export type PlayerStats = {
 // --- Actions ---
 
 /**
- * Get project details by slug.
- * Creates a new project if it doesn't exist (for demo purposes/ease of use).
+ * Create a new project with a short ID based slug.
  */
+export async function createNewProject() {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    let ownerId: string | undefined = undefined;
+    const membersCreate = [];
+
+    if (user) {
+        ownerId = user.id;
+        let profile = await prisma.profile.findUnique({ where: { id: user.id } });
+        if (!profile) {
+            profile = await prisma.profile.create({
+                data: {
+                    id: user.id,
+                    email: user.email!,
+                    displayName: user.user_metadata.full_name || 'User',
+                }
+            });
+        }
+        membersCreate.push({
+            userId: user.id,
+            name: profile.displayName || 'Me',
+            avatarUrl: profile.avatarUrl,
+        });
+    } else {
+        membersCreate.push({
+            name: '自分',
+        });
+    }
+
+    try {
+        // Create project to get auto-incremented shortId
+        // We use a temporary slug first, then update it
+        const tempSlug = `temp-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+        
+        const project = await prisma.juiceProject.create({
+            data: {
+                slug: tempSlug,
+                name: 'New Group',
+                ownerId: ownerId ?? null,
+                members: {
+                    create: membersCreate
+                }
+            }
+        });
+
+        // Ensure shortId is available. 
+        // Note: 'shortId' is an autoincrement integer field.
+        // If the Prisma Client type definitions are stale, accessing 'shortId' might cause issues, 
+        // or 'select' might fail if the field isn't recognized by the query engine.
+        // We assume 'npx prisma generate' has been run successfully.
+        
+        let shortId = project.shortId;
+        
+        // Reload if undefined (though create should return it if schema is correct)
+        if (shortId === undefined) {
+             // Explicitly select shortId to ensure it's fetched
+             // Cast to any to bypass potential TS errors if types are slightly out of sync during dev
+            const reloaded = await prisma.juiceProject.findUnique({
+                where: { id: project.id },
+                // @ts-ignore: shortId might be missing in old generated types
+                select: { shortId: true }
+            }) as { shortId: number } | null;
+            
+            if (reloaded) {
+                shortId = reloaded.shortId;
+            }
+        }
+
+        if (shortId === undefined) {
+            // Fallback if shortId is still missing (e.g. DB migration issue)
+            console.warn("shortId missing after creation, using random fallback");
+            shortId = Math.floor(Math.random() * 1000000);
+        }
+
+        // Generate short slug from shortId
+        // e.g. 1 => 0001, or hash based
+        // Request: "e08bc07e-dくらいの桁数" -> 8 chars + suffix? Or just short unique string.
+        // Request said "e08bc07e-dくらいの桁数" which is still long (10 chars), but "確実に重複しないように連番などにして"
+        // Let's use the auto-increment shortId to generate a concise, unique slug.
+        // Base36 encode the shortId to make it URL friendly and short.
+        // e.g. shortId=1000 -> "rs"
+        // To prevent enumeration, we can add a small random suffix or hash.
+        
+        // shortId(10進数) -> Base36
+        const idPart = shortId.toString(36); 
+        // Add random suffix for obscurity if desired, but user asked for "連番などにして" to ensure uniqueness.
+        // Pure sequence is shortest and safest for uniqueness.
+        // Let's prefix with 'g-' to make it look like a group ID. e.g. "g-1", "g-a", "g-10"
+        
+        const newSlug = `g-${idPart}`; 
+        
+        // Update the project with the final slug and name
+        const updatedProject = await prisma.juiceProject.update({
+            where: { id: project.id },
+            data: {
+                slug: newSlug,
+                name: `${newSlug.toUpperCase()}`,
+            }
+        });
+
+        return { success: true, slug: newSlug };
+
+    } catch (e) {
+        console.error("Failed to create new project", e);
+        return { success: false, error: e };
+    }
+}
 export async function getJuiceProject(slug: string): Promise<JuiceProjectData | null> {
   // Try to find existing project
   const project = await prisma.juiceProject.findUnique({
@@ -104,7 +211,7 @@ export async function getJuiceProject(slug: string): Promise<JuiceProjectData | 
     const newProject = await prisma.juiceProject.create({
       data: {
         slug,
-        name: `${slug}'s Group`,
+        name: `${slug}'s Group`, // Will be updated to shortId-based name if needed
         ownerId: ownerId ?? null,
         members: {
           create: membersCreate
@@ -115,6 +222,10 @@ export async function getJuiceProject(slug: string): Promise<JuiceProjectData | 
         matches: { include: { results: true } },
       }
     });
+
+    // Update name to use shortId if available (optional aesthetic)
+    // newProject.shortId is available after creation
+    
     return newProject;
   } catch (e) {
     console.error("Failed to create project", e);

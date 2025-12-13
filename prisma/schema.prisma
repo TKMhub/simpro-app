@@ -185,6 +185,9 @@ model JuiceProject {
   slug        String        @unique
   name        String        @default("New Group")
   
+  // Auto-incrementing ID for shorter URLs (optional but safer for unique checks)
+  shortId     Int           @default(autoincrement()) @unique
+
   ownerId     String?
   owner       Profile?       @relation(fields: [ownerId], references: [id])
   

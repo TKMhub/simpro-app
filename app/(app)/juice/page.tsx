@@ -4,20 +4,28 @@ import Image from 'next/image';
 import { ArrowRight, Calculator, Trophy, BarChart3, Link2, Crown, Settings2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
+import { createNewProject } from '@/lib/juice/actions';
+import { toast } from 'sonner';
+
 export default function JuiceLandingPage() {
   const router = useRouter();
 
-  const handleStart = () => {
-    // UUIDと5桁のランダムな数字（連番の代わり）を生成
-    // crypto.randomUUIDが環境によって使えない場合があるため、簡易的な代替手段を使用
-    const uuid = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function' 
-      ? crypto.randomUUID() 
-      : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-
-    const randomNumber = Math.floor(10000 + Math.random() * 90000);
-    const slug = `${uuid}-${randomNumber}`;
-
-    router.push(`/juice/group/${slug}`);
+  const handleStart = async () => {
+    try {
+        const result = await createNewProject();
+        if (result.success && result.slug) {
+            router.push(`/juice/group/${result.slug}`);
+        } else {
+            console.error('Failed to create project:', result.error);
+            // Fallback for offline/error: generate locally (though it won't be saved in DB immediately)
+            // But since we want short IDs, client-side generation is risky for collision.
+            // Better to show error toast.
+            toast.error('プロジェクト作成に失敗しました。もう一度お試しください。');
+        }
+    } catch (e) {
+        console.error(e);
+        toast.error('エラーが発生しました');
+    }
   };
 
   return (
