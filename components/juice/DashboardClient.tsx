@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Plus, History, Users, Share2, Check, ChevronDown, User, Trash2, Pencil } from 'lucide-react';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-import { JuiceProjectData, joinAsCurrentUser, addMember, removeMember, updateMemberProfile } from '@/lib/juice/actions';
+import { JuiceProjectData, addMember, removeMember, updateMemberProfile } from '@/lib/juice/actions';
 import { toast } from 'sonner';
 import {
   DropdownMenu,
@@ -20,7 +20,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -192,15 +191,6 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
     setCopied(true);
     toast.success('URLをコピーしました');
     setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleJoin = async () => {
-    const res = await joinAsCurrentUser(project.id, project.slug);
-    if (res.success) {
-      toast.success('参加しました！');
-    } else {
-      toast.error('参加に失敗しました: ' + res.error);
-    }
   };
 
   return (

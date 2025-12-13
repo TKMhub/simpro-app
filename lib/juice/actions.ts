@@ -102,7 +102,6 @@ export async function createNewProject() {
              // Cast to any to bypass potential TS errors if types are slightly out of sync during dev
             const reloaded = await prisma.juiceProject.findUnique({
                 where: { id: project.id },
-                // @ts-ignore: shortId might be missing in old generated types
                 select: { shortId: true }
             }) as { shortId: number } | null;
             
@@ -135,7 +134,7 @@ export async function createNewProject() {
         const newSlug = `g-${idPart}`; 
         
         // Update the project with the final slug and name
-        const updatedProject = await prisma.juiceProject.update({
+        await prisma.juiceProject.update({
             where: { id: project.id },
             data: {
                 slug: newSlug,

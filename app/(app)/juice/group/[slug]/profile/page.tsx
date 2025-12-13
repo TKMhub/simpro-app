@@ -1,7 +1,7 @@
 import { getJuiceProject } from '@/lib/juice/actions';
 import ProfileClient from '@/components/juice/ProfileClient';
 import { createClient } from '@/lib/supabase/server';
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 
 export default async function ProfilePage(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
