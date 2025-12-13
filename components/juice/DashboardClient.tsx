@@ -545,7 +545,7 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
                     value={newMemberName}
                     onChange={(e) => setNewMemberName(e.target.value)}
                     placeholder="新しいメンバー名..."
-                    className="flex-1"
+                    className="flex-1 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                 />
                 <Button type="submit" disabled={isAddingMember || !newMemberName.trim()} size="icon">
                     <Plus className="w-4 h-4" />
@@ -553,7 +553,7 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
             </form>
 
             <div className="space-y-2">
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">メンバー一覧 ({project.members.length})</p>
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">メンバー一覧 ({project.members.length})</p>
                 <div className="space-y-2">
                     {project.members.map(member => (
                         <div key={member.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
@@ -565,7 +565,7 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
                                         <User className="w-4 h-4 text-slate-500" />
                                     )}
                                 </div>
-                                <span className="font-bold truncate">{member.name}</span>
+                                <span className="font-bold truncate text-slate-900 dark:text-slate-100">{member.name}</span>
                             </div>
                             <div className="flex items-center gap-1">
                                 <Button 
@@ -626,6 +626,7 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
                         onChange={(e) => setEditingMemberName(e.target.value)}
                         placeholder="メンバー名を入力..."
                         autoFocus
+                        className="text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     />
                 </div>
                 <DialogFooter>
