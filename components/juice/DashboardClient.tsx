@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Plus, History, Users, Share2, Check, ChevronDown, User, Trash2, Pencil, Lock, Key } from 'lucide-react';
+import { Plus, History, Users, Share2, Check, ChevronDown, User, Trash2, Pencil, Lock, Key, MoreHorizontal } from 'lucide-react';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-import { JuiceProjectData, addMember, removeMember, updateMemberProfile, setProjectPassword, verifyProjectPassword } from '@/lib/juice/actions';
+import { JuiceProjectData, addMember, removeMember, updateMemberProfile, setProjectPassword, verifyProjectPassword, deleteMatch } from '@/lib/juice/actions';
 import { toast } from 'sonner';
 import {
   DropdownMenu,
@@ -229,6 +229,14 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
       } finally {
           setIsUpdatingMember(false);
       }
+  };
+
+  const handleDeleteMatch = async (matchId: string) => {
+      toast.promise(deleteMatch(matchId, project.slug), {
+          loading: '削除中...',
+          success: '履歴を削除しました',
+          error: '削除に失敗しました',
+      });
   };
 
   // --- Data Processing ---
@@ -501,7 +509,7 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
               const rank = myResult ? myResult.rank : '-';
 
               return (
-                <div key={match.id} className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+                <div key={match.id} className="relative group flex items-center justify-between p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm pr-12">
                   <div className="flex items-center space-x-4">
                     <div className={`w-12 h-12 rounded-lg flex flex-col items-center justify-center ${point > 0 ? 'bg-cyan-50 dark:bg-cyan-900/30' : 'bg-slate-100 dark:bg-slate-800'}`}>
                       <span className="text-xs font-bold text-slate-400">{rank}位</span>
@@ -519,6 +527,34 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
                   <div className={`font-black text-lg ${point > 0 ? 'text-cyan-500' : 'text-slate-400'}`}>
                     {point > 0 ? '+' : ''}{point}
                   </div>
+                  
+                  {/* Menu */}
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-300 hover:text-slate-600 dark:hover:text-slate-200">
+                                <MoreHorizontal className="w-5 h-5" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <Link href={`/juice/group/${project.slug}/record?matchId=${match.id}`}>
+                                <DropdownMenuItem className="cursor-pointer">
+                                    <Pencil className="w-4 h-4 mr-2" />
+                                    編集
+                                </DropdownMenuItem>
+                            </Link>
+                            <DropdownMenuItem 
+                                onClick={() => {
+                                    if(confirm('本当に削除しますか？')) handleDeleteMatch(match.id);
+                                }} 
+                                className="text-red-500 cursor-pointer focus:text-red-500"
+                            >
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                削除
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
               );
             })}
@@ -535,7 +571,7 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
       <Dialog open={isManageMembersOpen} onOpenChange={setIsManageMembersOpen}>
         <DialogContent className="sm:max-w-[425px] max-h-[80vh] overflow-y-auto bg-white dark:bg-slate-900">
           <DialogHeader>
-            <DialogTitle>メンバー管理</DialogTitle>
+            <DialogTitle className="text-slate-900 dark:text-white font-bold">メンバー管理</DialogTitle>
           </DialogHeader>
           
           <div className="space-y-6 py-4">
@@ -545,9 +581,9 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
                     value={newMemberName}
                     onChange={(e) => setNewMemberName(e.target.value)}
                     placeholder="新しいメンバー名..."
-                    className="flex-1 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                    className="flex-1 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 border-slate-200 dark:border-slate-700"
                 />
-                <Button type="submit" disabled={isAddingMember || !newMemberName.trim()} size="icon">
+                <Button type="submit" disabled={isAddingMember || !newMemberName.trim()} size="icon" className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200">
                     <Plus className="w-4 h-4" />
                 </Button>
             </form>
@@ -585,15 +621,15 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
                                     </AlertDialogTrigger>
                                     <AlertDialogContent className="bg-white dark:bg-slate-900">
                                         <AlertDialogHeader>
-                                            <AlertDialogTitle>メンバー削除</AlertDialogTitle>
-                                            <AlertDialogDescription>
+                                            <AlertDialogTitle className="text-slate-900 dark:text-white">メンバー削除</AlertDialogTitle>
+                                            <AlertDialogDescription className="text-slate-500 dark:text-slate-400">
                                                 {member.name} を削除してもよろしいですか？<br />
                                                 これまでの対戦履歴からも削除されます。
                                             </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
-                                            <AlertDialogCancel>キャンセル</AlertDialogCancel>
-                                            <AlertDialogAction onClick={() => handleRemoveMember(member.id)} className="bg-red-500 hover:bg-red-600">
+                                            <AlertDialogCancel className="text-slate-900 dark:text-white border-slate-200 dark:border-slate-700">キャンセル</AlertDialogCancel>
+                                            <AlertDialogAction onClick={() => handleRemoveMember(member.id)} className="bg-red-500 hover:bg-red-600 text-white">
                                                 削除
                                             </AlertDialogAction>
                                         </AlertDialogFooter>
@@ -606,7 +642,7 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
             </div>
           </div>
           <DialogFooter>
-             <Button variant="outline" onClick={() => setIsManageMembersOpen(false)}>閉じる</Button>
+             <Button variant="outline" onClick={() => setIsManageMembersOpen(false)} className="text-slate-900 dark:text-white border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">閉じる</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, Save, GripVertical, Crown, Plus, Pencil, Users, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { JuiceProjectData, addMember, recordMatch, updateMemberProfile } from '@/lib/juice/actions';
+import { JuiceProjectData, addMember, recordMatch, updateMatch, updateMemberProfile } from '@/lib/juice/actions';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -43,10 +43,12 @@ const initialRankSettings: RankSetting[] = [
 
 type Props = {
   project: JuiceProjectData;
+  initialMatch?: JuiceProjectData['matches'][number];
 };
 
-export default function RecordClient({ project }: Props) {
+export default function RecordClient({ project, initialMatch }: Props) {
   const router = useRouter();
+  const isEditing = !!initialMatch;
   
   // Initialize players from project members
   // Default to selecting the first 4 members or all if less than 4
@@ -61,6 +63,8 @@ export default function RecordClient({ project }: Props) {
   // Game title state
   const [gameTitle, setGameTitle] = useState('');
 
+  // ... (dialog states)
+  
   // New member dialog state
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
   const [newMemberName, setNewMemberName] = useState('');
@@ -76,19 +80,53 @@ export default function RecordClient({ project }: Props) {
   const [isUpdatingMember, setIsUpdatingMember] = useState(false);
 
   useEffect(() => {
-    // Initial setup: Take up to 4 members
-    const initial = project.members.slice(0, 4).map((m, index) => {
-      const rank = index + 1;
-      const setting = initialRankSettings.find(s => s.rank === rank);
-      return {
-        id: m.id,
-        name: m.name,
-        rank,
-        points: setting ? setting.points : 0, // Initial calculation
-      };
-    });
-    setActivePlayers(initial);
-  }, [project.members]);
+    if (initialMatch) {
+      // Initialize from match for editing
+      setGameTitle(initialMatch.gameTitle || '');
+      
+      const players = initialMatch.results
+        .sort((a, b) => a.rank - b.rank)
+        .map(r => {
+           const member = project.members.find(m => m.id === r.memberId);
+           return {
+               id: r.memberId,
+               name: member?.name || 'Unknown',
+               rank: r.rank,
+               points: r.points
+           };
+        });
+      setActivePlayers(players);
+      
+      // Initialize rank settings from the match data
+      const distinctRanks = Array.from(new Set(players.map(p => p.rank)));
+      const newSettings = distinctRanks.map(rank => {
+          const p = players.find(pl => pl.rank === rank);
+          return { rank, points: p ? p.points : 0 };
+      }).sort((a, b) => a.rank - b.rank);
+      
+      const mergedSettings = [...newSettings];
+      initialRankSettings.forEach(init => {
+          if (!mergedSettings.find(s => s.rank === init.rank)) {
+              mergedSettings.push(init);
+          }
+      });
+      setRankSettings(mergedSettings.sort((a, b) => a.rank - b.rank));
+
+    } else {
+        // Initial setup: Take up to 4 members
+        const initial = project.members.slice(0, 4).map((m, index) => {
+        const rank = index + 1;
+        const setting = initialRankSettings.find(s => s.rank === rank);
+        return {
+            id: m.id,
+            name: m.name,
+            rank,
+            points: setting ? setting.points : 0, // Initial calculation
+        };
+        });
+        setActivePlayers(initial);
+    }
+  }, [project.members, initialMatch]);
 
   // Recalculate points when rankSettings or activePlayers change (re-indexing ranks)
   useEffect(() => {
@@ -125,7 +163,18 @@ export default function RecordClient({ project }: Props) {
     // Swap
     [newPlayers[index], newPlayers[targetIndex]] = [newPlayers[targetIndex], newPlayers[index]];
     
-    setActivePlayers(newPlayers);
+    // Recalculate ranks and points immediately
+    const updatedPlayers = newPlayers.map((p, idx) => {
+        const rank = idx + 1;
+        const setting = rankSettings.find(s => s.rank === rank);
+        return { 
+          ...p, 
+          rank, 
+          points: setting ? setting.points : 0 
+        };
+    });
+
+    setActivePlayers(updatedPlayers);
   };
 
   const handleSubmitNewMember = async (e: React.FormEvent) => {
@@ -252,10 +301,15 @@ export default function RecordClient({ project }: Props) {
         points: p.points,
       }));
 
-      const res = await recordMatch(project.id, project.slug, new Date(), results, gameTitle);
+      let res;
+      if (isEditing && initialMatch) {
+        res = await updateMatch(initialMatch.id, project.slug, initialMatch.playedAt, results, gameTitle);
+      } else {
+        res = await recordMatch(project.id, project.slug, new Date(), results, gameTitle);
+      }
       
       if (res.success) {
-        toast.success('記録しました！');
+        toast.success(isEditing ? '記録を更新しました！' : '記録しました！');
         router.push(`/juice/group/${project.slug}`);
       } else {
         toast.error('保存に失敗しました');

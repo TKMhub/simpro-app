@@ -411,6 +411,67 @@ export async function recordMatch(
 }
 
 /**
+ * Delete a match.
+ */
+export async function deleteMatch(matchId: string, slug: string) {
+  try {
+    await prisma.juiceMatch.delete({
+      where: { id: matchId },
+    });
+    revalidatePath(`/juice/group/${slug}`);
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to delete match:', error);
+    return { success: false, error };
+  }
+}
+
+/**
+ * Update a match (delete existing results and recreate).
+ */
+export async function updateMatch(
+  matchId: string,
+  slug: string,
+  playedAt: Date,
+  results: { memberId: string; rank: number; points: number }[],
+  gameTitle?: string
+) {
+  try {
+    await prisma.$transaction(async (tx) => {
+      // Update match details
+      await tx.juiceMatch.update({
+        where: { id: matchId },
+        data: {
+          playedAt,
+          gameTitle,
+        },
+      });
+
+      // Delete old results
+      await tx.juiceMatchResult.deleteMany({
+        where: { matchId },
+      });
+
+      // Create new results
+      await tx.juiceMatchResult.createMany({
+        data: results.map(r => ({
+          matchId,
+          memberId: r.memberId,
+          rank: r.rank,
+          points: r.points,
+        })),
+      });
+    });
+
+    revalidatePath(`/juice/group/${slug}`);
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to update match:', error);
+    return { success: false, error };
+  }
+}
+
+/**
  * Update member profile.
  * Can also sync to global profile if userId is present.
  */
