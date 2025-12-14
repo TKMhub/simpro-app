@@ -52,10 +52,14 @@ export function ZaikoHeader({
                 className="rounded-lg object-cover" 
               />
             </div>
-            {!title && <span className="text-lg font-bold tracking-tight">Zaiko</span>}
+            {(!title || title === 'Zaiko') && (
+              <span className="text-lg font-bold tracking-tight">
+                Zaiko<span className="text-green-500">.</span>
+              </span>
+            )}
           </Link>
         )}
-        {title && (
+        {title && title !== 'Zaiko' && (
           <h1 className="text-base font-bold leading-none tracking-tight">
             {title}
           </h1>

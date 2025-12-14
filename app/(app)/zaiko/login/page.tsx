@@ -79,7 +79,7 @@ export default function ZaikoLoginPage() {
            </div>
            <h1 className="text-2xl font-bold">おかえりなさい</h1>
            <p className="text-zinc-500 text-sm">
-             Zaikoアカウントにログインして<br />
+             Zaiko<span className="text-green-500">.</span>アカウントにログインして<br />
              家族との共有を始めましょう
            </p>
         </div>

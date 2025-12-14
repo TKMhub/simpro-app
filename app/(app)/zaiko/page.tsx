@@ -58,7 +58,7 @@ export default async function ZaikoLpPage() {
         </SectionBlock>
 
         {/* Solution Section */}
-        <SectionBlock title="Zaikoなら解決できます" subtitle="在庫管理のストレスをゼロに">
+        <SectionBlock title={<>Zaiko<span className="text-green-500">.</span>なら解決できます</>} subtitle="在庫管理のストレスをゼロに">
           <div className="grid grid-cols-1 gap-4">
              <MotionContainer delay="small">
               <FeatureCard 

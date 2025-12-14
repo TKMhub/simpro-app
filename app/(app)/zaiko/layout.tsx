@@ -2,7 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Zaiko - 家庭の在庫管理をゼロに',
+  title: 'Zaiko. - 家庭の在庫管理をゼロに',
   description: '家族で使える在庫管理アプリ。買い忘れも、買いすぎも、もうありません。',
 };
 

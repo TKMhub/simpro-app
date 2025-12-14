@@ -61,7 +61,7 @@ export default function ZaikoSettingsPage() {
         </Button>
         
         <p className="text-center text-xs text-zinc-400 mt-4">
-          Zaiko v0.1.0 (Beta)
+          Zaiko<span className="text-green-500">.</span> v0.1.0 (Beta)
         </p>
 
       </div>
