@@ -10,6 +10,21 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'source.unsplash.com', pathname: '/**' },
     ],
   },
+  // 画像などの静的ファイルのキャッシュ設定
+  async headers() {
+    return [
+      {
+        source: '/:all*(svg|jpg|jpeg|png|gif|ico|webp)',
+        locale: false,
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=60, stale-while-revalidate=2592000',
+          },
+        ],
+      },
+    ];
+  },
   // Ensure Next.js treats this repo as the workspace root
   outputFileTracingRoot: process.cwd(),
 };

@@ -5,7 +5,12 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 // - アクセストークンの期限切れ時にリフレッシュ
 // - Cookie に最新セッションを反映
 export async function middleware(req: NextRequest) {
-  let res = NextResponse.next({ request: { headers: req.headers } });
+  // 静的ファイルへのリクエストは処理しない（matcherのバックアップ）
+  if (req.nextUrl.pathname.match(/\.(svg|png|jpg|jpeg|gif|webp|ico|txt)$/)) {
+    return NextResponse.next();
+  }
+
+  const res = NextResponse.next({ request: { headers: req.headers } });
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
