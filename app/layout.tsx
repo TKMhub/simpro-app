@@ -27,7 +27,7 @@ export default async function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "(function(){try{var m=document.cookie.match(/(?:^|; )theme=([^;]+)/);var cs=m?decodeURIComponent(m[1]):null;var ls=localStorage.getItem('theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var v=cs||ls;var e=v?v==='dark':d;document.documentElement.classList.toggle('dark',e);}catch(e){}})();",
+              "(function(){try{var m=document.cookie.match(/(?:^|; )theme=([^;]+)/);var cs=m?decodeURIComponent(m[1]):null;var ls=localStorage.getItem('theme');var v=cs||ls;var e=v?v==='dark':false;document.documentElement.classList.toggle('dark',e);}catch(e){}})();",
           }}
         />
         {children}

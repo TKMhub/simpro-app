@@ -101,9 +101,9 @@ export default function SummarySlider({ items, intervalMs = 0 }: SummarySliderPr
 
 function SummaryCard({ item }: { item: SummaryItem }) {
   return (
-    <div className="group relative h-full flex flex-col overflow-hidden rounded-2xl bg-white/60 dark:bg-slate-950/60 backdrop-blur-md border border-slate-200/60 dark:border-slate-800/60 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-slate-300/80 dark:hover:border-slate-700/80 hover:-translate-y-1">
+    <div className="group relative h-full flex flex-col overflow-hidden rounded-2xl bg-[var(--cover-glass-bg)] backdrop-blur-xl backdrop-saturate-150 ring-1 ring-[var(--glass-border)] shadow-lg shadow-black/10 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
       {/* Image Area */}
-      <div className="relative w-full aspect-[2/1] bg-slate-50/50 dark:bg-slate-900/50 overflow-hidden border-b border-slate-100/50 dark:border-slate-800/50">
+      <div className="relative w-full aspect-[2/1] bg-white/5 dark:bg-black/5 overflow-hidden border-b border-[var(--glass-border)]">
         {item.image?.src ? (
           <Image
             src={item.image.src}
@@ -114,14 +114,14 @@ function SummaryCard({ item }: { item: SummaryItem }) {
             unoptimized={item.image.src.toLowerCase().endsWith('.svg')}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-slate-400">
+          <div className="w-full h-full flex items-center justify-center text-muted-foreground">
             No Image
           </div>
         )}
         {/* Category Badge overlay */}
         {item.category && (
           <div className="absolute top-3 left-3">
-            <Badge variant="secondary" className="bg-white/80 dark:bg-black/50 backdrop-blur-sm shadow-sm font-semibold capitalize border border-slate-200/50 dark:border-slate-800/50">
+            <Badge variant="secondary" className="bg-white/90 dark:bg-black/60 text-[var(--cover-foreground)] backdrop-blur-md shadow-sm font-semibold capitalize border border-[var(--glass-border)]">
               {item.category}
             </Badge>
           </div>
@@ -132,13 +132,13 @@ function SummaryCard({ item }: { item: SummaryItem }) {
       <div className="flex flex-col flex-1 p-5">
         <div className="flex-1 space-y-3">
           <div className="flex items-start justify-between gap-2">
-            <h3 className={`font-bold text-lg leading-tight text-slate-800 dark:text-slate-200 transition-colors line-clamp-1 ${item.hoverColorClass ?? "group-hover:text-blue-600 dark:group-hover:text-blue-400"}`}>
+            <h3 className={`font-bold text-lg leading-tight text-[var(--cover-foreground)] transition-colors line-clamp-1 ${item.hoverColorClass ?? ""}`}>
               {item.titleComponent ?? item.title}
             </h3>
           </div>
           
           {item.description && (
-            <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed h-10">
+            <p className="text-sm text-[var(--cover-foreground)]/80 line-clamp-2 leading-relaxed h-10">
               {item.description}
             </p>
           )}
@@ -148,7 +148,7 @@ function SummaryCard({ item }: { item: SummaryItem }) {
               {item.tags.slice(0, 3).map((t, i) => (
                 <span 
                   key={`${item.id}-tag-${i}`}
-                  className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-medium bg-slate-100/80 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300"
+                  className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-medium bg-[var(--cover-foreground)]/10 text-[var(--cover-foreground)]"
                 >
                   {t}
                 </span>
@@ -157,11 +157,11 @@ function SummaryCard({ item }: { item: SummaryItem }) {
           )}
         </div>
 
-        <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800/50 flex items-center justify-end">
+        <div className="mt-5 pt-4 border-t border-[var(--glass-border)] flex items-center justify-end">
           {item.cta?.href && (
             <Link 
               href={item.cta.href} 
-              className={`inline-flex items-center text-sm font-semibold transition-colors ${item.ctaColorClass ?? "text-blue-600/90 dark:text-blue-400/90 hover:text-blue-700 dark:hover:text-blue-300"}`}
+              className={`inline-flex items-center text-sm font-semibold transition-colors ${item.ctaColorClass ?? "text-[var(--cover-foreground)]/90 hover:text-[var(--cover-foreground)]"}`}
             >
               {item.cta.label ?? "View Details"}
               <svg className="ml-1 w-4 h-4 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
