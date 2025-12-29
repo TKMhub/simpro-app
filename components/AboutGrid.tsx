@@ -36,6 +36,7 @@ export default function AboutGrid() {
       image: { src: "/Simplo_gray_main_sub.svg", alt: "Simpro ロゴ" },
       imageFit: "contain" as const,
       cta: { label: "趣味", href: "/about#hobby" },
+      imageClassName: "p-14",
     },
   ];
 
@@ -50,7 +51,7 @@ export default function AboutGrid() {
                         src={item.image.src}
                         alt={item.image.alt ?? item.title}
                         fill
-                    className="object-contain p-8 transition-transform duration-500 group-hover:scale-105"
+                    className={`object-contain transition-transform duration-500 group-hover:scale-105 ${item.imageClassName || "p-8"}`}
                         priority={false}
                         unoptimized={item.image.src.toLowerCase().endsWith('.svg')}
                       />
