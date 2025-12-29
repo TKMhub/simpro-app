@@ -6,7 +6,8 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 // - Cookie に最新セッションを反映
 export async function middleware(req: NextRequest) {
   // 静的ファイルへのリクエストは処理しない（matcherのバックアップ）
-  if (req.nextUrl.pathname.match(/\.(svg|png|jpg|jpeg|gif|webp|ico|txt)$/)) {
+  // 大文字小文字を無視して拡張子をチェック
+  if (req.nextUrl.pathname.match(/\.(svg|png|jpg|jpeg|gif|webp|ico|txt)$/i)) {
     return NextResponse.next();
   }
 
@@ -75,6 +76,18 @@ export async function middleware(req: NextRequest) {
 // 静的アセットや Next.js の内部パスを除外
 export const config = {
   matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - robots.txt
+     * - sitemap.xml
+     * - images with extensions: svg, png, jpg, jpeg, gif, webp, ico
+     * - text files: txt
+     * Note: The regex inside matcher string does not support flags like 'i',
+     * so we rely on the middleware function logic for case-insensitive exclusion as well.
+     */
     "/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt)$).*)",
   ],
 };
