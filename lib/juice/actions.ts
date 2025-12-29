@@ -579,3 +579,20 @@ export async function joinAsCurrentUser(projectId: string, slug: string) {
      return { success: false, error };
   }
 }
+
+/**
+ * Update project name.
+ */
+export async function updateProjectName(projectId: string, slug: string, name: string) {
+  try {
+    const project = await prisma.juiceProject.update({
+      where: { id: projectId },
+      data: { name },
+    });
+    revalidatePath(`/juice/group/${slug}`);
+    return { success: true, project };
+  } catch (error) {
+    console.error('Failed to update project name:', error);
+    return { success: false, error };
+  }
+}

@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Plus, History, Users, Share2, Check, ChevronDown, User, Trash2, Pencil, Lock, Key, MoreHorizontal } from 'lucide-react';
+import { Plus, History, Users, Share2, Check, ChevronDown, User, Trash2, Pencil, Lock, Key, MoreHorizontal, Settings } from 'lucide-react';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-import { JuiceProjectData, addMember, removeMember, updateMemberProfile, setProjectPassword, verifyProjectPassword, deleteMatch } from '@/lib/juice/actions';
+import { JuiceProjectData, addMember, removeMember, updateMemberProfile, setProjectPassword, verifyProjectPassword, deleteMatch, updateProjectName } from '@/lib/juice/actions';
 import { toast } from 'sonner';
 import {
   DropdownMenu,
@@ -36,6 +36,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type Props = {
   project: JuiceProjectData;
@@ -46,6 +47,13 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
   const [copied, setCopied] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   
+  // Settings State
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  
+  // Project Name State
+  const [projectNameInput, setProjectNameInput] = useState(project.name);
+  const [isUpdatingProjectName, setIsUpdatingProjectName] = useState(false);
+
   // Member Management State
   const [isManageMembersOpen, setIsManageMembersOpen] = useState(false);
   const [newMemberName, setNewMemberName] = useState('');
@@ -58,12 +66,16 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
   const [isEditMemberDialogOpen, setIsEditMemberDialogOpen] = useState(false);
 
   // Password Protection State
-  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
+  // const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false); // Replaced by isSettingsOpen
   const [passwordInput, setPasswordInput] = useState('');
   const [isSettingPassword, setIsSettingPassword] = useState(false);
   const [isVerified, setIsVerified] = useState(!project.hasPassword); // Automatically verified if no password
   const [verifyPasswordInput, setVerifyPasswordInput] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
+
+  useEffect(() => {
+    setProjectNameInput(project.name);
+  }, [project.name]);
 
   // Check auth cookie on mount (client-side verify if needed, but server component usually handles initial auth check)
   // For this implementation, we will use a simple client-side gate for the UI if hasPassword is true.
@@ -82,7 +94,7 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
                       description: 'パスワードを設定して、プロジェクトを保護することをお勧めします。',
                       action: {
                           label: '設定する',
-                          onClick: () => setIsPasswordDialogOpen(true),
+                          onClick: () => setIsSettingsOpen(true),
                       },
                       duration: 8000,
                   });
@@ -104,6 +116,28 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
       }
   }, [project.hasPassword, project.id, isVerified]);
 
+  const handleUpdateProjectName = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!projectNameInput.trim()) return;
+
+    setIsUpdatingProjectName(true);
+    try {
+      const res = await updateProjectName(project.id, project.slug, projectNameInput);
+      if (res.success) {
+        toast.success('グループ名を変更しました');
+        // Dialog stays open or close? Let's keep it open or close based on UX. 
+        // Maybe close it to indicate success clearly.
+        // setIsSettingsOpen(false); 
+      } else {
+        toast.error('変更に失敗しました');
+      }
+    } catch {
+      toast.error('エラーが発生しました');
+    } finally {
+      setIsUpdatingProjectName(false);
+    }
+  };
+
   const handleSetPassword = async (e: React.FormEvent) => {
       e.preventDefault();
       if (!passwordInput.trim()) return;
@@ -113,7 +147,7 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
           const res = await setProjectPassword(project.id, passwordInput);
           if (res.success) {
               toast.success('パスワードを設定しました');
-              setIsPasswordDialogOpen(false);
+              setIsSettingsOpen(false);
               setPasswordInput('');
               setIsVerified(true); // Creator is authenticated
               // Ideally refresh page to update project.hasPassword prop, but router.refresh() works too
@@ -347,38 +381,79 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
             <span>{copied ? 'Copied' : 'Share'}</span>
           </button>
 
-          <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
+          <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
             <DialogTrigger asChild>
                 <button className="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-                    {project.hasPassword ? <Lock className="w-4 h-4" /> : <Key className="w-4 h-4" />}
+                    <Settings className="w-4 h-4" />
                 </button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px] bg-white dark:bg-slate-900">
                 <DialogHeader>
-                    <DialogTitle>パスワード設定</DialogTitle>
+                    <DialogTitle>グループ設定</DialogTitle>
                 </DialogHeader>
-                <form onSubmit={handleSetPassword} className="space-y-4 py-4">
-                    <p className="text-sm text-slate-500">
-                        {project.hasPassword 
-                            ? '新しいパスワードを設定すると、以前のパスワードは無効になります。' 
-                            : 'パスワードを設定すると、URLを知っているユーザーでもパスワードを入力しないとアクセスできなくなります。'}
-                    </p>
-                    <div className="space-y-2">
-                        <Label htmlFor="new-password">パスワード</Label>
-                        <Input
-                            id="new-password"
-                            type="password"
-                            value={passwordInput}
-                            onChange={(e) => setPasswordInput(e.target.value)}
-                            placeholder="新しいパスワード"
-                        />
-                    </div>
-                    <DialogFooter>
-                        <Button type="submit" disabled={isSettingPassword || !passwordInput.trim()}>
+                
+                <Tabs defaultValue="general" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="general">一般</TabsTrigger>
+                    <TabsTrigger value="security">セキュリティ</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="general" className="space-y-4 py-4">
+                    <form onSubmit={handleUpdateProjectName} className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="project-name">グループ名</Label>
+                            <Input
+                                id="project-name"
+                                value={projectNameInput}
+                                onChange={(e) => setProjectNameInput(e.target.value)}
+                                placeholder="グループ名"
+                                className="text-slate-900 dark:text-white"
+                            />
+                        </div>
+                        <Button type="submit" disabled={isUpdatingProjectName || !projectNameInput.trim()} className="w-full">
+                            {isUpdatingProjectName ? '保存中...' : '保存'}
+                        </Button>
+                    </form>
+                  </TabsContent>
+
+                  <TabsContent value="security" className="space-y-4 py-4">
+                    <form onSubmit={handleSetPassword} className="space-y-4">
+                        <div className="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg flex items-center gap-3">
+                            <div className={`p-2 rounded-full ${project.hasPassword ? 'bg-green-100 text-green-600' : 'bg-slate-200 text-slate-500'}`}>
+                                {project.hasPassword ? <Lock className="w-4 h-4" /> : <Key className="w-4 h-4" />}
+                            </div>
+                            <div>
+                                <p className="text-sm font-bold text-slate-900 dark:text-white">
+                                    {project.hasPassword ? 'パスワード保護中' : 'パスワード未設定'}
+                                </p>
+                                <p className="text-xs text-slate-500">
+                                    {project.hasPassword ? 'このグループは保護されています' : '誰でもアクセス可能です'}
+                                </p>
+                            </div>
+                        </div>
+
+                        <p className="text-sm text-slate-500">
+                            {project.hasPassword 
+                                ? '新しいパスワードを設定すると、以前のパスワードは無効になります。' 
+                                : 'パスワードを設定すると、URLを知っているユーザーでもパスワードを入力しないとアクセスできなくなります。'}
+                        </p>
+                        <div className="space-y-2">
+                            <Label htmlFor="new-password">パスワード</Label>
+                            <Input
+                                id="new-password"
+                                type="password"
+                                value={passwordInput}
+                                onChange={(e) => setPasswordInput(e.target.value)}
+                                placeholder="新しいパスワード"
+                                className="text-slate-900 dark:text-white"
+                            />
+                        </div>
+                        <Button type="submit" disabled={isSettingPassword || !passwordInput.trim()} className="w-full">
                             {isSettingPassword ? '設定中...' : '保存'}
                         </Button>
-                    </DialogFooter>
-                </form>
+                    </form>
+                  </TabsContent>
+                </Tabs>
             </DialogContent>
           </Dialog>
           

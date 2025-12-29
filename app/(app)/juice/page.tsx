@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { ArrowRight, Calculator, Trophy, BarChart3, Link2, Crown, Settings2 } from 'lucide-react';
+import { ArrowRight, Calculator, Trophy, BarChart3, Link2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 import { createNewProject } from '@/lib/juice/actions';

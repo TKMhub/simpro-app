@@ -488,13 +488,12 @@ export default function RecordClient({ project, initialMatch }: Props) {
                   const setting = rankSettings.find(s => s.rank === p.rank) || { rank: p.rank, points: 0 };
                   return (
                     <div key={p.rank} className="flex justify-between items-center text-sm border-b border-slate-100 dark:border-slate-800 last:border-0 py-2">
-                    <span className="text-slate-500 dark:text-slate-400 font-medium">{p.rank}位</span>
+                      <span className="text-slate-500 dark:text-slate-400 font-medium">{p.rank}位</span>
                     <div className="flex items-center">
-                        <input
-                        type="number"
-                        value={setting.points}
-                        onChange={(e) => handlePointSettingChange(p.rank, parseInt(e.target.value, 10) || 0)}
-                        className="w-16 text-right font-bold bg-slate-100 dark:bg-slate-800 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-slate-800 dark:text-white"
+                        <PointInput
+                          value={setting.points}
+                          onChange={(val) => handlePointSettingChange(p.rank, val)}
+                          className="w-16 text-right font-bold bg-slate-100 dark:bg-slate-800 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-slate-800 dark:text-white"
                         />
                         <span className="font-bold w-6 text-right pr-1">pt</span>
                     </div>
@@ -545,6 +544,66 @@ export default function RecordClient({ project, initialMatch }: Props) {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+function PointInput({ 
+  value, 
+  onChange, 
+  className 
+}: { 
+  value: number; 
+  onChange: (val: number) => void; 
+  className?: string; 
+}) {
+  const [inputValue, setInputValue] = useState(value === 0 ? '' : value.toString());
+
+  useEffect(() => {
+    // If value changes externally, update our string rep if the number meaning is different
+    const currentNum = (inputValue === '' || inputValue === '-') ? 0 : Number(inputValue);
+    if (value !== currentNum) {
+        setInputValue(value === 0 ? '' : value.toString());
+    }
+  }, [value]); // inputValue is not needed in deps if we just read it, but let's be safe
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    setInputValue(raw);
+    
+    if (raw === '' || raw === '-') {
+        onChange(0);
+    } else {
+        const parsed = parseInt(raw, 10);
+        if (!isNaN(parsed)) {
+            onChange(parsed);
+        }
+    }
+  };
+
+  const handleBlur = () => {
+    if (inputValue === '-') {
+        setInputValue('');
+        onChange(0);
+    }
+  };
+
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (value === 0) {
+      setInputValue('');
+    }
+    e.target.select();
+  };
+
+  return (
+    <input
+      type="number"
+      value={inputValue}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      onFocus={handleFocus}
+      className={className}
+      placeholder="0"
+    />
   );
 }
 
