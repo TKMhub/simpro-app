@@ -37,6 +37,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Image from 'next/image';
 
 type Props = {
   project: JuiceProjectData;
@@ -462,7 +463,7 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
               <button className="flex items-center space-x-2 text-sm font-bold bg-white dark:bg-slate-900 pr-3 pl-2 py-1 rounded-full border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors outline-none focus:ring-2 focus:ring-cyan-500/20">
                 <div className="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
                   {myMember?.avatarUrl ? (
-                     <img src={myMember.avatarUrl} alt={myMember.name} className="w-full h-full object-cover" />
+                     <Image src={myMember.avatarUrl} alt={myMember.name} className="w-full h-full object-cover" />
                   ) : (
                      <User className="w-3 h-3 text-slate-500" />
                   )}
@@ -483,7 +484,7 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
                   <div className="flex items-center gap-2">
                     <div className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
                         {member.avatarUrl ? (
-                            <img src={member.avatarUrl} alt={member.name} className="w-full h-full object-cover" />
+                            <Image src={member.avatarUrl} alt={member.name} className="w-full h-full object-cover" />
                         ) : (
                             <span className="text-[10px]">👤</span>
                         )}
@@ -671,7 +672,7 @@ export default function DashboardClient({ project, currentUserEmail }: Props) {
                             <div className="flex items-center gap-3 overflow-hidden">
                                 <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
                                     {member.avatarUrl ? (
-                                        <img src={member.avatarUrl} alt={member.name} className="w-full h-full object-cover rounded-full" />
+                                        <Image src={member.avatarUrl} alt={member.name} className="w-full h-full object-cover rounded-full" />
                                     ) : (
                                         <User className="w-4 h-4 text-slate-500" />
                                     )}

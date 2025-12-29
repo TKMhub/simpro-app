@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { updateMemberProfile, uploadAvatar } from '@/lib/juice/actions';
 import { toast } from 'sonner';
+import Image from 'next/image';
 
 type Props = {
   projectSlug: string;
@@ -99,7 +100,7 @@ export default function ProfileClient({ projectSlug, member }: Props) {
           <div className="relative w-32 h-32">
             <div className="w-full h-full rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center overflow-hidden border-4 border-white dark:border-slate-800 shadow-lg">
               {avatarUrl ? (
-                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                <Image src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
                 <User className="w-16 h-16 text-slate-400" />
               )}
