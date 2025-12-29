@@ -121,7 +121,7 @@ function SummaryCard({ item }: { item: SummaryItem }) {
         {/* Category Badge overlay */}
         {item.category && (
           <div className="absolute top-3 left-3">
-            <Badge variant="secondary" className="bg-white/90 dark:bg-black/60 text-[var(--cover-foreground)] backdrop-blur-md shadow-sm font-semibold capitalize border border-[var(--glass-border)]">
+            <Badge variant="secondary" className="bg-white/90 dark:bg-black/60 text-zinc-900 dark:text-zinc-100 backdrop-blur-md shadow-sm font-semibold capitalize border border-[var(--glass-border)]">
               {item.category}
             </Badge>
           </div>

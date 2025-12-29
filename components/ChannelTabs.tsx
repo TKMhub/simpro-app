@@ -44,7 +44,7 @@ export default function ChannelTabs({ sections, value, onValueChange }: ChannelT
                   // inactive style
                   "text-[var(--cover-foreground)]/80",
                   // active pill emphasis
-                  "data-[state=active]:text-[var(--cover-foreground)]",
+                  "data-[state=active]:text-zinc-900 dark:data-[state=active]:text-zinc-100",
                   // Light: white pill on dark-ish glass, Dark: subtle black pill on white glass
                   "data-[state=active]:bg-white/70 data-[state=active]:shadow-sm",
                   "dark:data-[state=active]:bg-black/20",
