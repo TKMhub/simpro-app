@@ -57,7 +57,7 @@ export async function getZaikoUser(): Promise<any | null> {
       return null;
     }
   } else {
-      // 既存ユーザーだがZaikoは初めての場合
+      // 既存ユーザーの場合
       if (!profile.joinedApps.includes('zaiko')) {
           await prisma.profile.update({
               where: { id: profile.id },
@@ -67,27 +67,27 @@ export async function getZaikoUser(): Promise<any | null> {
                   }
               }
           });
-          
-          // Zaiko用の初期データ作成
-          const existingFamily = await prisma.zaikoFamilyMember.findFirst({
-              where: { userId: profile.id }
-          });
-          
-          if (!existingFamily) {
-             await prisma.zaikoFamily.create({
-                data: {
-                    name: 'マイ在庫',
-                    inviteCode: Math.random().toString(36).substring(2, 10),
-                    createdBy: profile.id,
-                    members: {
-                        create: {
-                            userId: profile.id,
-                            role: 'ADMIN',
-                        }
+      }
+      
+      // 家族に参加しているか確認し、していなければデフォルト家族を作成
+      const existingFamily = await prisma.zaikoFamilyMember.findFirst({
+          where: { userId: profile.id }
+      });
+      
+      if (!existingFamily) {
+         await prisma.zaikoFamily.create({
+            data: {
+                name: 'マイ在庫',
+                inviteCode: Math.random().toString(36).substring(2, 10),
+                createdBy: profile.id,
+                members: {
+                    create: {
+                        userId: profile.id,
+                        role: 'ADMIN',
                     }
                 }
-              });
-          }
+            }
+          });
       }
   }
 

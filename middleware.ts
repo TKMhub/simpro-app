@@ -50,9 +50,11 @@ export async function middleware(req: NextRequest) {
       path !== "/zaiko"
   ) {
     if (!user) {
-      // 未認証ユーザーはZaikoのLPへリダイレクト
+      // 未認証ユーザーはメインのログイン画面へリダイレクト
       const url = req.nextUrl.clone();
-      url.pathname = "/zaiko";
+      url.pathname = "/login";
+      // ログイン後のリダイレクト先を保持
+      url.searchParams.set("next", path);
       return NextResponse.redirect(url);
     }
   }

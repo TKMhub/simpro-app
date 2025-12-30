@@ -25,7 +25,7 @@ export default async function ZaikoLpPage() {
         title="" 
         rightAction={
           <Button asChild variant="outline" size="sm" className="rounded-full h-8 px-4 text-xs">
-            <Link href="/zaiko/login">ログイン</Link>
+            <Link href="/login?next=/zaiko/dashboard">ログイン</Link>
           </Button>
         }
       />
@@ -129,7 +129,7 @@ export default async function ZaikoLpPage() {
         {/* Bottom CTA */}
         <div className="sticky bottom-0 p-4 bg-white/90 dark:bg-black/90 backdrop-blur border-t border-zinc-200 dark:border-zinc-800">
            <Button asChild size="lg" className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl shadow-lg h-12 text-base font-bold">
-            <Link href="/zaiko/login">
+            <Link href="/login?next=/zaiko/dashboard">
               今すぐ始める
             </Link>
           </Button>

@@ -1,9 +1,10 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Menu, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+
+import { ZaikoLogo } from '@/components/zaiko/ZaikoLogo';
 
 interface ZaikoHeaderProps {
   title?: string;
@@ -44,19 +45,7 @@ export function ZaikoHeader({
           </Button>
         ) : (
           <Link href="/zaiko/dashboard" className="flex items-center gap-2">
-            <div className="relative h-8 w-8 shrink-0">
-              <Image 
-                src="/zaiko-logo.svg" 
-                alt="Zaiko Logo" 
-                fill 
-                className="rounded-lg object-cover" 
-              />
-            </div>
-            {(!title || title === 'Zaiko') && (
-              <span className="text-lg font-bold tracking-tight">
-                Zaiko<span className="text-green-500">.</span>
-              </span>
-            )}
+            <ZaikoLogo showText={!title || title === 'Zaiko'} />
           </Link>
         )}
         {title && title !== 'Zaiko' && (

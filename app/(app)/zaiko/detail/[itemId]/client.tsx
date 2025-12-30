@@ -40,7 +40,7 @@ export function ZaikoDetailClient({ item }: { item: ZaikoItem }) {
   const initialValues = {
     name: item.name,
     quantity: item.quantity,
-    iconName: item.icon,
+    icon: item.icon,
     category: item.category,
     threshold: item.threshold,
     location: item.location || '',
