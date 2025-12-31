@@ -33,8 +33,9 @@ export function ZaikoHeader({
         className
       )}
     >
-      <div className="flex items-center gap-2">
-        {showBack ? (
+      {/* Left: Back Button & Logo */}
+      <div className="flex items-center gap-2 z-10 shrink-0">
+        {showBack && (
           <Button
             variant="ghost"
             size="icon"
@@ -43,19 +44,28 @@ export function ZaikoHeader({
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-        ) : (
-          <Link href="/zaiko/dashboard" className="flex items-center gap-2">
-            <ZaikoLogo showText={!title || title === 'Zaiko'} />
-          </Link>
         )}
+        {/* Logo and Text always displayed */}
+        <Link href="/zaiko/dashboard" className="flex items-center gap-2">
+          <ZaikoLogo showText={true} />
+        </Link>
+      </div>
+
+      {/* Center: Title */}
+      {/* Absolute positioning to ensure true center, with pointer-events-none to allow clicking through empty space if needed */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         {title && title !== 'Zaiko' && (
-          <h1 className="text-base font-bold leading-none tracking-tight">
+          <h1 className={cn(
+            "text-base font-bold leading-none tracking-tight pointer-events-auto",
+            transparent ? "text-white" : "text-zinc-900 dark:text-zinc-50"
+          )}>
             {title}
           </h1>
         )}
       </div>
 
-      <div className="flex items-center gap-2">
+      {/* Right: Actions */}
+      <div className="flex items-center gap-2 z-10 shrink-0">
         {rightAction || (
           <Button
             variant="ghost"
@@ -69,4 +79,3 @@ export function ZaikoHeader({
     </header>
   );
 }
-

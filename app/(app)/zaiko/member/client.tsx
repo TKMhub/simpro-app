@@ -2,19 +2,31 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { UserPlus } from 'lucide-react';
+import { UserPlus, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ZaikoHeader } from '../_components/layout/zaiko-header';
 import { ZaikoMemberWithProfile } from '../_lib/types';
+import { toast } from 'sonner';
 
 interface ZaikoMemberClientProps {
   members: ZaikoMemberWithProfile[];
   currentUserId: string | null;
+  family: any;
 }
 
-export default function ZaikoMemberClient({ members, currentUserId }: ZaikoMemberClientProps) {
+export default function ZaikoMemberClient({ members, currentUserId, family }: ZaikoMemberClientProps) {
   const router = useRouter();
+
+  const handleCopyInvite = () => {
+    if (!family?.inviteCode) {
+        toast.error('招待コードが見つかりません');
+        return;
+    }
+    const url = `${window.location.origin}/zaiko/invite/${family.inviteCode}`;
+    navigator.clipboard.writeText(url);
+    toast.success('招待リンクをコピーしました');
+  };
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
@@ -37,7 +49,10 @@ export default function ZaikoMemberClient({ members, currentUserId }: ZaikoMembe
                招待リンクを送って<br />在庫をリアルタイム共有しましょう
              </p>
            </div>
-           <Button className="w-full" onClick={() => alert('招待機能は準備中です')}>招待リンクをコピー</Button>
+           <Button className="w-full" onClick={handleCopyInvite}>
+                <Copy className="h-4 w-4 mr-2" />
+                招待リンクをコピー
+           </Button>
         </div>
 
         {/* Member List */}
@@ -74,4 +89,3 @@ export default function ZaikoMemberClient({ members, currentUserId }: ZaikoMembe
     </div>
   );
 }
-

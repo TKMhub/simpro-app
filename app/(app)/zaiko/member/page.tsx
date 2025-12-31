@@ -5,6 +5,6 @@ import ZaikoMemberClient from './client';
 export const dynamic = 'force-dynamic';
 
 export default async function ZaikoMemberPage() {
-  const { members, currentUserId } = await getZaikoMembers();
-  return <ZaikoMemberClient members={members} currentUserId={currentUserId} />;
+  const { members, currentUserId, family } = await getZaikoMembers();
+  return <ZaikoMemberClient members={members} currentUserId={currentUserId} family={family} />;
 }

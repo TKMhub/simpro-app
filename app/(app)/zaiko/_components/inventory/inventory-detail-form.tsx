@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -30,11 +30,19 @@ interface InventoryDetailFormProps {
   defaultValues?: Partial<FormValues>;
   onSubmit: (values: FormValues) => void;
   isEdit?: boolean;
+  categories?: any[];
+  locations?: any[];
 }
 
 const EMOJI_PRESETS = ['📦', '🧻', '🧼', '🧴', '💄', '💊', '🍱', '🍙', '🥦', '🥩', '🥚', '🥛', '☕️', '🍺', '🧊', '🍳', '🍽️', '🥢', '🧹', '🪣', '👕', '🔋', '💡', '🩹'];
 
-export function InventoryDetailForm({ defaultValues, onSubmit, isEdit = false }: InventoryDetailFormProps) {
+export function InventoryDetailForm({ 
+  defaultValues, 
+  onSubmit, 
+  isEdit = false, 
+  categories = [], 
+  locations = [] 
+}: InventoryDetailFormProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -47,6 +55,34 @@ export function InventoryDetailForm({ defaultValues, onSubmit, isEdit = false }:
       ...defaultValues,
     },
   });
+
+  // Prepare Options with Icons/Labels
+  const categoryOptions = useMemo(() => {
+    // If we have DB categories, use them and enrich with icons from constants if matching
+    if (categories && categories.length > 0) {
+        return categories.map((cat: any) => {
+            const constant = ZAIKO_CATEGORIES.find(c => c.label === cat.name);
+            return {
+                id: cat.id,
+                label: cat.name,
+                icon: constant?.icon || '📦'
+            };
+        });
+    }
+    // Fallback to constants
+    return ZAIKO_CATEGORIES;
+  }, [categories]);
+
+  const locationOptions = useMemo(() => {
+    if (locations && locations.length > 0) {
+        return locations.map((loc: any) => ({
+            id: loc.id,
+            label: loc.name
+        }));
+    }
+    return ZAIKO_LOCATIONS;
+  }, [locations]);
+
 
   return (
     <Form {...form}>
@@ -127,7 +163,7 @@ export function InventoryDetailForm({ defaultValues, onSubmit, isEdit = false }:
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {ZAIKO_CATEGORIES.map((cat) => (
+                    {categoryOptions.map((cat: any) => (
                       <SelectItem key={cat.id} value={cat.id}>
                         <span className="mr-2">{cat.icon}</span>
                         {cat.label}
@@ -153,7 +189,7 @@ export function InventoryDetailForm({ defaultValues, onSubmit, isEdit = false }:
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {ZAIKO_LOCATIONS.map((loc) => (
+                    {locationOptions.map((loc: any) => (
                       <SelectItem key={loc.id} value={loc.id}>
                         {loc.label}
                       </SelectItem>

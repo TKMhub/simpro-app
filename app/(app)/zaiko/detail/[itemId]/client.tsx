@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useTransition } from 'react';
+import React, { useTransition, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,8 +8,17 @@ import { ZaikoHeader } from '../../_components/layout/zaiko-header';
 import { InventoryDetailForm } from '../../_components/inventory/inventory-detail-form';
 import { ZaikoItem } from '../../_lib/types';
 import { updateZaikoItem, deleteZaikoItem } from '../../_lib/actions';
+import { ZAIKO_CATEGORIES, ZAIKO_LOCATIONS } from '../../_lib/zaiko-constants';
 
-export function ZaikoDetailClient({ item }: { item: ZaikoItem }) {
+export function ZaikoDetailClient({ 
+  item, 
+  categories = [], 
+  locations = [] 
+}: { 
+  item: ZaikoItem, 
+  categories?: any[], 
+  locations?: any[] 
+}) {
   const router = useRouter();
   const [, startTransition] = useTransition();
 
@@ -37,15 +46,47 @@ export function ZaikoDetailClient({ item }: { item: ZaikoItem }) {
     }
   };
 
-  const initialValues = {
-    name: item.name,
-    quantity: item.quantity,
-    icon: item.icon,
-    category: item.category,
-    threshold: item.threshold,
-    location: item.location || '',
-    memo: item.memo || '',
-  };
+  // Map old constant IDs to new DB UUIDs if applicable
+  const initialValues = useMemo(() => {
+    // 1. Try to find if item.category matches a DB category ID (already migrated)
+    const isDbCategory = categories.some(c => c.id === item.category);
+    let categoryValue = item.category;
+
+    if (!isDbCategory) {
+        // 2. If not, check if it's an old Constant ID (e.g. 'food')
+        const constantCat = ZAIKO_CATEGORIES.find(c => c.id === item.category);
+        if (constantCat) {
+            // 3. Find the corresponding DB category by Name
+            const matchingDbCat = categories.find(c => c.name === constantCat.label);
+            if (matchingDbCat) {
+                categoryValue = matchingDbCat.id; // Use the new UUID
+            }
+        }
+    }
+
+    // Same for location
+    const isDbLocation = locations.some(l => l.id === item.location);
+    let locationValue = item.location || '';
+    if (item.location && !isDbLocation) {
+        const constantLoc = ZAIKO_LOCATIONS.find(l => l.id === item.location);
+        if (constantLoc) {
+            const matchingDbLoc = locations.find(l => l.name === constantLoc.label);
+            if (matchingDbLoc) {
+                locationValue = matchingDbLoc.id;
+            }
+        }
+    }
+
+    return {
+        name: item.name,
+        quantity: item.quantity,
+        icon: item.icon,
+        category: categoryValue,
+        threshold: item.threshold,
+        location: locationValue,
+        memo: item.memo || '',
+    };
+  }, [item, categories, locations]);
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
@@ -65,6 +106,8 @@ export function ZaikoDetailClient({ item }: { item: ZaikoItem }) {
           defaultValues={initialValues}
           onSubmit={handleSubmit}
           isEdit
+          categories={categories}
+          locations={locations}
         />
       </div>
     </div>

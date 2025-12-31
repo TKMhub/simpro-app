@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Loader2, Mail, Github, ArrowLeft } from "lucide-react";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import { useSearchParams } from "next/navigation";
 
 // -----------------------------------------------------------------------------
 // Meteor Effect Component (Internal)
@@ -109,12 +110,15 @@ function Meteors() {
 }
 
 // -----------------------------------------------------------------------------
-// Login Page
+// Login Form Component
 // -----------------------------------------------------------------------------
-export default function LoginPage() {
+function LoginForm() {
   const [isGithubLoading, setIsGithubLoading] = useState(false);
   const [isEmailLoading, setIsEmailLoading] = useState(false);
   const [email, setEmail] = useState("");
+  
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next") || "/";
 
   const handleOAuthLogin = async (provider: "github" | "google") => {
     setIsGithubLoading(true);
@@ -123,7 +127,7 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
         },
       });
       if (error) throw error;
@@ -143,7 +147,7 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
         },
       });
       if (error) throw error;
@@ -158,6 +162,118 @@ export default function LoginPage() {
 
   const isLoading = isGithubLoading || isEmailLoading;
 
+  return (
+    <div className="relative z-10 p-8 sm:p-10 flex flex-col items-center">
+      
+      {/* Logo & Title */}
+      <div className="flex flex-col items-center gap-4 mb-8">
+        <div className="relative w-40 h-10 sm:w-48 sm:h-12">
+           <Image 
+             src="/Simplo_white_blue.svg" 
+             alt="Simplo" 
+             fill 
+             className="object-contain" // No invert needed as it's already white
+             priority
+           />
+        </div>
+        <p className="text-sm text-center text-zinc-500 dark:text-[var(--cover-foreground)]/80">
+          複雑な仕組みを“シンプルに使える形”に。
+        </p>
+      </div>
+
+      <div className="w-full space-y-4">
+        
+        {/* OAuth Button */}
+        <Button
+          className={cn(
+            "w-full h-12 text-base relative rounded-xl border-0",
+            "bg-zinc-900 text-white hover:bg-zinc-800",
+            "dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100",
+            "shadow-lg shadow-zinc-500/10"
+          )}
+          onClick={() => handleOAuthLogin("github")}
+          disabled={isLoading}
+        >
+          {isGithubLoading ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : (
+            <>
+              <Github className="absolute left-4 w-5 h-5" />
+              GitHubで続ける
+            </>
+          )}
+        </Button>
+
+        {/* Divider */}
+        <div className="relative py-2">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-zinc-200/50 dark:border-zinc-700/50" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="px-2 text-zinc-400 bg-transparent backdrop-blur-sm">
+              Or continue with
+            </span>
+          </div>
+        </div>
+
+        {/* Email Form */}
+        <form onSubmit={handleEmailLogin} className="space-y-3">
+          <Input
+            type="email"
+            placeholder="メールアドレス"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className={cn(
+                "h-12 rounded-xl border-zinc-200/50 bg-white/50 backdrop-blur-sm",
+                "focus:bg-white focus:ring-2 focus:ring-blue-500/20",
+                "dark:border-zinc-700/50 dark:bg-zinc-900/50 dark:focus:bg-zinc-900",
+                "transition-all duration-200"
+            )}
+            disabled={isLoading}
+          />
+          <Button
+            type="submit"
+            className={cn(
+                "w-full h-12 text-base rounded-xl",
+                "bg-blue-600 hover:bg-blue-700 text-white",
+                "shadow-lg shadow-blue-500/20",
+                "transition-all duration-200"
+            )}
+            disabled={isLoading || !email}
+          >
+            {isEmailLoading ? (
+              <Loader2 className="w-5 h-5 animate-spin mr-2" />
+            ) : (
+              <Mail className="w-4 h-4 mr-2" />
+            )}
+            メールアドレスでログイン
+          </Button>
+        </form>
+      </div>
+
+      {/* Footer */}
+      <div className="mt-8 text-center space-y-4">
+         <Button variant="link" asChild className="text-zinc-500 dark:text-zinc-400">
+            <Link href="/signup">アカウントをお持ちでない方は新規登録</Link>
+         </Button>
+         
+         <p className="text-[10px] leading-relaxed text-zinc-400 dark:text-zinc-500">
+           登録することで、
+           <Link href="/terms" className="underline hover:text-zinc-600 dark:hover:text-zinc-300 mx-1">利用規約</Link>
+           および
+           <Link href="/privacy" className="underline hover:text-zinc-600 dark:hover:text-zinc-300 mx-1">プライバシーポリシー</Link>
+           に<br />同意したものとみなされます。
+         </p>
+      </div>
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// Login Page (Exported)
+// -----------------------------------------------------------------------------
+export default function LoginPage() {
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 bg-zinc-50 dark:bg-black relative overflow-hidden">
       
@@ -183,110 +299,10 @@ export default function LoginPage() {
         {/* Animated Background */}
         <Meteors />
 
-        <div className="relative z-10 p-8 sm:p-10 flex flex-col items-center">
-          
-          {/* Logo & Title */}
-          <div className="flex flex-col items-center gap-4 mb-8">
-            <div className="relative w-40 h-10 sm:w-48 sm:h-12">
-               <Image 
-                 src="/Simplo_white_blue.svg" 
-                 alt="Simplo" 
-                 fill 
-                 className="object-contain" // No invert needed as it's already white
-                 priority
-               />
-            </div>
-            <p className="text-sm text-center text-zinc-500 dark:text-[var(--cover-foreground)]/80">
-              複雑な仕組みを“シンプルに使える形”に。
-            </p>
-          </div>
+        <Suspense fallback={<div className="p-10 text-center">Loading...</div>}>
+          <LoginForm />
+        </Suspense>
 
-          <div className="w-full space-y-4">
-            
-            {/* OAuth Button */}
-            <Button
-              className={cn(
-                "w-full h-12 text-base relative rounded-xl border-0",
-                "bg-zinc-900 text-white hover:bg-zinc-800",
-                "dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100",
-                "shadow-lg shadow-zinc-500/10"
-              )}
-              onClick={() => handleOAuthLogin("github")}
-              disabled={isLoading}
-            >
-              {isGithubLoading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <>
-                  <Github className="absolute left-4 w-5 h-5" />
-                  GitHubで続ける
-                </>
-              )}
-            </Button>
-
-            {/* Divider */}
-            <div className="relative py-2">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-zinc-200/50 dark:border-zinc-700/50" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="px-2 text-zinc-400 bg-transparent backdrop-blur-sm">
-                  Or continue with
-                </span>
-              </div>
-            </div>
-
-            {/* Email Form */}
-            <form onSubmit={handleEmailLogin} className="space-y-3">
-              <Input
-                type="email"
-                placeholder="メールアドレス"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className={cn(
-                    "h-12 rounded-xl border-zinc-200/50 bg-white/50 backdrop-blur-sm",
-                    "focus:bg-white focus:ring-2 focus:ring-blue-500/20",
-                    "dark:border-zinc-700/50 dark:bg-zinc-900/50 dark:focus:bg-zinc-900",
-                    "transition-all duration-200"
-                )}
-                disabled={isLoading}
-              />
-              <Button
-                type="submit"
-                className={cn(
-                    "w-full h-12 text-base rounded-xl",
-                    "bg-blue-600 hover:bg-blue-700 text-white",
-                    "shadow-lg shadow-blue-500/20",
-                    "transition-all duration-200"
-                )}
-                disabled={isLoading || !email}
-              >
-                {isEmailLoading ? (
-                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                ) : (
-                  <Mail className="w-4 h-4 mr-2" />
-                )}
-                メールアドレスでログイン
-              </Button>
-            </form>
-          </div>
-
-          {/* Footer */}
-          <div className="mt-8 text-center space-y-4">
-             <Button variant="link" asChild className="text-zinc-500 dark:text-zinc-400">
-                <Link href="/signup">アカウントをお持ちでない方は新規登録</Link>
-             </Button>
-             
-             <p className="text-[10px] leading-relaxed text-zinc-400 dark:text-zinc-500">
-               登録することで、
-               <Link href="/terms" className="underline hover:text-zinc-600 dark:hover:text-zinc-300 mx-1">利用規約</Link>
-               および
-               <Link href="/privacy" className="underline hover:text-zinc-600 dark:hover:text-zinc-300 mx-1">プライバシーポリシー</Link>
-               に<br />同意したものとみなされます。
-             </p>
-          </div>
-        </div>
       </div>
     </div>
   );

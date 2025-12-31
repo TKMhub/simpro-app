@@ -6,7 +6,12 @@ import { ZaikoHeader } from '../_components/layout/zaiko-header';
 import { InventoryDetailForm } from '../_components/inventory/inventory-detail-form';
 import { createZaikoItem } from '../_lib/actions';
 
-export default function ZaikoInputClient() {
+interface ZaikoInputClientProps {
+  categories?: any[];
+  locations?: any[];
+}
+
+export default function ZaikoInputClient({ categories, locations }: ZaikoInputClientProps) {
   const router = useRouter();
   const [, startTransition] = useTransition();
 
@@ -24,7 +29,7 @@ export default function ZaikoInputClient() {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
-      <ZaikoHeader
+    <ZaikoHeader
         title="新しい在庫を追加"
         showBack
         onBack={() => router.back()}
@@ -32,9 +37,8 @@ export default function ZaikoInputClient() {
       />
       
       <div className="px-4 py-6">
-        <InventoryDetailForm onSubmit={handleSubmit} />
+        <InventoryDetailForm onSubmit={handleSubmit} categories={categories} locations={locations} />
       </div>
     </div>
   );
 }
-

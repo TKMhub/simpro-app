@@ -126,6 +126,8 @@ model ZaikoFamily {
   
   members     ZaikoFamilyMember[]
   items       ZaikoItem[]
+  categories  ZaikoCategory[]
+  locations   ZaikoLocation[]
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -252,4 +254,30 @@ model JuiceMatchResult {
   points    Int
   
   @@map("juice_match_results")
+}
+
+model ZaikoCategory {
+  id        String      @id @default(uuid())
+  familyId  String
+  name      String
+  family    ZaikoFamily @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@unique([familyId, name])
+  @@map("zaiko_categories")
+}
+
+model ZaikoLocation {
+  id        String      @id @default(uuid())
+  familyId  String
+  name      String
+  family    ZaikoFamily @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@unique([familyId, name])
+  @@map("zaiko_locations")
 }
