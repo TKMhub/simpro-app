@@ -20,6 +20,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { createZaikoCategory, deleteZaikoCategory, createZaikoLocation, deleteZaikoLocation, joinZaikoFamily } from '../_lib/actions';
 import { useTheme } from 'next-themes';
+import { createClient } from '@/lib/supabase/client';
 
 type SettingsClientProps = {
     user: any;
@@ -111,6 +112,12 @@ export default function SettingsClient({
         } catch (e) {
             toast.error('削除に失敗しました');
         }
+    };
+
+    const handleLogout = async () => {
+        const supabase = createClient();
+        await supabase.auth.signOut();
+        router.push('/zaiko');
     };
 
     return (
@@ -259,7 +266,11 @@ export default function SettingsClient({
                     </div>
                 )}
 
-                <Button variant="outline" className="w-full text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 border-red-100 mt-8">
+                <Button 
+                    variant="outline" 
+                    className="w-full text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 border-red-100 mt-8"
+                    onClick={handleLogout}
+                >
                     <LogOut className="h-4 w-4 mr-2" />
                     ログアウト
                 </Button>
@@ -272,4 +283,3 @@ export default function SettingsClient({
         </div>
     );
 }
-
