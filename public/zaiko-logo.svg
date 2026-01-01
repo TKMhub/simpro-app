@@ -27,7 +27,7 @@
     <mask id="box-mask">
       <rect x="32" y="32" width="448" height="448" rx="80" fill="white"/>
     </mask>
-    <g mask="url(#box-mask)" opacity="0.08" style="mix-blend-mode: multiply;">
+    <g mask="url(#box-mask)" opacity="0" style="mix-blend-mode: multiply;">
        <path d="M0 0 H512" stroke="black" stroke-width="0"/> <!-- dummy for loop -->
        <!-- 40px間隔のストライプ -->
        <path d="M52 0V512 M92 0V512 M132 0V512 M172 0V512 M212 0V512 M252 0V512 M292 0V512 M332 0V512 M372 0V512 M412 0V512 M452 0V512" stroke="#5c4033" stroke-width="4"/>
@@ -37,6 +37,6 @@
     <path d="M150 150H362L150 362H362" stroke="#5c4033" stroke-width="80" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
     
     <!-- 緑のテープ（養生テープ風） -->
-    <path d="M340 20 L500 180" stroke="#22c55e" stroke-width="70" opacity="0.6" stroke-linecap="butt" style="mix-blend-mode: multiply;"/>
+    <rect x="290" y="60" width="180" height="70" rx="2" transform="rotate(45 380 95)" fill="#22c55e" opacity="0.6" style="mix-blend-mode: multiply;" />
   </g>
 </svg>
