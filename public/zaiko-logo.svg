@@ -21,7 +21,7 @@
 
   <g filter="url(#shadow)">
     <!-- 本体: 質感適用 -->
-    <rect x="32" y="32" width="448" height="448" rx="80" fill="url(#cardboard_grad)" filter="url(#texture)"/>
+    <rect x="32" y="32" width="448" height="448" rx="80" fill="url(#cardboard_grad)" filter="url(#texture)" opacity="0"/>
     
     <!-- 段目の縦縞（うっすらと入れてダンボールの断面構造を暗示） -->
     <mask id="box-mask">

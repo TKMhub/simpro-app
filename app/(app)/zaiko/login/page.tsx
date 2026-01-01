@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { ZaikoHeader } from '../_components/layout/zaiko-header';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
 
 export default function ZaikoLoginPage() {
   const router = useRouter();
@@ -113,7 +112,7 @@ export default function ZaikoLoginPage() {
 
           <div className="relative py-4">
             <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-zinc-200 dark:border-zinc-800" />
+                {/* Border removed as per request */}
             </div>
             <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-white dark:bg-black px-2 text-zinc-500">Or continue with</span>
@@ -138,30 +137,35 @@ export default function ZaikoLoginPage() {
 
         </div>
 
-        {/* Powered by Simpro */}
-        <div className="flex flex-col items-center gap-2 pt-4 opacity-50">
-            <span className="text-[10px] text-zinc-400 font-medium tracking-wider uppercase">Powered by</span>
-            <div className="relative w-20 h-5">
-                <Image 
-                    src="/Simplo_gray_main_sub.svg" 
-                    alt="Simplo" 
-                    fill 
-                    className="object-contain dark:invert" 
-                />
+        <div className="text-center pt-4 pb-8 space-y-8">
+            <div className="text-center">
+                <Button variant="link" asChild className="text-zinc-500">
+                    <Link href="/zaiko/signup">アカウントをお持ちでない方はこちら</Link>
+                </Button>
             </div>
-            <p className="text-[10px] text-zinc-400">“Simple is Professional”</p>
-        </div>
 
-        <div className="text-center pt-4">
-            <Button variant="link" asChild className="text-zinc-500">
-                <Link href="/zaiko/signup">アカウントをお持ちでない方はこちら</Link>
-            </Button>
-        </div>
+            <p className="text-xs text-center text-zinc-400">
+              <Link href="/terms" className="underline underline-offset-4 hover:text-zinc-900 dark:hover:text-zinc-100">利用規約</Link>
+              {' '}および{' '}
+              <Link href="/privacy" className="underline underline-offset-4 hover:text-zinc-900 dark:hover:text-zinc-100">プライバシーポリシー</Link>
+              {' '}に<br />
+              同意した上でログインしてください。
+            </p>
 
-        <p className="text-xs text-center text-zinc-400">
-          利用規約 および プライバシーポリシー に<br />
-          同意した上でログインしてください。
-        </p>
+            {/* Powered by Simpro */}
+            <div className="flex flex-col items-center gap-2 opacity-50 pb-8">
+                <span className="text-[10px] text-zinc-400 font-medium tracking-wider uppercase">Powered by</span>
+                <div className="relative w-20 h-5">
+                    <Image 
+                        src="/Simplo_gray_main_sub.svg" 
+                        alt="Simplo" 
+                        fill 
+                        className="object-contain dark:invert" 
+                    />
+                </div>
+                <p className="text-[10px] text-zinc-400">“Simple is Professional”</p>
+            </div>
+        </div>
       </div>
     </div>
   );

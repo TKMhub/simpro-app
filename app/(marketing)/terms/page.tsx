@@ -3,10 +3,9 @@ import { ZaikoHeader } from '@/app/(app)/zaiko/_components/layout/zaiko-header';
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black">
-      {/* 簡易ヘッダー: 戻るボタン等は共通Headerのpropsで制御可能だが、ここではシンプルに */}
-      <div className="sticky top-0 z-50 bg-white/80 dark:bg-black/80 backdrop-blur border-b border-zinc-200 dark:border-zinc-800 p-4">
-        <h1 className="font-bold text-center">利用規約</h1>
+    <div className="min-h-screen bg-white dark:bg-black">
+      <div className="p-4 pt-8">
+        <h1 className="font-bold text-center text-xl">利用規約</h1>
       </div>
 
       <div className="max-w-3xl mx-auto px-6 py-10 space-y-8 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">

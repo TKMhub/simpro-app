@@ -25,7 +25,7 @@ export default async function ZaikoLpPage() {
         title="" 
         rightAction={
           <Button asChild variant="outline" size="sm" className="rounded-full h-8 px-4 text-xs">
-            <Link href="/login?next=/zaiko/dashboard">ログイン</Link>
+            <Link href="/zaiko/login">ログイン</Link>
           </Button>
         }
       />
@@ -129,13 +129,20 @@ export default async function ZaikoLpPage() {
         {/* Bottom CTA */}
         <div className="sticky bottom-0 p-4 bg-white/90 dark:bg-black/90 backdrop-blur border-t border-zinc-200 dark:border-zinc-800">
            <Button asChild size="lg" className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl shadow-lg h-12 text-base font-bold">
-            <Link href="/login?next=/zaiko/dashboard">
+            <Link href="/zaiko/login">
               今すぐ始める
             </Link>
           </Button>
           <p className="text-center text-[10px] text-zinc-400 mt-2">
             ご利用にはログインが必要です
           </p>
+        </div>
+
+        {/* Powered by Simpro */}
+        <div className="flex flex-col items-center gap-2 py-8 opacity-50">
+            <span className="text-[10px] text-zinc-400 font-medium tracking-wider uppercase">Powered by</span>
+            <span className="text-xl font-bold text-zinc-400 tracking-widest">Simplo</span>
+            <p className="text-[10px] text-zinc-400">“Simple is Professional”</p>
         </div>
       </main>
     </div>
