@@ -4,8 +4,6 @@ import { Menu, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-import { ZaikoLogo } from '@/components/zaiko/ZaikoLogo';
-
 interface ZaikoHeaderProps {
   title?: string;
   showBack?: boolean;
@@ -47,7 +45,9 @@ export function ZaikoHeader({
         )}
         {/* Logo and Text always displayed */}
         <Link href="/zaiko/dashboard" className="flex items-center gap-2">
-          <ZaikoLogo showText={true} />
+          <span className="text-lg font-bold tracking-tight">
+            Zaiko<span className="text-green-500">.</span>
+          </span>
         </Link>
       </div>
 

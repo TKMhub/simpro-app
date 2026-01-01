@@ -146,7 +146,7 @@ export default function ZaikoLoginPage() {
           </DialogContent>
         </Dialog>
 
-        <div className="text-center space-y-2 flex flex-col items-center">
+        <div className="text-center space-y-2 flex flex-col items-center mt-8">
            <div className="relative w-24 h-24 mb-2">
               <Image 
                 src="/zaiko-logo.svg" 
