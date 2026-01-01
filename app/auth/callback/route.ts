@@ -49,42 +49,46 @@ export async function GET(request: Request) {
                 id: user.id,
                 email: user.email!,
                 // 表示名はOnboardingで設定してもらうため、ここでは一旦メールアドレスのローカルパートなどを仮置き
-                // あるいは空でも良いが、スキーマ上String?なのでnull可
                 displayName: user.user_metadata?.full_name || user.email?.split('@')[0],
                 avatarUrl: user.user_metadata?.avatar_url,
                 joinedApps: isZaikoContext ? [appTag] : [],
+                isActive: false, // ユーザー登録完了までは非活性
               },
             });
             
-            // Zaiko用の初期データ作成
+            // Zaiko用の初期データ作成 (まだ作成しない、Onboarding完了時に作成する？ or ここで作成して良い？)
+            // 仕様変更: "ユーザー登録するまではユーザー活性フラグはfalse" -> "ユーザー登録(Onboarding)で更新と活性フラグtrue"
+            // 初期データ自体は作っておいて問題ないはず
             if (isZaikoContext) {
                await createZaikoInitialData(newProfile.id);
             }
 
-            // 新規ユーザーの場合、必ずOnboardingへリダイレクトして表示名などを確認させる
-            // もし既に next が onboarding ならそのまま、そうでなければ強制的に onboarding へ
-            if (!next.includes('/onboarding')) {
-                // 元の行き先を returnTo に退避
-                const returnTo = next === '/' ? '/login' : next; // loginに戻すのが一般的か、dashboardに行くか。Onboarding後は再ログインフローなので /login が適切
-                next = `/onboarding?returnTo=${encodeURIComponent(returnTo)}`;
-            }
+            // isActiveがfalseの場合は必ずOnboardingへ
+            const returnTo = next === '/' ? '/login' : next; 
+            next = `/onboarding?returnTo=${encodeURIComponent(returnTo)}`;
 
           } else {
             // =========================================================
             // 既存ユーザー
             // =========================================================
             
-            // Zaikoからのログインで、未登録ならタグ追加
-            if (isZaikoContext && !existingProfile.joinedApps.includes(appTag)) {
-              await prisma.profile.update({
-                where: { id: user.id },
-                data: {
-                  joinedApps: {
-                    push: appTag
-                  }
+            // isActiveがfalseの場合はOnboardingへリダイレクト (途中離脱等のケース)
+            if (existingProfile.isActive === false) {
+                 const returnTo = next === '/' ? '/login' : next; 
+                 next = `/onboarding?returnTo=${encodeURIComponent(returnTo)}`;
+            } else {
+                // Zaikoからのログインで、未登録ならタグ追加
+                if (isZaikoContext && !existingProfile.joinedApps.includes(appTag)) {
+                  await prisma.profile.update({
+                    where: { id: user.id },
+                    data: {
+                      joinedApps: {
+                        push: appTag
+                      }
+                    }
+                  });
+                  await createZaikoInitialData(existingProfile.id);
                 }
-              });
-              await createZaikoInitialData(existingProfile.id);
             }
           }
 

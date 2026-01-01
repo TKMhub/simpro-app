@@ -60,6 +60,7 @@ export async function getZaikoUser(): Promise<any | null> {
           displayName: user.user_metadata?.full_name || user.email?.split('@')[0],
           avatarUrl: user.user_metadata?.avatar_url,
           joinedApps: ['zaiko'],
+          isActive: true, // アプリ内からの生成は一旦trueにしておく（本来はフローを通すべきだが）
         },
       });
       

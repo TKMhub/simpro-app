@@ -9,12 +9,14 @@ import { Input } from '@/components/ui/input';
 import { ZaikoHeader } from '../_components/layout/zaiko-header';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 export default function ZaikoSignupPage() {
   const router = useRouter();
   const [isGithubLoading, setIsGithubLoading] = useState(false);
   const [isEmailLoading, setIsEmailLoading] = useState(false);
   const [email, setEmail] = useState('');
+  const [showEmailSentDialog, setShowEmailSentDialog] = useState(false);
 
   const handleOAuthLogin = async (provider: 'github' | 'google') => {
     setIsGithubLoading(true);
@@ -23,7 +25,7 @@ export default function ZaikoSignupPage() {
         const { error } = await supabase.auth.signInWithOAuth({
             provider,
             options: {
-                redirectTo: `${window.location.origin}/auth/callback?next=/onboarding?returnTo=/zaiko/dashboard`,
+                redirectTo: `${window.location.origin}/auth/callback?next=/zaiko/dashboard`,
             },
         });
         if (error) throw error;
@@ -43,14 +45,19 @@ export default function ZaikoSignupPage() {
         const { error } = await supabase.auth.signInWithOtp({
             email,
             options: {
-                emailRedirectTo: `${window.location.origin}/auth/callback?next=/onboarding?returnTo=/zaiko/dashboard`,
+                emailRedirectTo: `${window.location.origin}/auth/callback?next=/zaiko/dashboard`,
             },
         });
         if (error) throw error;
-        alert('登録用のリンクをメールで送信しました。確認してください。');
-    } catch (e) {
+        setShowEmailSentDialog(true);
+    } catch (e: any) {
         console.error(e);
-        alert('登録処理に失敗しました');
+        // Supabase rate limit error handling
+        if (e.message?.includes('security purposes') || e.status === 429) {
+            alert('セキュリティのため、しばらく時間を置いてから再試行してください。');
+        } else {
+            alert('登録処理に失敗しました');
+        }
     } finally {
         setIsEmailLoading(false);
     }
@@ -161,6 +168,31 @@ export default function ZaikoSignupPage() {
           利用規約 および プライバシーポリシー に<br />
           同意した上で登録してください。
         </p>
+
+        <Dialog open={showEmailSentDialog} onOpenChange={setShowEmailSentDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader className="flex flex-col items-center gap-4">
+              <div className="relative w-16 h-16">
+                 <Image 
+                   src="/zaiko-logo.svg" 
+                   alt="Zaiko Logo" 
+                   fill 
+                   className="object-contain"
+                 />
+              </div>
+              <DialogTitle className="text-center">メールを送信しました</DialogTitle>
+              <DialogDescription className="text-center">
+                登録用のリンクをメールで送信しました。<br />
+                メールを確認して、リンクからログインしてください。
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="sm:justify-center">
+              <Button type="button" onClick={() => setShowEmailSentDialog(false)} className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto min-w-[120px]">
+                OK
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

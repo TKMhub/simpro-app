@@ -10,8 +10,15 @@ import { ZaikoHeader } from '../_components/layout/zaiko-header';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 
+import { useSearchParams } from 'next/navigation';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+
 export default function ZaikoLoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const registered = searchParams.get('registered');
+  const [showRegisteredDialog, setShowRegisteredDialog] = useState(!!registered);
+
   const [isGithubLoading, setIsGithubLoading] = useState(false);
   const [isEmailLoading, setIsEmailLoading] = useState(false);
   const [email, setEmail] = useState('');
@@ -67,7 +74,33 @@ export default function ZaikoLoginPage() {
         rightAction={<div className="w-8" />}
       />
 
-      <div className="flex-1 flex flex-col items-center justify-center px-6 space-y-8 animate-in slide-in-from-bottom-4 duration-700">
+        <div className="flex-1 flex flex-col items-center justify-center px-6 space-y-8 animate-in slide-in-from-bottom-4 duration-700">
+        
+        <Dialog open={showRegisteredDialog} onOpenChange={setShowRegisteredDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader className="flex flex-col items-center gap-4">
+              <div className="relative w-16 h-16">
+                 <Image 
+                   src="/zaiko-logo.svg" 
+                   alt="Zaiko Logo" 
+                   fill 
+                   className="object-contain"
+                 />
+              </div>
+              <DialogTitle className="text-center">ユーザー登録が完了しました</DialogTitle>
+              <DialogDescription className="text-center">
+                登録ありがとうございます。<br />
+                再度ログインしてご利用を開始してください。
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="sm:justify-center">
+              <Button type="button" onClick={() => setShowRegisteredDialog(false)} className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto min-w-[120px]">
+                OK
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
         <div className="text-center space-y-2 flex flex-col items-center">
            <div className="relative w-24 h-24 mb-2">
               <Image 

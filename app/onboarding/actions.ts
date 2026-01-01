@@ -28,6 +28,7 @@ export async function submitOnboarding(formData: FormData) {
       displayName,
       bio,
       avatarUrl, // クライアント側でアップロードして取得したURLを保存
+      isActive: true, // ユーザー活性化
     },
   });
 
@@ -41,19 +42,16 @@ export async function submitOnboarding(formData: FormData) {
     }
   });
 
-  // 3. ログアウト処理は行わず、そのままアプリへリダイレクト
-  // await supabase.auth.signOut();
+  // 3. 仕様変更: 登録完了後はログアウトしてログイン画面へ
+  await supabase.auth.signOut();
 
-  // 4. リダイレクト先決定
-  let targetUrl = returnUrl || "/";
+  // 4. リダイレクト先決定 (基本はログイン画面へ)
+  // returnUrl が /zaiko/... なら /zaiko/login へ、それ以外なら /login へ
+  let targetUrl = "/login?registered=true";
   
-  // returnUrlが /login になっている場合はホームやダッシュボードに変える
-  if (targetUrl === "/login") {
-    targetUrl = "/";
-  } else if (targetUrl === "/zaiko/login") {
-    targetUrl = "/zaiko/dashboard";
+  if (returnUrl && returnUrl.startsWith("/zaiko")) {
+      targetUrl = "/zaiko/login?registered=true";
   }
 
-  // クエリパラメータを保持するかは要件次第だが、基本的には登録完了後の遷移なので素直にリダイレクト
   redirect(targetUrl);
 }
