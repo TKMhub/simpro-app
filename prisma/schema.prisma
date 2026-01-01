@@ -1,156 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client-js"
   output   = "../lib/generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
 }
 
-model BlogPost {
-  id              String     @id @default(uuid())
-  title           String
-  slug            String     @unique
-  author          String
-  category        String     @default("")
-  tags            String[]
-  status          PostStatus @default(draft)
-  isPublic        Boolean    @default(false)
-  goodCount       Int        @default(0)
-  headerImagePath String?
-  notionPageId    String     @unique
-  publishedAt     DateTime?
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
-
-  @@index([category])
-  @@index([status, isPublic])
-  @@index([slug])
-  @@index([tags])
-}
-
-model ProductPost {
-  id              String            @id @default(uuid())
-  title           String
-  slug            String            @unique
-  description     String            @default("")
-  author          String
-  category        String            @default("")
-  type            ProductType
-  tags            String[]
-  status          PostStatus        @default(draft)
-  isPublic        Boolean           @default(false)
-  goodCount       Int               @default(0)
-  headerImagePath String?
-  notionPageId    String            @unique
-  contentLink     String?
-  actionType      ProductActionType @default(transition)
-  publishedAt     DateTime?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-
-  @@index([category])
-  @@index([status, isPublic])
-  @@index([slug])
-  @@index([tags])
-  @@index([type])
-}
-
-model Profile {
-  id                   String              @id @default(uuid())
-  email                String
-  displayName          String?
-  avatarUrl            String?
-  joinedApps           String[]            @default([])
-  createdAt            DateTime            @default(now())
-  updatedAt            DateTime            @updatedAt
-  bio                  String?
-  // User Active Status
-  isActive             Boolean             @default(false)
-  zaikoCreatedFamilies ZaikoFamily[]       @relation("CreatedFamilies")
-  zaikoMemberships     ZaikoFamilyMember[]
-  
-  @@map("profiles")
-}
-
-model ZaikoFamily {
-  id         String              @id @default(uuid())
-  name       String
-  inviteCode String              @unique
-  createdBy  String
-  createdAt  DateTime            @default(now())
-  updatedAt  DateTime            @updatedAt
-  creator    Profile             @relation("CreatedFamilies", fields: [createdBy], references: [id])
-  members    ZaikoFamilyMember[]
-  items      ZaikoItem[]
-  categories ZaikoCategory[]
-  locations  ZaikoLocation[]
-  
-  @@map("zaiko_families")
-}
-
-model ZaikoFamilyMember {
-  id       String          @id @default(uuid())
-  familyId String
-  userId   String
-  role     ZaikoFamilyRole @default(EDITOR)
-  joinedAt DateTime        @default(now())
-  family   ZaikoFamily     @relation(fields: [familyId], references: [id], onDelete: Cascade)
-  user     Profile         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@unique([familyId, userId])
-  @@map("zaiko_family_members")
-}
-
-model ZaikoItem {
-  id        String      @id @default(uuid())
-  familyId  String
-  name      String
-  quantity  Int         @default(1)
-  threshold Int         @default(1)
-  category  String      @default("日用品")
-  location  String?
-  icon      String      @default("box")
-  memo      String?
-  createdBy String?
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  family    ZaikoFamily @relation(fields: [familyId], references: [id], onDelete: Cascade)
-  
-  @@index([familyId])
-  @@map("zaiko_items")
-}
-
-model ZaikoCategory {
-  id        String      @id @default(uuid())
-  familyId  String
-  name      String
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  family    ZaikoFamily @relation(fields: [familyId], references: [id], onDelete: Cascade)
-
-  @@unique([familyId, name])
-  @@map("zaiko_categories")
-}
-
-model ZaikoLocation {
-  id        String      @id @default(uuid())
-  familyId  String
-  name      String
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  family    ZaikoFamily @relation(fields: [familyId], references: [id], onDelete: Cascade)
-
-  @@unique([familyId, name])
-  @@map("zaiko_locations")
-}
-
+// Blog schema
 enum PostStatus {
   draft
   published
   archived
 }
 
+model BlogPost {
+  id              String      @id @default(uuid())
+  title           String
+  slug            String      @unique
+  author          String
+  category        String      @default("")
+  tags            String[]
+  status          PostStatus  @default(draft)
+  isPublic        Boolean     @default(false)
+  goodCount       Int         @default(0)
+  headerImagePath String?
+  notionPageId    String      @unique
+  publishedAt     DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([category])
+  @@index([status, isPublic])
+  @@index([slug])
+  @@index([tags])
+}
+
+// Product schema (similar to BlogPost with product-specific fields)
 enum ProductType {
   Tool
   Template
@@ -162,8 +54,246 @@ enum ProductActionType {
   download
 }
 
+model ProductPost {
+  id              String             @id @default(uuid())
+  title           String
+  slug            String             @unique
+  description     String             @default("")
+  author          String
+  category        String             @default("")
+  type            ProductType
+  tags            String[]
+  status          PostStatus         @default(draft)
+  isPublic        Boolean            @default(false)
+  goodCount       Int                @default(0)
+  headerImagePath String?
+  notionPageId    String             @unique
+  contentLink     String?
+  actionType      ProductActionType  @default(transition)
+  publishedAt     DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@index([category])
+  @@index([status, isPublic])
+  @@index([slug])
+  @@index([tags])
+  @@index([type])
+}
+
+// -----------------------------------------------------------------------------
+// Common Profile Schema
+// -----------------------------------------------------------------------------
+
+enum ThemePreference {
+  SYSTEM
+  LIGHT
+  DARK
+}
+
+// 全アプリ共有のプロフィールテーブル
+model Profile {
+  id           String   @id @default(uuid()) // auth.users.id と同期
+  email        String
+  displayName  String?
+  bio          String?
+  avatarUrl    String?
+  
+  // Theme Settings
+  theme        ThemePreference @default(SYSTEM)
+
+  // ユーザーが利用開始しているアプリのIDリスト (例: ["zaiko", "kakeibo"])
+  joinedApps   String[] @default([])
+
+  // User Active Status (Zaiko Onboardingなどで使用)
+  isActive     Boolean  @default(false)
+
+  // Relations (Zaiko)
+  zaikoCreatedFamilies ZaikoFamily[] @relation("CreatedFamilies")
+  zaikoMemberships     ZaikoFamilyMember[]
+
+  // Relations (Juice)
+  juiceCreatedProjects JuiceProject[]
+  juiceMemberships     JuiceMember[]
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  @@map("profiles")
+}
+
+// -----------------------------------------------------------------------------
+// Zaiko Schema
+// -----------------------------------------------------------------------------
+
+model ZaikoFamily {
+  id          String   @id @default(uuid())
+  name        String
+  inviteCode  String   @unique
+  
+  createdBy   String
+  creator     Profile  @relation("CreatedFamilies", fields: [createdBy], references: [id])
+  
+  members     ZaikoFamilyMember[]
+  items       ZaikoItem[]
+  categories  ZaikoCategory[]
+  locations   ZaikoLocation[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("zaiko_families")
+}
+
 enum ZaikoFamilyRole {
   ADMIN
   EDITOR
   VIEWER
+}
+
+model ZaikoFamilyMember {
+  id        String     @id @default(uuid())
+  familyId  String
+  userId    String
+  role      ZaikoFamilyRole @default(EDITOR)
+  
+  family    ZaikoFamily     @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  user      Profile         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  joinedAt  DateTime   @default(now())
+  
+  @@unique([familyId, userId])
+  @@map("zaiko_family_members")
+}
+
+model ZaikoItem {
+  id          String   @id @default(uuid())
+  familyId    String
+  name        String
+  quantity    Int      @default(1)
+  threshold   Int      @default(1)
+  category    String   @default("日用品") // アプリ側定数と同期
+  location    String?
+  icon        String   @default("box")
+  memo        String?
+  
+  // Auto-consume settings
+  autoConsume      Boolean  @default(false)
+  consumeQuantity  Int      @default(1)     // Amount to consume per interval
+  consumeInterval  Int      @default(1)     // Days interval for consumption
+  lastConsumedAt   DateTime?                // Last time consumption was calculated
+  
+  family      ZaikoFamily   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  
+  createdBy   String?  // Profile.id
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([familyId])
+  @@map("zaiko_items")
+}
+
+model ZaikoCategory {
+  id        String      @id @default(uuid())
+  familyId  String
+  name      String
+  family    ZaikoFamily @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@unique([familyId, name])
+  @@map("zaiko_categories")
+}
+
+model ZaikoLocation {
+  id        String      @id @default(uuid())
+  familyId  String
+  name      String
+  family    ZaikoFamily @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@unique([familyId, name])
+  @@map("zaiko_locations")
+}
+
+// -----------------------------------------------------------------------------
+// Juice Schema
+// -----------------------------------------------------------------------------
+
+model JuiceProject {
+  id          String        @id @default(uuid())
+  slug        String        @unique
+  name        String        @default("New Group")
+  
+  // Auto-incrementing ID for shorter URLs (optional but safer for unique checks)
+  shortId     Int           @default(autoincrement()) @unique
+  
+  // Optional password protection
+  passwordHash String?
+
+  ownerId     String?
+  owner       Profile?       @relation(fields: [ownerId], references: [id])
+  
+  members     JuiceMember[]
+  matches     JuiceMatch[]
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("juice_projects")
+}
+
+model JuiceMember {
+  id          String        @id @default(uuid())
+  projectId   String
+  project     JuiceProject  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  // Link to global profile if registered user
+  userId      String?
+  user        Profile?      @relation(fields: [userId], references: [id])
+
+  // Local profile for this group (or fallback if no user)
+  name        String
+  avatarUrl   String?
+  
+  matchResults JuiceMatchResult[]
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@unique([projectId, userId])
+  @@map("juice_members")
+}
+
+model JuiceMatch {
+  id          String             @id @default(uuid())
+  projectId   String
+  project     JuiceProject       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  gameTitle   String?            // Optional game title (e.g. "Soccer", "Mario Kart")
+  
+  results     JuiceMatchResult[]
+  
+  playedAt    DateTime           @default(now())
+  createdAt   DateTime           @default(now())
+
+  @@map("juice_matches")
+}
+
+model JuiceMatchResult {
+  id        String      @id @default(uuid())
+  matchId   String
+  match     JuiceMatch  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  
+  memberId  String
+  member    JuiceMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  
+  rank      Int
+  points    Int
+  
+  @@map("juice_match_results")
 }
