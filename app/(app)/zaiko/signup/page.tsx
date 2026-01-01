@@ -22,10 +22,13 @@ export default function ZaikoSignupPage() {
     setIsGithubLoading(true);
     const supabase = createClient();
     try {
+        // 次へ進むURLはダッシュボードを指定し、auth/callbackでisActiveチェックによりonboardingへ振り分けられる
+        // returnToパラメータも含めてエンコード
+        const nextUrl = encodeURIComponent('/zaiko/dashboard');
         const { error } = await supabase.auth.signInWithOAuth({
             provider,
             options: {
-                redirectTo: `${window.location.origin}/auth/callback?next=/zaiko/dashboard`,
+                redirectTo: `${window.location.origin}/auth/callback?next=${nextUrl}`,
             },
         });
         if (error) throw error;
@@ -42,10 +45,11 @@ export default function ZaikoSignupPage() {
     setIsEmailLoading(true);
     const supabase = createClient();
     try {
+        const nextUrl = encodeURIComponent('/zaiko/dashboard');
         const { error } = await supabase.auth.signInWithOtp({
             email,
             options: {
-                emailRedirectTo: `${window.location.origin}/auth/callback?next=/zaiko/dashboard`,
+                emailRedirectTo: `${window.location.origin}/auth/callback?next=${nextUrl}`,
             },
         });
         if (error) throw error;
@@ -53,10 +57,11 @@ export default function ZaikoSignupPage() {
     } catch (e: any) {
         console.error(e);
         // Supabase rate limit error handling
-        if (e.message?.includes('security purposes') || e.status === 429) {
-            alert('セキュリティのため、しばらく時間を置いてから再試行してください。');
+        const errorMessage = e?.message || '';
+        if (errorMessage.includes('security purposes') || errorMessage.includes('rate limit') || e?.status === 429) {
+            alert('セキュリティ保護のため、しばらく時間を置いてから再試行してください。（約1分後にお試しください）');
         } else {
-            alert('登録処理に失敗しました');
+            alert('登録処理に失敗しました。時間をおいて再度お試しください。');
         }
     } finally {
         setIsEmailLoading(false);

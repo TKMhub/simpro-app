@@ -21,14 +21,27 @@ export async function submitOnboarding(formData: FormData) {
     throw new Error("表示名は必須です");
   }
 
-  // 1. プロフィールの更新
-  await prisma.profile.update({
+  // 1. プロフィールの更新 (存在しない場合は作成)
+  // returnUrlからZaikoコンテキストか判定
+  const isZaiko = returnUrl && returnUrl.includes("zaiko");
+  const defaultJoinedApps = isZaiko ? ["zaiko"] : [];
+
+  await prisma.profile.upsert({
     where: { id: user.id },
-    data: {
+    update: {
       displayName,
       bio,
-      avatarUrl, // クライアント側でアップロードして取得したURLを保存
-      isActive: true, // ユーザー活性化
+      avatarUrl,
+      isActive: true,
+    },
+    create: {
+      id: user.id,
+      email: user.email!,
+      displayName,
+      bio,
+      avatarUrl,
+      isActive: true,
+      joinedApps: defaultJoinedApps,
     },
   });
 
@@ -50,6 +63,8 @@ export async function submitOnboarding(formData: FormData) {
   let targetUrl = "/login?registered=true";
   
   if (returnUrl && returnUrl.startsWith("/zaiko")) {
+      targetUrl = "/zaiko/login?registered=true";
+  } else if (returnUrl && returnUrl.includes("zaiko")) { // クエリパラメータ等に含まれる場合も考慮
       targetUrl = "/zaiko/login?registered=true";
   }
 

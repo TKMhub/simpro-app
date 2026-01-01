@@ -43,16 +43,17 @@ export async function middleware(req: NextRequest) {
   // ---------------------------------------------------------------------------
   
   // Zaiko App: /zaiko/dashboard や /zaiko/settings などへのアクセスを保護
-  // /zaiko/login, /zaiko/signup, /zaiko (LP), /onboarding は除外
+  // /zaiko/login, /zaiko/signup, /zaiko (LP), /zaiko/onboarding は除外 (onboardingは別途チェック)
   if (path.startsWith("/zaiko") && 
       !path.startsWith("/zaiko/login") && 
       !path.startsWith("/zaiko/signup") &&
+      !path.startsWith("/zaiko/onboarding") &&
       path !== "/zaiko"
   ) {
     if (!user) {
-      // 未認証ユーザーはメインのログイン画面へリダイレクト
+      // 未認証ユーザーはZaikoのログイン画面へリダイレクト
       const url = req.nextUrl.clone();
-      url.pathname = "/login";
+      url.pathname = "/zaiko/login";
       // ログイン後のリダイレクト先を保持
       url.searchParams.set("next", path);
       return NextResponse.redirect(url);
@@ -60,13 +61,21 @@ export async function middleware(req: NextRequest) {
   }
 
   // Onboarding Page: 認証必須
-  if (path.startsWith("/onboarding")) {
+  // ★認証直後のリダイレクト不具合を防ぐためコメントアウト
+  /*
+  if (path.startsWith("/onboarding") || path.startsWith("/zaiko/onboarding")) {
     if (!user) {
       const url = req.nextUrl.clone();
+      // Zaikoの場合はZaikoのログイン画面へ
+      if (path.startsWith("/zaiko")) {
+          url.pathname = "/zaiko/login";
+      } else {
       url.pathname = "/login";
+      }
       return NextResponse.redirect(url);
     }
   }
+  */
 
   // ---------------------------------------------------------------------------
   // Simpro App Root: 必要に応じて保護を追加 (例: /dashboard)

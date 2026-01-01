@@ -17,8 +17,9 @@ export default function ZaikoLoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const registered = searchParams.get('registered');
+  const errorMsg = searchParams.get('message');
   const [showRegisteredDialog, setShowRegisteredDialog] = useState(!!registered);
-  const [showLoginErrorDialog, setShowLoginErrorDialog] = useState(false);
+  const [showLoginErrorDialog, setShowLoginErrorDialog] = useState(!!errorMsg || searchParams.has('error'));
 
   const [isGithubLoading, setIsGithubLoading] = useState(false);
   const [isEmailLoading, setIsEmailLoading] = useState(false);
@@ -115,10 +116,23 @@ export default function ZaikoLoginPage() {
                    className="object-contain"
                  />
               </div>
-              <DialogTitle className="text-center">ログイン情報が見つかりませんでした</DialogTitle>
+              <DialogTitle className="text-center">
+                {errorMsg ? '認証エラー' : 'ログイン情報が見つかりませんでした'}
+              </DialogTitle>
               <DialogDescription className="text-center">
-                アカウントが見つかりませんでした。<br />
-                アカウントをお持ちでない場合は、新規登録をお願いします。
+                {errorMsg ? (
+                    <>
+                    {errorMsg.includes('code verifier') 
+                        ? 'ブラウザが異なるため認証できませんでした。登録を開始したブラウザと同じブラウザでリンクを開くか、最初からやり直してください。' 
+                        : '認証に失敗しました。リンクの期限切れの可能性があります。'}
+                    <br />もう一度お試しください。
+                    </>
+                ) : (
+                    <>
+                    アカウントが見つかりませんでした。<br />
+                    アカウントをお持ちでない場合は、新規登録をお願いします。
+                    </>
+                )}
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="sm:justify-center flex flex-col sm:flex-row gap-2">

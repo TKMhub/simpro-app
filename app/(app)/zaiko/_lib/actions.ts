@@ -46,12 +46,13 @@ export async function getZaikoUser(): Promise<any | null> {
 
   if (!user) return null;
 
-  // Find or Create Common Profile
-  let profile = await prisma.profile.findUnique({
-    where: { id: user.id },
-  });
+  try {
+    // Find or Create Common Profile
+    let profile = await prisma.profile.findUnique({
+      where: { id: user.id },
+    });
 
-  if (!profile) {
+    if (!profile) {
     try {
       profile = await prisma.profile.create({
         data: {
@@ -119,6 +120,10 @@ export async function getZaikoUser(): Promise<any | null> {
   }
 
   return profile;
+  } catch (e) {
+    console.error('[getZaikoUser] Error:', e);
+    return null;
+  }
 }
 
 // -----------------------------------------------------------------------------

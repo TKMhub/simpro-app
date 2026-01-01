@@ -69,7 +69,7 @@ model Profile {
   isActive             Boolean             @default(false)
   zaikoCreatedFamilies ZaikoFamily[]       @relation("CreatedFamilies")
   zaikoMemberships     ZaikoFamilyMember[]
-
+  
   @@map("profiles")
 }
 
@@ -83,7 +83,9 @@ model ZaikoFamily {
   creator    Profile             @relation("CreatedFamilies", fields: [createdBy], references: [id])
   members    ZaikoFamilyMember[]
   items      ZaikoItem[]
-
+  categories ZaikoCategory[]
+  locations  ZaikoLocation[]
+  
   @@map("zaiko_families")
 }
 
@@ -95,7 +97,7 @@ model ZaikoFamilyMember {
   joinedAt DateTime        @default(now())
   family   ZaikoFamily     @relation(fields: [familyId], references: [id], onDelete: Cascade)
   user     Profile         @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  
   @@unique([familyId, userId])
   @@map("zaiko_family_members")
 }
@@ -114,9 +116,33 @@ model ZaikoItem {
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
   family    ZaikoFamily @relation(fields: [familyId], references: [id], onDelete: Cascade)
-
+  
   @@index([familyId])
   @@map("zaiko_items")
+}
+
+model ZaikoCategory {
+  id        String      @id @default(uuid())
+  familyId  String
+  name      String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  family    ZaikoFamily @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  @@unique([familyId, name])
+  @@map("zaiko_categories")
+}
+
+model ZaikoLocation {
+  id        String      @id @default(uuid())
+  familyId  String
+  name      String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  family    ZaikoFamily @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  @@unique([familyId, name])
+  @@map("zaiko_locations")
 }
 
 enum PostStatus {
