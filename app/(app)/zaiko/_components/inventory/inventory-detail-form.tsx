@@ -7,8 +7,9 @@ import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { InventoryQuantityStepper } from './inventory-quantity-stepper';
 import { ZAIKO_CATEGORIES, ZAIKO_LOCATIONS } from '../../_lib/zaiko-constants';
 import { cn } from '@/lib/utils';
@@ -22,6 +23,11 @@ const formSchema = z.object({
   quantity: z.number().min(0),
   threshold: z.number().min(0),
   memo: z.string().optional(),
+  
+  // Auto-consume
+  autoConsume: z.boolean().default(false),
+  consumeQuantity: z.number().min(1).default(1),
+  consumeInterval: z.number().min(1).default(1),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -52,13 +58,14 @@ export function InventoryDetailForm({
       quantity: 1,
       threshold: 1,
       memo: '',
+      autoConsume: false,
+      consumeQuantity: 1,
+      consumeInterval: 1,
       ...defaultValues,
     },
   });
 
-  // Prepare Options with Icons/Labels
   const categoryOptions = useMemo(() => {
-    // If we have DB categories, use them and enrich with icons from constants if matching
     if (categories && categories.length > 0) {
         return categories.map((cat: any) => {
             const constant = ZAIKO_CATEGORIES.find(c => c.label === cat.name);
@@ -69,7 +76,6 @@ export function InventoryDetailForm({
             };
         });
     }
-    // Fallback to constants
     return ZAIKO_CATEGORIES;
   }, [categories]);
 
@@ -86,7 +92,7 @@ export function InventoryDetailForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 pb-24">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 pb-32">
         
         {/* Icon & Name Section */}
         <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 space-y-4">
@@ -146,6 +152,67 @@ export function InventoryDetailForm({
               />
             )}
           />
+        </div>
+
+        {/* Auto Consume Section */}
+        <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 space-y-4">
+            <FormField
+              control={form.control}
+              name="autoConsume"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                  <div className="space-y-0.5">
+                    <FormLabel>自動在庫減少</FormLabel>
+                    <FormDescription>
+                      日用品などを自動で減らします
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            
+            {form.watch('autoConsume') && (
+                <div className="flex items-center gap-4 bg-zinc-50 dark:bg-zinc-800/50 p-4 rounded-lg">
+                    <FormField
+                      control={form.control}
+                      name="consumeInterval"
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormLabel className="text-xs">何日ごとに</FormLabel>
+                          <FormControl>
+                            <div className="flex items-center gap-2">
+                                <Input type="number" min={1} {...field} onChange={e => field.onChange(parseInt(e.target.value))} />
+                                <span className="text-sm text-zinc-500 whitespace-nowrap">日</span>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="consumeQuantity"
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormLabel className="text-xs">いくつ減らす</FormLabel>
+                          <FormControl>
+                            <div className="flex items-center gap-2">
+                                <Input type="number" min={1} {...field} onChange={e => field.onChange(parseInt(e.target.value))} />
+                                <span className="text-sm text-zinc-500 whitespace-nowrap">個</span>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                </div>
+            )}
         </div>
 
         {/* Details Section */}
@@ -255,7 +322,7 @@ export function InventoryDetailForm({
         </div>
 
         {/* Submit Button */}
-        <div className="fixed bottom-0 left-0 w-full p-4 bg-white/90 dark:bg-black/90 backdrop-blur border-t border-zinc-200 dark:border-zinc-800 flex justify-center">
+        <div className="fixed bottom-0 left-0 w-full p-4 bg-white/90 dark:bg-black/90 backdrop-blur border-t border-zinc-200 dark:border-zinc-800 flex justify-center z-10">
            <div className="w-full max-w-[430px]">
              <Button type="submit" size="lg" className="w-full h-12 text-base font-bold shadow-lg bg-green-600 hover:bg-green-700 text-white">
               {isEdit ? '変更を保存' : '追加する'}

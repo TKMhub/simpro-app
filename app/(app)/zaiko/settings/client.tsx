@@ -21,6 +21,7 @@ import { Label } from '@/components/ui/label';
 import { createZaikoCategory, deleteZaikoCategory, createZaikoLocation, deleteZaikoLocation, joinZaikoFamily } from '../_lib/actions';
 import { useTheme } from 'next-themes';
 import { createClient } from '@/lib/supabase/client';
+import { updateThemePreference } from '@/app/_actions/theme';
 
 type SettingsClientProps = {
     user: any;
@@ -190,10 +191,16 @@ export default function SettingsClient({
                             </div>
                             <Switch 
                                 checked={theme === 'dark'}
-                                onCheckedChange={(checked) => {
-                                    setTheme(checked ? 'dark' : 'light');
-                                    // Cookieに設定を保存 (サーバーサイドレンダリング時のチラつき防止)
-                                    document.cookie = `theme=${checked ? 'dark' : 'light'}; path=/; max-age=31536000`;
+                                onCheckedChange={async (checked) => {
+                                    const newTheme = checked ? 'dark' : 'light';
+                                    setTheme(newTheme);
+                                    document.cookie = `theme=${newTheme}; path=/; max-age=31536000`;
+                                    // Update in DB
+                                    try {
+                                        await updateThemePreference(newTheme);
+                                    } catch (e) {
+                                        console.error('Failed to update theme preference', e);
+                                    }
                                 }}
                             />
                         </div>

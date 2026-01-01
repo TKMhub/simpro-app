@@ -85,6 +85,9 @@ export function ZaikoDetailClient({
         threshold: item.threshold,
         location: locationValue,
         memo: item.memo || '',
+        autoConsume: item.autoConsume,
+        consumeQuantity: item.consumeQuantity,
+        consumeInterval: item.consumeInterval,
     };
   }, [item, categories, locations]);
 

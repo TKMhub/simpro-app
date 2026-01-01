@@ -87,6 +87,12 @@ model ProductPost {
 // Common Profile Schema
 // -----------------------------------------------------------------------------
 
+enum ThemePreference {
+  SYSTEM
+  LIGHT
+  DARK
+}
+
 // 全アプリ共有のプロフィールテーブル
 model Profile {
   id           String   @id @default(uuid()) // auth.users.id と同期
@@ -95,6 +101,9 @@ model Profile {
   bio          String?
   avatarUrl    String?
   
+  // Theme Settings
+  theme        ThemePreference @default(SYSTEM)
+
   // ユーザーが利用開始しているアプリのIDリスト (例: ["zaiko", "kakeibo"])
   joinedApps   String[] @default([])
 
@@ -166,6 +175,12 @@ model ZaikoItem {
   location    String?
   icon        String   @default("box")
   memo        String?
+  
+  // Auto-consume settings
+  autoConsume      Boolean  @default(false)
+  consumeQuantity  Int      @default(1)     // Amount to consume per interval
+  consumeInterval  Int      @default(1)     // Days interval for consumption
+  lastConsumedAt   DateTime?                // Last time consumption was calculated
   
   family      ZaikoFamily   @relation(fields: [familyId], references: [id], onDelete: Cascade)
   

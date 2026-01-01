@@ -17,11 +17,6 @@ export async function seedZaikoFamilyData(familyId: string) {
             where: { familyId_name: { familyId, name: cat.label } },
             update: {},
             create: {
-                // If possible, we could use fixed IDs but Prisma auto-generates UUIDs.
-                // We will rely on name matching for now or just generate new ones.
-                // Note: If we want to support existing items with "food" ID, we might want to allow setting ID.
-                // But typically we should migrate existing items.
-                // For now, let's just create them. The UI will use these.
                 familyId,
                 name: cat.label,
             }
@@ -129,6 +124,71 @@ export async function getZaikoUser(): Promise<any | null> {
 // Inventory Actions
 // -----------------------------------------------------------------------------
 
+// Helper to calculate current quantity based on auto-consume logic
+// Note: This does not update the DB, just calculates display value.
+// Ideally, we should have a background job or update on read if significant time passed.
+// For simplicity in this "Beta", we will calculate on read and potentially update DB if needed,
+// but read-time calculation is safer to avoid race conditions without transactions.
+function calculateCurrentQuantity(item: any) {
+    if (!item.autoConsume || !item.lastConsumedAt) return item.quantity;
+
+    const now = new Date();
+    const lastConsumed = new Date(item.lastConsumedAt);
+    const diffTime = Math.abs(now.getTime() - lastConsumed.getTime());
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays >= item.consumeInterval) {
+        const cycles = Math.floor(diffDays / item.consumeInterval);
+        const consumeAmount = cycles * item.consumeQuantity;
+        const newQuantity = Math.max(0, item.quantity - consumeAmount);
+        
+        // Return calculated quantity (we might want to update DB asynchronously or lazily)
+        // For now, let's just return what it *should* be.
+        // To persist this, we'd need to update the item. 
+        // Let's do a lazy update here? It might slow down reads.
+        // Let's just return the value for display and rely on the user to "save" or
+        // implement a proper cron job later. 
+        // OR: Update DB here if it's been a while.
+        return newQuantity; 
+    }
+    
+    return item.quantity;
+}
+
+// Better approach: When fetching, check if auto-consume needs to trigger and update DB.
+async function processAutoConsume(item: any) {
+    if (!item.autoConsume || !item.lastConsumedAt) return item;
+
+    const now = new Date();
+    const lastConsumed = new Date(item.lastConsumedAt);
+    const diffTime = Math.abs(now.getTime() - lastConsumed.getTime());
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays >= item.consumeInterval) {
+        const cycles = Math.floor(diffDays / item.consumeInterval);
+        const consumeAmount = cycles * item.consumeQuantity;
+        const newQuantity = Math.max(0, item.quantity - consumeAmount);
+        
+        // Update DB
+        // Update lastConsumedAt to (lastConsumed + cycles * interval) to keep schedule accurate
+        // or just set to now? Keeping schedule is better.
+        const daysToAdd = cycles * item.consumeInterval;
+        const newLastConsumedAt = new Date(lastConsumed);
+        newLastConsumedAt.setDate(newLastConsumedAt.getDate() + daysToAdd);
+
+        const updatedItem = await prisma.zaikoItem.update({
+            where: { id: item.id },
+            data: {
+                quantity: newQuantity,
+                lastConsumedAt: newLastConsumedAt
+            }
+        });
+        return updatedItem;
+    }
+    return item;
+}
+
+
 export async function getZaikoItems() {
     const user = await getZaikoUser();
     if (!user) return [];
@@ -139,12 +199,17 @@ export async function getZaikoItems() {
     });
     const familyIds = memberships.map(m => m.familyId);
 
-    const items = await prisma.zaikoItem.findMany({
+    let items = await prisma.zaikoItem.findMany({
         where: {
             familyId: { in: familyIds }
         },
         orderBy: { updatedAt: 'desc' }
     });
+
+    // Process auto-consume
+    // This might be slow if many items. Ideally use a cron or worker.
+    // For personal app scale, it's fine.
+    items = await Promise.all(items.map(processAutoConsume));
 
     return items;
 }
@@ -153,9 +218,13 @@ export async function getZaikoItem(id: string) {
     const user = await getZaikoUser();
     if (!user) return null;
 
-    const item = await prisma.zaikoItem.findUnique({
+    let item = await prisma.zaikoItem.findUnique({
         where: { id },
     });
+    
+    if (item) {
+        item = await processAutoConsume(item);
+    }
     
     return item;
 }
@@ -169,6 +238,10 @@ export async function createZaikoItem(data: {
     icon: string;
     memo?: string;
     familyId?: string; // 指定がなければデフォルト家族
+    // Auto consume
+    autoConsume?: boolean;
+    consumeQuantity?: number;
+    consumeInterval?: number;
 }) {
     const user = await getZaikoUser();
     if (!user) throw new Error('Unauthorized');
@@ -188,6 +261,8 @@ export async function createZaikoItem(data: {
             ...data,
             familyId,
             createdBy: user.id,
+            // If auto-consume is enabled, set start time to now
+            lastConsumedAt: data.autoConsume ? new Date() : null
         }
     });
 
@@ -198,9 +273,27 @@ export async function updateZaikoItem(id: string, data: Partial<ZaikoItem>) {
     const user = await getZaikoUser();
     if (!user) throw new Error('Unauthorized');
 
+    const updateData: any = { ...data };
+    
+    // If enabling auto-consume for the first time or re-enabling, reset timer if needed
+    // Actually, if we just update configs, we might want to reset `lastConsumedAt` to now
+    // so consumption starts from this new configuration point.
+    // But if we are just updating name, we shouldn't reset.
+    // Simple logic: if autoConsume is being set to true (and wasn't before, or just ensuring), 
+    // ensure lastConsumedAt is set if it's null.
+    // Ideally we check previous state, but here we blindly update.
+    // Let's set lastConsumedAt to now() if autoConsume is true and we don't have a previous value?
+    // Or simpler: If the user explicitly sends `autoConsume: true` in `data`, reset the timer.
+    if (data.autoConsume === true) {
+       // We'll set it to now to restart the interval counter
+       updateData.lastConsumedAt = new Date();
+    } else if (data.autoConsume === false) {
+       updateData.lastConsumedAt = null;
+    }
+
     await prisma.zaikoItem.update({
         where: { id },
-        data,
+        data: updateData,
     });
 
     revalidatePath('/zaiko/dashboard');

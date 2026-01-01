@@ -52,58 +52,6 @@ function Meteors() {
             } as React.CSSProperties),
           }}
         />
-        <span
-          className="meteor"
-          style={{
-            top: "40%",
-            left: "85%",
-            ...({
-              "--dur": "4s",
-              "--delay": "1s",
-              "--trail": "300px",
-              "--size": "2px",
-              "--dx": "-700px",
-              "--dy": "150px",
-              "--angle": "-12deg",
-              "--color": "#ffffff",
-            } as React.CSSProperties),
-          }}
-        />
-        <span
-          className="meteor"
-          style={{
-            top: "60%",
-            left: "95%",
-            ...({
-              "--dur": "2.8s",
-              "--delay": "0.5s",
-              "--trail": "250px",
-              "--size": "3px",
-              "--dx": "-650px",
-              "--dy": "130px",
-              "--angle": "-10deg",
-              "--color": "#1d4ed8",
-              "--opacity": "0.8",
-            } as React.CSSProperties),
-          }}
-        />
-        <span
-          className="meteor"
-          style={{
-            top: "20%",
-            left: "100%",
-            ...({
-              "--dur": "2.2s",
-              "--delay": "-0.5s",
-              "--trail": "220px",
-              "--size": "2.5px",
-              "--dx": "-550px",
-              "--dy": "110px",
-              "--angle": "-12deg",
-              "--color": "#ffffff",
-            } as React.CSSProperties),
-          }}
-        />
       </div>
     </div>
   );
@@ -172,7 +120,7 @@ function LoginForm() {
              src="/Simplo_white_blue.svg" 
              alt="Simplo" 
              fill 
-             className="object-contain" // No invert needed as it's already white
+             className="object-contain"
              priority
            />
         </div>
@@ -182,41 +130,8 @@ function LoginForm() {
       </div>
 
       <div className="w-full space-y-4">
-        
-        {/* OAuth Button */}
-        <Button
-          className={cn(
-            "w-full h-12 text-base relative rounded-xl border-0",
-            "bg-zinc-900 text-white hover:bg-zinc-800",
-            "dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100",
-            "shadow-lg shadow-zinc-500/10"
-          )}
-          onClick={() => handleOAuthLogin("github")}
-          disabled={isLoading}
-        >
-          {isGithubLoading ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
-          ) : (
-            <>
-              <Github className="absolute left-4 w-5 h-5" />
-              GitHubで続ける
-            </>
-          )}
-        </Button>
 
-        {/* Divider */}
-        <div className="relative py-2">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-zinc-200/50 dark:border-zinc-700/50" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="px-2 text-zinc-400 bg-transparent backdrop-blur-sm">
-              Or continue with
-            </span>
-          </div>
-        </div>
-
-        {/* Email Form */}
+        {/* Email Form (Swapped Order) */}
         <form onSubmit={handleEmailLogin} className="space-y-3">
           <Input
             type="email"
@@ -250,6 +165,41 @@ function LoginForm() {
             メールアドレスでログイン
           </Button>
         </form>
+
+        {/* Divider */}
+        <div className="relative py-2">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-zinc-200/50 dark:border-zinc-700/50" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            {/* Removed background color for transparency */}
+            <span className="px-2 text-zinc-400">
+              Or continue with
+            </span>
+          </div>
+        </div>
+        
+        {/* OAuth Button */}
+        <Button
+          className={cn(
+            "w-full h-12 text-base relative rounded-xl border-0",
+            "bg-zinc-900 text-white hover:bg-zinc-800",
+            "dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100",
+            "shadow-lg shadow-zinc-500/10"
+          )}
+          onClick={() => handleOAuthLogin("github")}
+          disabled={isLoading}
+        >
+          {isGithubLoading ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : (
+            <>
+              <Github className="absolute left-4 w-5 h-5" />
+              GitHubで続ける
+            </>
+          )}
+        </Button>
+
       </div>
 
       {/* Footer */}

@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { ZaikoHeader } from '../_components/layout/zaiko-header';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 export default function ZaikoLoginPage() {
   const router = useRouter();
@@ -85,31 +86,7 @@ export default function ZaikoLoginPage() {
         </div>
 
         <div className="w-full space-y-3">
-          <Button 
-            className="w-full h-12 text-base relative" 
-            variant="outline"
-            onClick={() => handleOAuthLogin('github')}
-            disabled={isLoading}
-          >
-             {isGithubLoading ? (
-               <Loader2 className="w-5 h-5 animate-spin" />
-             ) : (
-               <>
-                 <Github className="absolute left-4 w-5 h-5" />
-                 GitHubで続ける
-               </>
-             )}
-          </Button>
-          
-          <div className="relative py-4">
-            <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-zinc-200 dark:border-zinc-800" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white dark:bg-black px-2 text-zinc-500">Or continue with</span>
-            </div>
-          </div>
-
+            
           <form onSubmit={handleEmailLogin} className="space-y-3">
             <Input 
                 type="email" 
@@ -133,9 +110,49 @@ export default function ZaikoLoginPage() {
                 メールアドレスでログイン
             </Button>
           </form>
+
+          <div className="relative py-4">
+            <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-zinc-200 dark:border-zinc-800" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white dark:bg-black px-2 text-zinc-500">Or continue with</span>
+            </div>
+          </div>
+          
+          <Button 
+            className="w-full h-12 text-base relative" 
+            variant="outline"
+            onClick={() => handleOAuthLogin('github')}
+            disabled={isLoading}
+          >
+             {isGithubLoading ? (
+               <Loader2 className="w-5 h-5 animate-spin" />
+             ) : (
+               <>
+                 <Github className="absolute left-4 w-5 h-5" />
+                 GitHubで続ける
+               </>
+             )}
+          </Button>
+
         </div>
 
-        <div className="text-center">
+        {/* Powered by Simpro */}
+        <div className="flex flex-col items-center gap-2 pt-4 opacity-50">
+            <span className="text-[10px] text-zinc-400 font-medium tracking-wider uppercase">Powered by</span>
+            <div className="relative w-20 h-5">
+                <Image 
+                    src="/Simplo_gray_main_sub.svg" 
+                    alt="Simplo" 
+                    fill 
+                    className="object-contain dark:invert" 
+                />
+            </div>
+            <p className="text-[10px] text-zinc-400">“Simple is Professional”</p>
+        </div>
+
+        <div className="text-center pt-4">
             <Button variant="link" asChild className="text-zinc-500">
                 <Link href="/zaiko/signup">アカウントをお持ちでない方はこちら</Link>
             </Button>

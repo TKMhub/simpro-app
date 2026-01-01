@@ -2,34 +2,34 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Loader2, Mail, Github } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ZaikoHeader } from '../_components/layout/zaiko-header';
 import { createClient } from '@/lib/supabase/client';
+import Link from 'next/link';
 
 export default function ZaikoSignupPage() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isGithubLoading, setIsGithubLoading] = useState(false);
+  const [isEmailLoading, setIsEmailLoading] = useState(false);
   const [email, setEmail] = useState('');
 
-  // OAuthはログインと同じ（アカウントがなければ作成される）
   const handleOAuthLogin = async (provider: 'github' | 'google') => {
-    setIsLoading(true);
+    setIsGithubLoading(true);
     const supabase = createClient();
     try {
         const { error } = await supabase.auth.signInWithOAuth({
             provider,
             options: {
-                redirectTo: `${window.location.origin}/auth/callback?next=/zaiko/dashboard`,
+                redirectTo: `${window.location.origin}/auth/callback?next=/onboarding?returnTo=/zaiko/dashboard`,
             },
         });
         if (error) throw error;
     } catch (e) {
         console.error(e);
-        setIsLoading(false);
+        setIsGithubLoading(false);
     }
   };
 
@@ -37,26 +37,26 @@ export default function ZaikoSignupPage() {
     e.preventDefault();
     if (!email) return;
     
-    setIsLoading(true);
+    setIsEmailLoading(true);
     const supabase = createClient();
     try {
-        // signInWithOtp はユーザーが存在しなければ作成する＝新規登録と同じ挙動
         const { error } = await supabase.auth.signInWithOtp({
             email,
             options: {
-                // Onboardingへ誘導し、完了後はZaikoのログインへ戻す
-                emailRedirectTo: `${window.location.origin}/auth/callback?next=/onboarding?returnTo=/zaiko/login`,
+                emailRedirectTo: `${window.location.origin}/auth/callback?next=/onboarding?returnTo=/zaiko/dashboard`,
             },
         });
         if (error) throw error;
-        alert('登録確認用のリンクをメールで送信しました。メールを確認して登録を完了してください。');
+        alert('登録用のリンクをメールで送信しました。確認してください。');
     } catch (e) {
         console.error(e);
         alert('登録処理に失敗しました');
     } finally {
-        setIsLoading(false);
+        setIsEmailLoading(false);
     }
   };
+
+  const isLoading = isGithubLoading || isEmailLoading;
 
   return (
     <div className="min-h-screen bg-white dark:bg-black flex flex-col">
@@ -79,12 +79,13 @@ export default function ZaikoSignupPage() {
            </div>
            <h1 className="text-2xl font-bold">はじめまして</h1>
            <p className="text-zinc-500 text-sm">
-             アカウントを作成して<br />
-             快適な在庫管理を始めましょう
+             まずは無料でアカウント作成。<br />
+             シンプルな在庫管理を体験しましょう
            </p>
         </div>
 
         <div className="w-full space-y-3">
+            
           <form onSubmit={handleEmailSignup} className="space-y-3">
             <Input 
                 type="email" 
@@ -93,13 +94,18 @@ export default function ZaikoSignupPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="h-12"
+                disabled={isLoading}
             />
             <Button 
                 type="submit"
                 className="w-full h-12 text-base bg-green-600 hover:bg-green-700 text-white" 
                 disabled={isLoading || !email}
             >
-                <Mail className="w-4 h-4 mr-2" />
+                {isEmailLoading ? (
+                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                ) : (
+                  <Mail className="w-4 h-4 mr-2" />
+                )}
                 メールアドレスで登録
             </Button>
           </form>
@@ -109,17 +115,17 @@ export default function ZaikoSignupPage() {
                 <span className="w-full border-t border-zinc-200 dark:border-zinc-800" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white dark:bg-black px-2 text-zinc-500">外部アカウントで登録</span>
+                <span className="bg-white dark:bg-black px-2 text-zinc-500">Or continue with</span>
             </div>
           </div>
-
+          
           <Button 
             className="w-full h-12 text-base relative" 
             variant="outline"
             onClick={() => handleOAuthLogin('github')}
             disabled={isLoading}
           >
-             {isLoading ? (
+             {isGithubLoading ? (
                <Loader2 className="w-5 h-5 animate-spin" />
              ) : (
                <>
@@ -128,21 +134,34 @@ export default function ZaikoSignupPage() {
                </>
              )}
           </Button>
+
+        </div>
+        
+        {/* Powered by Simpro */}
+        <div className="flex flex-col items-center gap-2 pt-4 opacity-50">
+            <span className="text-[10px] text-zinc-400 font-medium tracking-wider uppercase">Powered by</span>
+            <div className="relative w-20 h-5">
+                <Image 
+                    src="/Simplo_gray_main_sub.svg" 
+                    alt="Simplo" 
+                    fill 
+                    className="object-contain dark:invert" 
+                />
+            </div>
+            <p className="text-[10px] text-zinc-400">“Simple is Professional”</p>
         </div>
 
-        <div className="text-center">
+        <div className="text-center pt-4">
             <Button variant="link" asChild className="text-zinc-500">
                 <Link href="/zaiko/login">すでにアカウントをお持ちの方はこちら</Link>
             </Button>
         </div>
 
         <p className="text-xs text-center text-zinc-400">
-          登録することで、<br />
           利用規約 および プライバシーポリシー に<br />
-          同意したものとみなされます。
+          同意した上で登録してください。
         </p>
       </div>
     </div>
   );
 }
-
