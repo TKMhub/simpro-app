@@ -18,6 +18,7 @@ export default function ZaikoLoginPage() {
   const searchParams = useSearchParams();
   const registered = searchParams.get('registered');
   const [showRegisteredDialog, setShowRegisteredDialog] = useState(!!registered);
+  const [showLoginErrorDialog, setShowLoginErrorDialog] = useState(false);
 
   const [isGithubLoading, setIsGithubLoading] = useState(false);
   const [isEmailLoading, setIsEmailLoading] = useState(false);
@@ -51,13 +52,15 @@ export default function ZaikoLoginPage() {
             email,
             options: {
                 emailRedirectTo: `${window.location.origin}/auth/callback?next=/zaiko/dashboard`,
+                shouldCreateUser: false, // 新規登録を防ぐ
             },
         });
         if (error) throw error;
         alert('ログイン用のリンクをメールで送信しました。確認してください。');
-    } catch (e) {
+    } catch (e: any) {
         console.error(e);
-        alert('ログイン処理に失敗しました');
+        // エラー時はログイン情報がない可能性が高いためダイアログを表示
+        setShowLoginErrorDialog(true);
     } finally {
         setIsEmailLoading(false);
     }
@@ -96,6 +99,34 @@ export default function ZaikoLoginPage() {
             <DialogFooter className="sm:justify-center">
               <Button type="button" onClick={() => setShowRegisteredDialog(false)} className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto min-w-[120px]">
                 OK
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={showLoginErrorDialog} onOpenChange={setShowLoginErrorDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader className="flex flex-col items-center gap-4">
+              <div className="relative w-16 h-16">
+                 <Image 
+                   src="/zaiko-logo.svg" 
+                   alt="Zaiko Logo" 
+                   fill 
+                   className="object-contain"
+                 />
+              </div>
+              <DialogTitle className="text-center">ログイン情報が見つかりませんでした</DialogTitle>
+              <DialogDescription className="text-center">
+                アカウントが見つかりませんでした。<br />
+                アカウントをお持ちでない場合は、新規登録をお願いします。
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="sm:justify-center flex flex-col sm:flex-row gap-2">
+              <Button type="button" variant="outline" onClick={() => setShowLoginErrorDialog(false)} className="w-full sm:w-auto">
+                閉じる
+              </Button>
+              <Button type="button" onClick={() => router.push('/zaiko/signup')} className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto">
+                アカウント作成へ
               </Button>
             </DialogFooter>
           </DialogContent>
