@@ -5,7 +5,7 @@ export type ProductHeader = {
   description?: string;
   author: string;
   category: string;
-  type: 'Tool' | 'Template' | 'Service';
+  type: 'Tool' | 'Template' | 'Application';
   tags: string[];
   isPublic: boolean;
   status: 'draft' | 'published' | 'archived';

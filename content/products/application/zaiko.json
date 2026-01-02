@@ -1,0 +1,20 @@
+{
+  "id": "zaiko-app",
+  "title": "Zaiko.",
+  "slug": "zaiko",
+  "description": "家族やシェアハウスで使える日用品在庫管理アプリ。消耗品の自動消費予測で買い忘れを防ぎます。",
+  "author": "Takumi",
+  "category": "LifeStyle",
+  "type": "Application",
+  "tags": ["Next.js", "Supabase", "PWA", "TailwindCSS"],
+  "isPublic": true,
+  "status": "published",
+  "goodCount": 120,
+  "headerImagePath": "/zaiko-logo.svg",
+  "notionPageId": "12345678-1234-1234-1234-1234567890ab",
+  "contentLink": "/zaiko",
+  "actionType": "transition",
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "updatedAt": "2025-01-01T00:00:00.000Z",
+  "publishedAt": "2025-01-01T00:00:00.000Z"
+}

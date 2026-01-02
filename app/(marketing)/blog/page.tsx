@@ -12,7 +12,7 @@ export default async function BlogListPage() {
   });
   const facets = await getBlogFacets();
   return (
-    <Suspense fallback={<main className="mx-auto max-w-4xl px-4 sm:px-6 pb-16" /> }>
+    <Suspense fallback={<main className="mx-auto max-w-6xl px-4 sm:px-6 pb-16" /> }>
       <BlogListClient
         initialItems={items}
         initialTotal={total}

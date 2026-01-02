@@ -1,0 +1,20 @@
+{
+  "id": "juice-app",
+  "title": "Juice.",
+  "slug": "juice",
+  "description": "友達との割り勘や貸し借りを記録・清算できるアプリ。ゲームの結果入力で負けた人がジュースを奢る機能も。",
+  "author": "Takumi",
+  "category": "Entertainment",
+  "type": "Application",
+  "tags": ["Next.js", "PostgreSQL", "Gamification"],
+  "isPublic": true,
+  "status": "published",
+  "goodCount": 85,
+  "headerImagePath": "/juice-logo.svg",
+  "notionPageId": "abcdef12-1234-1234-1234-1234567890ab",
+  "contentLink": "/juice",
+  "actionType": "transition",
+  "createdAt": "2025-01-02T00:00:00.000Z",
+  "updatedAt": "2025-01-02T00:00:00.000Z",
+  "publishedAt": "2025-01-02T00:00:00.000Z"
+}

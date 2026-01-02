@@ -1,0 +1,21 @@
+{
+  "id": "nextjs-starter",
+  "title": "Next.js SaaS Starter",
+  "slug": "nextjs-starter",
+  "description": "Authentication, Database, Stripe決済が組み込まれたSaaS開発用スターターキット。",
+  "author": "Takumi",
+  "category": "Development",
+  "type": "Template",
+  "tags": ["Next.js", "Stripe", "Auth"],
+  "isPublic": true,
+  "status": "published",
+  "goodCount": 45,
+  "headerImagePath": "covers/starter.png",
+  "notionPageId": "dummy-template-id",
+  "contentLink": "https://github.com/example/starter",
+  "actionType": "download",
+  "createdAt": "2025-01-03T00:00:00.000Z",
+  "updatedAt": "2025-01-03T00:00:00.000Z",
+  "publishedAt": "2025-01-03T00:00:00.000Z"
+}
+

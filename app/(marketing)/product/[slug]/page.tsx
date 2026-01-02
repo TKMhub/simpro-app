@@ -3,23 +3,39 @@ import { notFound } from "next/navigation";
 import ImageWithFallback from "@/components/ImageWithFallback";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getProductDetailBySlug } from "@/lib/product/actions";
+import { getLocalProductBySlug } from "@/lib/product/local-content";
 import { RenderBlock } from "@/util/common/notion-render";
+import { fetchNotionBlocks } from "@/lib/blog/notion-client";
+import { normalizeNotionDocument } from "@/lib/blog/notion-normalize";
 
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
-  const p = await getProductDetailBySlug(slug);
+  const p = await getLocalProductBySlug(slug);
   if (!p) return { title: "Not Found" };
-  return { title: `${p.header.title} | Product`, description: undefined };
+  return { title: `${p.title} | Product`, description: p.description };
 }
 
 export default async function ProductDetailPage({ params }: Props) {
   const { slug } = await params;
-  const data = await getProductDetailBySlug(slug);
-  if (!data) return notFound();
-  const { header: product, notion } = data;
+  const product = await getLocalProductBySlug(slug);
+  if (!product) return notFound();
+
+  let notion = { blocks: [], unavailable: true };
+  
+  // Fetch Notion content if ID is valid
+  // We use a simple check to skip placeholders
+  if (product.notionPageId && 
+      !product.notionPageId.includes("dummy") && 
+      !product.notionPageId.includes("NOTION_PAGE_ID")) {
+    try {
+      const rawBlocks = await fetchNotionBlocks(product.notionPageId);
+      notion = await normalizeNotionDocument(rawBlocks);
+    } catch (e) {
+      console.error(`Failed to fetch notion content for ${slug}:`, e);
+    }
+  }
 
   return (
     <main className="mx-auto max-w-3xl px-4 sm:px-6 pb-16">
@@ -40,7 +56,7 @@ export default async function ProductDetailPage({ params }: Props) {
         {/* Type and category */}
         <div className="flex items-center gap-2 mt-2">
           <Badge variant="secondary" className="rounded-full">
-            {product.type === 'Tool' ? 'ツール' : product.type === 'Template' ? 'テンプレート' : 'サービス'}
+            {product.type === 'Tool' ? 'ツール' : product.type === 'Template' ? 'テンプレート' : 'アプリケーション'}
           </Badge>
           {product.category && (
             <p className="text-sm text-muted-foreground">{product.category}</p>
@@ -68,7 +84,10 @@ export default async function ProductDetailPage({ params }: Props) {
         </div>
 
         {notion.unavailable || notion.blocks.length === 0 ? (
-          <p className="text-sm text-muted-foreground mt-6">表示できるコンテンツがありません。</p>
+          <div className="mt-10 p-8 border rounded-lg bg-muted/20 text-center">
+             <p className="text-muted-foreground">詳細情報は準備中です。</p>
+             <p className="text-sm text-muted-foreground mt-2">（Notion Page ID: {product.notionPageId}）</p>
+          </div>
         ) : (
           <div className="prose dark:prose-invert max-w-none mt-6">
             {notion.blocks.map((b, idx) => (
@@ -78,8 +97,8 @@ export default async function ProductDetailPage({ params }: Props) {
         )}
 
         {product.contentLink && (
-          <div className="mt-6">
-            <Button asChild>
+          <div className="mt-10 flex justify-center">
+            <Button asChild size="lg" className="rounded-full px-8">
               <Link 
                 href={product.contentLink}
                 target={product.actionType === 'transition' ? "_self" : "_blank"}

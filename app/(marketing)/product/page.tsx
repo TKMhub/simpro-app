@@ -1,81 +1,13 @@
-import Link from "next/link";
-import ImageWithFallback from "@/components/ImageWithFallback";
-import { getProductList } from "@/lib/product/actions";
+import { getLocalProductList } from "@/lib/product/local-content";
+import { ProductListClient } from "@/components/product/ProductListClient";
 
-function ProductCard({
-  slug,
-  title,
-  description,
-  stack,
-  coverUrl,
-}: {
-  slug: string;
-  title: string;
-  description: string;
-  stack: string[];
-  coverUrl: string;
-}) {
-  const visibleTags = stack.slice(0, 3);
-  const extraCount = Math.max(0, stack.length - visibleTags.length);
-  return (
-    <Link href={`/product/${slug}`} className="block group">
-      <div className="relative overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--card)] shadow-sm transition-all duration-300 group-hover:shadow-md group-hover:scale-[1.01] h-full flex flex-col">
-        <div className="relative aspect-[16/9] w-full">
-          <ImageWithFallback
-            src={coverUrl}
-            alt={`${title} cover`}
-            fill
-            sizes="(max-width: 768px) 100vw, 600px"
-            className="object-cover"
-            fallbackSrc="/Simplo_gray_main_sub.jpg"
-            priority={false}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 text-white">
-            <h3 className="text-lg font-semibold tracking-tight drop-shadow">{title}</h3>
-            <p className="mt-1 text-xs sm:text-sm opacity-90 line-clamp-2">
-              {description}
-            </p>
-          </div>
-        </div>
-        <div className="p-4 sm:p-5 flex flex-col grow">
-          <div className="flex items-start gap-2 overflow-hidden h-8">
-            {visibleTags.map((t) => (
-              <span
-                key={t}
-                className="rounded-full border px-2.5 h-8 inline-flex items-center text-xs text-[var(--muted-foreground)] bg-[var(--muted)]/20"
-              >
-                {t}
-              </span>
-            ))}
-            {extraCount > 0 && (
-              <span className="rounded-full border px-2.5 h-8 inline-flex items-center text-xs text-[var(--muted-foreground)] bg-[var(--muted)]/20">
-                +{extraCount}
-              </span>
-            )}
-          </div>
-          <div className="mt-auto pt-4 text-sm text-blue-600">詳しく見る →</div>
-        </div>
-      </div>
-    </Link>
-  );
-}
+export const metadata = {
+  title: "Product | Simpro",
+  description: "個人開発しているプロダクトの紹介とリンク集",
+};
 
 export default async function ProductPage() {
-  const { items } = await getProductList();
-
-  const typeLabel: Record<"Tool" | "Template" | "Service", string> = {
-    Tool: "ツール",
-    Template: "テンプレート",
-    Service: "サービス",
-  };
-
-  const order: Array<keyof typeof typeLabel> = ["Tool", "Template", "Service"];
-  const grouped = order.map((t) => ({
-    type: t,
-    label: typeLabel[t],
-    items: items.filter((p) => p.type === t),
-  }));
+  const items = await getLocalProductList();
 
   return (
     <main className="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-16 space-y-10">
@@ -86,25 +18,7 @@ export default async function ProductPage() {
         </p>
       </header>
 
-      {grouped.map(({ type, label, items }) => (
-        items.length > 0 && (
-          <section key={type} className="space-y-4">
-            <h2 className="text-xl sm:text-2xl font-semibold">{label}</h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr items-stretch">
-              {items.map((p) => (
-                <ProductCard
-                  key={p.slug}
-                  slug={p.slug}
-                  title={p.title}
-                  description={p.description || p.category}
-                  stack={p.tags}
-                  coverUrl={p.headerImageUrl || "/Simplo_gray_main_sub.jpg"}
-                />
-              ))}
-            </div>
-          </section>
-        )
-      ))}
+      <ProductListClient items={items} />
     </main>
   );
 }

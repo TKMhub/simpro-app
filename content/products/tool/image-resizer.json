@@ -1,0 +1,21 @@
+{
+  "id": "image-resizer",
+  "title": "Simple Image Resizer",
+  "slug": "image-resizer",
+  "description": "ブラウザ上で完結する画像リサイズ・フォーマット変換ツール。サーバーへのアップロードなしで安全。",
+  "author": "Takumi",
+  "category": "Utility",
+  "type": "Tool",
+  "tags": ["React", "WASM", "Image"],
+  "isPublic": true,
+  "status": "published",
+  "goodCount": 200,
+  "headerImagePath": "covers/resizer.png",
+  "notionPageId": "dummy-tool-id",
+  "contentLink": "/tools/resizer",
+  "actionType": "transition",
+  "createdAt": "2025-01-04T00:00:00.000Z",
+  "updatedAt": "2025-01-04T00:00:00.000Z",
+  "publishedAt": "2025-01-04T00:00:00.000Z"
+}
+
