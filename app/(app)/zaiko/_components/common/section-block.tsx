@@ -23,7 +23,7 @@ export function SectionBlock({
       id={id}
       className={cn(
         'py-12 px-6',
-        dark ? 'bg-zinc-900 text-white' : 'bg-white text-zinc-900',
+        dark ? 'bg-zinc-900 text-white' : 'bg-white dark:bg-black text-zinc-900 dark:text-zinc-100',
         className
       )}
     >

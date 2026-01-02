@@ -10,6 +10,7 @@ import { SectionBlock } from './_components/common/section-block';
 import { FeatureCard } from './_components/common/feature-card';
 import { MotionContainer } from './_components/common/motion-container';
 import { createClient } from '@/lib/supabase/server';
+import { PoweredBy } from '@/components/common/PoweredBy';
 
 export default async function ZaikoLpPage() {
   const supabase = await createClient();
@@ -35,7 +36,7 @@ export default async function ZaikoLpPage() {
         <UiHero />
 
         {/* Problem Section */}
-        <SectionBlock className="bg-zinc-50 dark:bg-zinc-900/50 text-zinc-900 dark:text-zinc-100">
+        <SectionBlock className="bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">
           <MotionContainer>
             <div className="space-y-6">
               <h2 className="text-xl font-bold text-center">こんな「困った」ありませんか？</h2>
@@ -85,7 +86,7 @@ export default async function ZaikoLpPage() {
         </SectionBlock>
 
         {/* Feature Grid */}
-        <SectionBlock id="features" title="便利な機能" className="bg-zinc-50 dark:bg-zinc-900/50 text-zinc-900 dark:text-zinc-100">
+        <SectionBlock id="features" title="便利な機能" className="bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">
           <div className="grid grid-cols-2 gap-3">
              {[
                { icon: Zap, label: '簡単入力', desc: 'タップだけで完了' },
@@ -139,10 +140,8 @@ export default async function ZaikoLpPage() {
         </div>
 
         {/* Powered by Simpro */}
-        <div className="flex flex-col items-center gap-2 py-8 opacity-50">
-            <span className="text-[10px] text-zinc-400 font-medium tracking-wider uppercase">Powered by</span>
-            <span className="text-xl font-bold text-zinc-400 tracking-widest">Simplo</span>
-            <p className="text-[10px] text-zinc-400">“Simple is Professional”</p>
+        <div className="py-8">
+          <PoweredBy />
         </div>
       </main>
     </div>

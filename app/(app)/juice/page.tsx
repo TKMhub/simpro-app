@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 
 import { createNewProject } from '@/lib/juice/actions';
 import { toast } from 'sonner';
+import { PoweredBy } from '@/components/common/PoweredBy';
 import {
   Accordion,
   AccordionContent,
@@ -227,6 +228,10 @@ export default function JuiceLandingPage() {
               </AccordionContent>
             </AccordionItem>
           </Accordion>
+        </div>
+        
+        <div className="mt-16">
+          <PoweredBy />
         </div>
       </section>
       
