@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { ZaikoItem } from './types';
-import { ZaikoFamilyRole } from '@prisma/client';
+import { ZaikoFamilyRole } from '@/lib/generated/prisma';
 import { ZAIKO_CATEGORIES, ZAIKO_LOCATIONS } from './zaiko-constants';
 
 // -----------------------------------------------------------------------------

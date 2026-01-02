@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Loader2, Mail, Github } from 'lucide-react';
@@ -13,7 +13,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
-export default function ZaikoLoginPage() {
+function ZaikoLoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const registered = searchParams.get('registered');
@@ -246,5 +246,13 @@ export default function ZaikoLoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ZaikoLoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white dark:bg-black flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-zinc-400" /></div>}>
+      <ZaikoLoginContent />
+    </Suspense>
   );
 }

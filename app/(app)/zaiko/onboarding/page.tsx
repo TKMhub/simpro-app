@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, Suspense } from "react";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Loader2, Camera, Upload } from "lucide-react";
@@ -22,7 +22,7 @@ function ZaikoMeteors() {
   );
 }
 
-export default function ZaikoOnboardingPage() {
+function ZaikoOnboardingContent() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -216,5 +216,13 @@ export default function ZaikoOnboardingPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ZaikoOnboardingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen w-full flex items-center justify-center bg-white dark:bg-black"><Loader2 className="w-8 h-8 animate-spin text-zinc-400" /></div>}>
+      <ZaikoOnboardingContent />
+    </Suspense>
   );
 }

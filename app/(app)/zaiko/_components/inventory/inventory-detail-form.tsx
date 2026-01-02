@@ -49,19 +49,19 @@ export function InventoryDetailForm({
   categories = [], 
   locations = [] 
 }: InventoryDetailFormProps) {
-  const form = useForm<FormValues>({
+  const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-      icon: '📦',
-      category: '',
-      quantity: 1,
-      threshold: 1,
-      memo: '',
-      autoConsume: false,
-      consumeQuantity: 1,
-      consumeInterval: 1,
-      ...defaultValues,
+      name: defaultValues?.name || '',
+      icon: defaultValues?.icon || '📦',
+      category: defaultValues?.category || '',
+      quantity: defaultValues?.quantity ?? 1,
+      threshold: defaultValues?.threshold ?? 1,
+      memo: defaultValues?.memo || '',
+      autoConsume: defaultValues?.autoConsume ?? false,
+      consumeQuantity: defaultValues?.consumeQuantity ?? 1,
+      consumeInterval: defaultValues?.consumeInterval ?? 1,
+      location: defaultValues?.location || undefined,
     },
   });
 

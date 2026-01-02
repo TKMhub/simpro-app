@@ -1,7 +1,7 @@
 import { joinZaikoFamily, getZaikoUser } from '../../_lib/actions';
 import { redirect } from 'next/navigation';
 
-export default async function InvitePage({ params }: { params: { code: string } }) {
+export default async function InvitePage({ params }: { params: Promise<{ code: string }> }) {
   const user = await getZaikoUser();
   const { code } = await params;
 

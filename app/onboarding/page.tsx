@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, Suspense } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { Loader2, Camera, Upload } from "lucide-react";
@@ -22,7 +22,7 @@ function Meteors() {
   );
 }
 
-export default function OnboardingPage() {
+function OnboardingContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -215,5 +215,13 @@ export default function OnboardingPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function OnboardingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen w-full flex items-center justify-center bg-zinc-50 dark:bg-black"><Loader2 className="w-8 h-8 animate-spin text-zinc-400" /></div>}>
+      <OnboardingContent />
+    </Suspense>
   );
 }
