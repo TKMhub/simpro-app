@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ZaikoHeader } from '../_components/layout/zaiko-header';
 import { createClient } from '@/lib/supabase/client';
+import { getBaseUrl } from '@/lib/utils';
 import Link from 'next/link';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
@@ -28,7 +29,7 @@ export default function ZaikoSignupPage() {
         const { error } = await supabase.auth.signInWithOAuth({
             provider,
             options: {
-                redirectTo: `${window.location.origin}/auth/callback?next=${nextUrl}`,
+                redirectTo: `${getBaseUrl()}/auth/callback?next=${nextUrl}`,
             },
         });
         if (error) throw error;
@@ -49,7 +50,7 @@ export default function ZaikoSignupPage() {
         const { error } = await supabase.auth.signInWithOtp({
             email,
             options: {
-                emailRedirectTo: `${window.location.origin}/auth/callback?next=${nextUrl}`,
+                emailRedirectTo: `${getBaseUrl()}/auth/callback?next=${nextUrl}`,
             },
         });
         if (error) throw error;

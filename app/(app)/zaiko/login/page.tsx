@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ZaikoHeader } from '../_components/layout/zaiko-header';
 import { createClient } from '@/lib/supabase/client';
+import { getBaseUrl } from '@/lib/utils';
 import Link from 'next/link';
 
 import { useSearchParams } from 'next/navigation';
@@ -32,7 +33,7 @@ function ZaikoLoginContent() {
         const { error } = await supabase.auth.signInWithOAuth({
             provider,
             options: {
-                redirectTo: `${window.location.origin}/auth/callback?next=/zaiko/dashboard`,
+                redirectTo: `${getBaseUrl()}/auth/callback?next=/zaiko/dashboard`,
             },
         });
         if (error) throw error;
@@ -52,7 +53,7 @@ function ZaikoLoginContent() {
         const { error } = await supabase.auth.signInWithOtp({
             email,
             options: {
-                emailRedirectTo: `${window.location.origin}/auth/callback?next=/zaiko/dashboard`,
+                emailRedirectTo: `${getBaseUrl()}/auth/callback?next=/zaiko/dashboard`,
                 shouldCreateUser: false, // 新規登録を防ぐ
             },
         });
