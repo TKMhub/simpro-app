@@ -246,7 +246,7 @@ export default function ContactClient({
                             src="/icons/x.svg" 
                             alt="X" 
                             fill 
-                            className="object-contain dark:invert" 
+                            className="object-contain invert dark:invert-0" 
                           />
                         </div>
                       </div>
