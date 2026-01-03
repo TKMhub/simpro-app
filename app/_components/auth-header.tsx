@@ -100,7 +100,7 @@ export default function AuthHeader({ context = "header" }: AuthHeaderProps) {
         <SheetClose asChild>
           <Button
             size="sm"
-            className={`${glassBtn} text-black dark:text-black`}
+            className={`${glassBtn} text-white dark:text-black`}
             onClick={onSignOut}
           >
             ログアウト

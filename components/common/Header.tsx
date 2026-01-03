@@ -4,6 +4,7 @@ import ThemedLogo from "@/components/common/ThemedLogo";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
+import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -30,6 +31,7 @@ type ProfileWithRole = {
 } | null;
 
 export default function Header() {
+  const { resolvedTheme } = useTheme();
   const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [profile, setProfile] = useState<ProfileWithRole>(null);
@@ -104,7 +106,7 @@ export default function Header() {
                   <MenuIcon />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-[80%] sm:max-w-sm bg-background border-r border-border">
+              <SheetContent side="left" className="w-[80%] sm:max-w-sm border-r border-border bg-black/80 text-white dark:bg-white/80 dark:text-black backdrop-blur-md">
                 <SheetHeader className="p-0">
                   <SheetTitle className="sr-only">メニュー</SheetTitle>
                 </SheetHeader>

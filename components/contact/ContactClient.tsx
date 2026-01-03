@@ -166,7 +166,7 @@ export default function ContactClient({
             "w-full md:w-80 flex-col gap-4 border-r border-border pr-6",
             showMobileContent ? "hidden md:flex" : "flex"
         )}>
-            <Button onClick={() => setIsCreating(true)} className="w-full shadow-sm bg-primary text-primary-foreground hover:bg-primary/90" size="lg">
+            <Button onClick={() => setIsCreating(true)} className="w-full shadow-sm bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-600 dark:hover:bg-blue-700" size="lg">
               <Plus className="mr-2 h-4 w-4" /> 新しい問い合わせ
             </Button>
             <ScrollArea className="flex-1 -mr-4 pr-4">
