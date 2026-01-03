@@ -1,7 +1,7 @@
 import React from "react";
 
 export type Section = {
-  id: "about" | "blog" | "product" | "link";
+  id: "about" | "product" | "blog" | "contact";
   label: string;
 };
 
@@ -30,15 +30,38 @@ export type SummaryData = {
 // Prefer live data from Supabase (via Prisma). Fallback to minimal static items when unavailable.
 export async function fetchSummaryData(): Promise<SummaryData> {
   const sections: Section[] = [
-    { id: "about", label: "about" },
-    { id: "product", label: "product" },
-    { id: "blog", label: "blog" },
-    { id: "link", label: "link" },
+    { id: "about", label: "About" },
+    { id: "product", label: "Product" },
+    { id: "blog", label: "Blog" },
+    { id: "contact", label: "Contact" },
   ];
 
   const items: SummaryItem[] = [];
 
-  // 0) Product - Apps
+  // --- About Section (Static) ---
+  items.push(
+    {
+      id: "about-me",
+      section: "about",
+      title: "About Me",
+      description: "エンジニアとしての経歴やスキルセット、個人の価値観について。",
+      cta: { label: "詳しく見る", href: "/about" },
+      image: { src: "/taku.jpg", alt: "Profile" },
+      imageFit: "cover",
+    },
+    {
+      id: "about-link",
+      section: "about",
+      title: "Links",
+      description: "各種SNSや活動リンクをまとめています。",
+      cta: { label: "リンク集へ", href: "/link" },
+      tags: ["SNS", "GitHub", "Zenn"],
+    }
+  );
+
+  // --- Output Section (Product & Blog) ---
+  
+  // 1) Products
   items.push(
     {
       id: "app-juice",
@@ -70,16 +93,16 @@ export async function fetchSummaryData(): Promise<SummaryData> {
     }
   );
 
-  // 1) Blog (from Supabase via Prisma)
+  // 2) Blog Posts (Latest 3)
   try {
     const { getBlogList } = await import("@/lib/blog/actions");
-    const blog = await getBlogList({ page: 1, pageSize: 6, sort: "updated", order: "desc", status: "published" });
+    const blog = await getBlogList({ page: 1, pageSize: 3, sort: "updated", order: "desc", status: "published" });
     for (const b of blog.items) {
       items.push({
         id: `blog-${b.id}`,
         section: "blog",
         title: b.title,
-        description: b.category || undefined,
+        description: `Blog: ${b.category || "General"}`,
         cta: { label: "読む", href: `/blog/${b.slug}` },
         image: b.headerImageUrl ? { src: b.headerImageUrl, alt: b.title } : undefined,
         tags: b.tags || [],
@@ -87,70 +110,25 @@ export async function fetchSummaryData(): Promise<SummaryData> {
     }
   } catch (e) {
     console.error(e);
-    // swallow and continue; we will still show other sections
   }
 
-  // 2) Product (from Supabase via Prisma)
-  try {
-    const { getProductList } = await import("@/lib/product/actions");
-    const prods = await getProductList({ page: 1, pageSize: 6, sort: "updated", order: "desc", status: "published" });
-    for (const p of prods.items) {
-      items.push({
-        id: `product-${p.id}`,
-        section: "product",
-        category: "template", // Default to template for now, logic can be refined
-        title: p.title,
-        description: p.description || undefined,
-        cta: { label: p.actionType === "download" ? "ダウンロード" : "詳しく", href: p.contentLink ?? `/product/${p.slug}` },
-        image: p.headerImageUrl ? { src: p.headerImageUrl, alt: p.title } : undefined,
-        tags: p.tags || [],
-      });
-    }
-  } catch (e) {
-    console.error(e);
-    // ignore and proceed
-  }
-
-  // 3) Static About + Link as fallback/auxiliary
-  try {
-    const { aboutData } = await import("@/lib/about/data");
-    items.push(
-      {
-        id: "about-1",
-        section: "about",
-        title: "自己紹介",
-        description: aboutData.intro,
-        cta: { label: "詳細を見る", href: "/about" },
-        image: { src: "/avatar.svg", alt: "プロフィール" },
-        tags: ["Profile"],
-      },
-      {
-        id: "about-2",
-        section: "about",
-        title: "スキルスタック",
-        description: `${aboutData.skills.frameworks.slice(0, 3).join(" / ")} / ${aboutData.skills.languages.slice(0, 3).join(" / ")}`,
-        cta: { label: "スキル", href: "/about#skills" },
-        tags: ["Skills"],
-      },
-    );
-  } catch {}
-  
+  // --- Contact Section (Static) ---
   items.push(
     {
-      id: "link-1",
-      section: "link",
-      title: "X (Twitter)",
-      description: "学習ログをポストしています。",
-      cta: { label: "フォロー", href: "https://x.com/" },
-      tags: ["Social"],
+      id: "contact-request",
+      section: "contact",
+      title: "Development Request",
+      description: "Webアプリ開発、業務改善ツール作成など、技術的なご相談はこちら。",
+      cta: { label: "依頼する", href: "/request" },
+      tags: ["Development", "Consulting"],
     },
     {
-      id: "link-2",
-      section: "link",
-      title: "YouTube",
-      description: "開発ログや技術メモを更新中。",
-      cta: { label: "見る", href: "https://youtube.com/" },
-      tags: ["Video"],
+      id: "contact-inquiry",
+      section: "contact",
+      title: "General Inquiry",
+      description: "その他のお問い合わせ、ご質問、雑談などはこちらから。",
+      cta: { label: "問い合わせる", href: "/contact" },
+      tags: ["Support", "Question"],
     }
   );
 

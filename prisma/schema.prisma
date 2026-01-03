@@ -91,6 +91,12 @@ enum ThemePreference {
   DARK
 }
 
+enum Role {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
 // 全アプリ共有のプロフィールテーブル
 model Profile {
   id           String   @id @default(uuid()) // auth.users.id と同期
@@ -101,6 +107,9 @@ model Profile {
   
   // Theme Settings
   theme        ThemePreference @default(SYSTEM)
+  
+  // Role
+  role         Role            @default(USER)
 
   // ユーザーが利用開始しているアプリのIDリスト (例: ["zaiko", "kakeibo"])
   joinedApps   String[] @default([])
@@ -116,10 +125,105 @@ model Profile {
   juiceCreatedProjects JuiceProject[]
   juiceMemberships     JuiceMember[]
   
+  // Relations (Contact & Requests)
+  contactThreads      ContactThread[]
+  contactMessages     ContactMessage[]
+  developmentRequests DevelopmentRequest[]
+
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   
   @@map("profiles")
+}
+
+// -----------------------------------------------------------------------------
+// Contact & Request Schema
+// -----------------------------------------------------------------------------
+
+enum ContactType {
+  CHAT
+  EMAIL_FORM
+}
+
+enum ContactStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+model ContactThread {
+  id        String   @id @default(uuid())
+  
+  userId    String?  // Optional for non-logged in users
+  user      Profile? @relation(fields: [userId], references: [id])
+  
+  // For anonymous users (Email Form)
+  email     String?
+  name      String?
+
+  subject   String?  // For email forms
+  type      ContactType
+  status    ContactStatus @default(OPEN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  messages  ContactMessage[]
+
+  @@map("contact_threads")
+}
+
+model ContactMessage {
+  id        String   @id @default(uuid())
+  threadId  String
+  thread    ContactThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  
+  userId    String?  // Optional
+  user      Profile? @relation(fields: [userId], references: [id])
+  
+  content   String
+  attachments String[] @default([]) // Array of URLs
+  isAdminResponse Boolean @default(false)
+  createdAt DateTime @default(now())
+  readAt    DateTime?
+
+  @@map("contact_messages")
+}
+
+enum RequestStatus {
+  PENDING     // 見積前
+  HEARING     // ヒアリング中
+  PROPOSAL    // 提案中
+  CONTRACT    // 契約
+  DEVELOPMENT // 開発中
+  DELIVERED   // 納品
+  MAINTENANCE // 保守
+  LOST        // 失注
+}
+
+enum RequestType {
+  WEB
+  TOOL
+  CONSULTATION
+}
+
+model DevelopmentRequest {
+  id          String   @id @default(uuid())
+  userId      String
+  user        Profile  @relation(fields: [userId], references: [id])
+  type        RequestType
+  background  String   // 背景・目的
+  requirements String? // 要件
+  deadline    String?  // 希望納期
+  budget      String?  // 予算レンジ
+  
+  status      RequestStatus @default(PENDING)
+  adminNote   String?  // 内部メモ
+  attachments String[] @default([]) // Array of URLs
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("development_requests")
 }
 
 // -----------------------------------------------------------------------------
