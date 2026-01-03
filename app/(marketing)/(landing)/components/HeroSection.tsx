@@ -1,10 +1,11 @@
 "use client";
 
-import Image from "next/image";
+import ThemedLogo from "@/components/common/ThemedLogo";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Github, Globe, Instagram, Twitter, Youtube } from "lucide-react";
 import { SiTiktok } from "react-icons/si";
+import Image from "next/image";
 
 export type SocialLink = {
   type: "instagram" | "blog" | "x" | "github" | "youtube" | "tiktok";
@@ -526,13 +527,12 @@ export default function HeroSection(props: HeroSectionProps) {
                 <div className="p-4">
                   {/* ロゴ */}
                   <div className="flex items-center gap-3">
-                    <Image
-                      src={brandLogoSrc}
-                      alt={brandLogoAlt}
+                    <ThemedLogo
                       width={600}
                       height={200}
                       className="h-10 sm:h-12 md:h-14 w-auto"
                       priority={false}
+                      forceTheme="dark" // Always use dark mode logo (White/Blue) due to dark glass background
                     />
                   </div>
                   {/* 表題 */}
@@ -605,22 +605,24 @@ export default function HeroSection(props: HeroSectionProps) {
           <div
             className={cn(
               // 既存
-              "sm:mx-10 md:mx-20 size-20 sm:size-32 md:size-40 lg:size-40 rounded-full overflow-hidden",
+              "sm:mx-10 md:mx-20 size-20 sm:size-32 md:size-40 lg:size-40 rounded-full overflow-hidden shrink-0",
               "ring-4 ring-[var(--glass-border)]",
               // ▼ 影をテーマで出し分け（任意値）
               "[--avatar-shadow:0_10px_30px_rgba(0,0,0,0.14)] dark:[--avatar-shadow:0_12px_36px_rgba(0,0,0,0.55)]",
               "shadow-[var(--avatar-shadow)]"
             )}
           >
-            <Image
-              src={avatarSrc}
-              alt={avatarAlt}
-              className="h-full w-full object-cover"
-              width={400}
-              height={400}
-              loading="eager"
-              decoding="async"
-            />
+            <div className="relative h-full w-full">
+              <Image
+                src={avatarSrc}
+                alt={avatarAlt}
+                className="object-cover"
+                fill
+                sizes="(max-width: 640px) 80px, (max-width: 768px) 128px, 160px"
+                loading="eager"
+                decoding="async"
+              />
+            </div>
           </div>
 
           {/* テキストブロック */}

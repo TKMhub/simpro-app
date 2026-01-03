@@ -44,7 +44,7 @@ export default function ContactClient({
 
   // Create form state
   const [newSubject, setNewSubject] = useState("");
-  const [newType, setNewType] = useState<ContactType>("CHAT");
+  const [newType, setNewType] = useState<ContactType | "X_DM">("X_DM");
   const [initialMessage, setInitialMessage] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [contactName, setContactName] = useState("");
@@ -64,6 +64,7 @@ export default function ContactClient({
   // Handlers
   const handleCreate = async () => {
     // Validation
+    if (newType === "X_DM") return;
     if (newType === "CHAT" && !userId) {
       router.push("/login?returnUrl=/contact");
       return;
@@ -151,7 +152,7 @@ export default function ContactClient({
     <div className="flex h-[calc(100vh-140px)] gap-6">
       {/* Sidebar List (Only visible if logged in and has threads) */}
       {userId && (
-        <div className="w-80 hidden md:flex flex-col gap-4 border-r border-slate-200 dark:border-slate-800 pr-6">
+        <div className="w-80 hidden md:flex flex-col gap-4 border-r border-border pr-6">
             <Button onClick={() => setIsCreating(true)} className="w-full shadow-sm" size="lg">
               <Plus className="mr-2 h-4 w-4" /> 新しい問い合わせ
             </Button>
@@ -167,8 +168,8 @@ export default function ContactClient({
                     className={cn(
                       "p-4 rounded-xl border transition-all cursor-pointer group",
                       activeThreadId === thread.id && !isCreating 
-                        ? "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm" 
-                        : "hover:bg-slate-50 dark:hover:bg-slate-900 border-transparent hover:border-slate-200 dark:hover:border-slate-800"
+                        ? "bg-muted border-border shadow-sm" 
+                        : "hover:bg-accent border-transparent hover:border-border"
                     )}
                 >
                     <div className="flex justify-between items-start mb-2">
@@ -185,7 +186,7 @@ export default function ContactClient({
                         {format(new Date(thread.updatedAt), "MM/dd")}
                     </span>
                     </div>
-                    {thread.subject && <div className="text-sm font-bold mb-1 truncate text-slate-900 dark:text-slate-100">{thread.subject}</div>}
+                    {thread.subject && <div className="text-sm font-bold mb-1 truncate text-foreground">{thread.subject}</div>}
                     <div className="text-xs text-muted-foreground truncate leading-relaxed">
                     {thread.messages[0]?.content || "No messages"}
                     </div>
@@ -206,31 +207,56 @@ export default function ContactClient({
             "w-full h-fit flex flex-col gap-6 rounded-xl py-6",
             !userId && "max-w-xl"
           )}>
-            <div className="pb-4 border-b border-slate-200 dark:border-slate-800">
+            <div className="pb-4 border-b border-border">
               <h2 className="text-2xl font-bold tracking-tight">お問い合わせ</h2>
               <p className="text-muted-foreground mt-1">
                 ご質問、ご要望などお気軽にお送りください。
               </p>
             </div>
             <div className="space-y-6">
-              <Tabs defaultValue={newType} onValueChange={(v) => setNewType(v as ContactType)} className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-6 bg-slate-100 dark:bg-slate-800 p-1 rounded-full">
+              <Tabs defaultValue={newType} onValueChange={(v) => setNewType(v as ContactType | "X_DM")} className="w-full">
+                <TabsList className="grid w-full grid-cols-3 mb-6 bg-muted p-1 rounded-full">
+                  <TabsTrigger 
+                    value="X_DM"
+                    className="rounded-full data-[state=active]:bg-zinc-900 data-[state=active]:text-white dark:data-[state=active]:bg-zinc-100 dark:data-[state=active]:text-zinc-900 transition-colors"
+                  >
+                    X (DM)
+                  </TabsTrigger>
                   <TabsTrigger 
                     value="CHAT"
-                    className="rounded-full data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:shadow-sm transition-all"
+                    className="rounded-full data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 transition-colors"
                   >
                     チャット
                   </TabsTrigger>
                   <TabsTrigger 
                     value="EMAIL_FORM"
-                    className="rounded-full data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:shadow-sm transition-all"
+                    className="rounded-full data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 transition-colors"
                   >
                     メールフォーム
                   </TabsTrigger>
                 </TabsList>
 
-                {newType === "CHAT" && !userId ? (
-                  <div className="flex flex-col items-center justify-center p-8 text-center space-y-4 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-100 dark:border-slate-800">
+                <div className="min-h-[420px]">
+                {newType === "X_DM" ? (
+                   <div className="flex flex-col items-center justify-center p-8 text-center space-y-6 h-full min-h-[400px] border rounded-lg bg-card border-border">
+                      <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-full">
+                        <svg viewBox="0 0 24 24" className="w-8 h-8" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+                      </div>
+                      <div className="max-w-md space-y-2">
+                        <h3 className="font-bold text-xl">X (旧Twitter) DM</h3>
+                        <p className="text-muted-foreground text-sm leading-relaxed">
+                          Xのダイレクトメッセージからもお問い合わせいただけます。<br/>
+                          お気軽にご連絡ください。
+                        </p>
+                      </div>
+                      <Button asChild size="lg" className="rounded-full bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200">
+                          <a href="https://x.com/simpro_app" target="_blank" rel="noopener noreferrer">
+                              DMを送る
+                          </a>
+                      </Button>
+                   </div>
+                ) : newType === "CHAT" && !userId ? (
+                  <div className="flex flex-col items-center justify-center p-8 text-center space-y-4 bg-muted/50 rounded-lg border border-border min-h-[400px]">
                       <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-full">
                         <LogIn className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                       </div>
@@ -243,7 +269,12 @@ export default function ContactClient({
                       </Button>
                   </div>
                 ) : (
-                  <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  <div className="space-y-4">
+                    <div className="bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-900/30 p-3 rounded-lg text-xs text-yellow-800 dark:text-yellow-400 mb-4 flex gap-2 items-center">
+                        <span className="font-bold bg-yellow-200 dark:bg-yellow-900/50 px-1.5 py-0.5 rounded">Note</span>
+                        <span>返信にお時間をいただく場合がございます。</span>
+                    </div>
+
                     {newType === "EMAIL_FORM" && !userId && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
@@ -252,7 +283,7 @@ export default function ContactClient({
                                     value={contactName} 
                                     onChange={e => setContactName(e.target.value)} 
                                     placeholder="Simplo 太郎" 
-                                    className="bg-white dark:bg-slate-950"
+                                    className="bg-background"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -263,7 +294,7 @@ export default function ContactClient({
                                     placeholder="your@email.com" 
                                     type="email"
                                     required
-                                    className="bg-white dark:bg-slate-950"
+                                    className="bg-background"
                                 />
                             </div>
                         </div>
@@ -276,7 +307,7 @@ export default function ContactClient({
                             value={newSubject} 
                             onChange={e => setNewSubject(e.target.value)} 
                             placeholder="お問い合わせの件名" 
-                            className="bg-white dark:bg-slate-950"
+                            className="bg-background"
                         />
                       </div>
                     )}
@@ -288,7 +319,7 @@ export default function ContactClient({
                         onChange={e => setInitialMessage(e.target.value)} 
                         placeholder="お問い合わせ内容をご記入ください..." 
                         rows={6}
-                        className="bg-white dark:bg-slate-950 resize-none"
+                        className="bg-background resize-none"
                       />
                     </div>
 
@@ -307,12 +338,13 @@ export default function ContactClient({
                     </div>
                   </div>
                 )}
+                </div>
               </Tabs>
             </div>
           </div>
         ) : activeThread && userId ? (
-          <div className="flex flex-col h-full relative rounded-2xl overflow-hidden bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border border-slate-200 dark:border-slate-800 shadow-xl">
-             <div className="border-b border-slate-200 dark:border-slate-800 p-4 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm flex items-center justify-between">
+          <div className="flex flex-col h-full relative rounded-2xl overflow-hidden bg-card/60 backdrop-blur-md border border-border shadow-xl">
+             <div className="border-b border-border p-4 bg-card/50 backdrop-blur-sm flex items-center justify-between">
                 <h2 className="text-lg font-bold flex items-center gap-3">
                    <div className={cn(
                       "p-2 rounded-full",
@@ -324,7 +356,7 @@ export default function ContactClient({
                    </div>
                    {activeThread.subject || "チャットでのお問い合わせ"}
                 </h2>
-                <span className="text-xs font-medium bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full text-slate-600 dark:text-slate-400">
+                <span className="text-xs font-medium bg-muted px-3 py-1 rounded-full text-muted-foreground">
                   {activeThread.status}
                 </span>
              </div>
@@ -334,13 +366,13 @@ export default function ContactClient({
                      <Loader2 className="animate-spin text-muted-foreground" />
                  </div>
              ) : (
-                <ScrollArea className="flex-1 p-4 sm:p-6 bg-slate-50/50 dark:bg-slate-950/50">
+                <ScrollArea className="flex-1 p-4 sm:p-6 bg-muted/30">
                     <div className="space-y-6 pb-4">
                         {activeDetails?.messages.map((msg) => {
                             const isMe = msg.userId === userId;
                             return (
                                 <div key={msg.id} className={`flex gap-3 ${isMe ? "flex-row-reverse" : "flex-row"}`}>
-                                    <Avatar className="h-8 w-8 mt-1 border border-slate-200 dark:border-slate-700 shadow-sm">
+                                    <Avatar className="h-8 w-8 mt-1 border border-border shadow-sm">
                                         <AvatarImage src={msg.user?.avatarUrl || undefined} />
                                         <AvatarFallback className="text-xs">{msg.user?.displayName?.slice(0,2) || "??"}</AvatarFallback>
                                     </Avatar>
@@ -348,12 +380,12 @@ export default function ContactClient({
                                       "group relative p-4 rounded-2xl max-w-[85%] sm:max-w-[70%] whitespace-pre-wrap text-sm leading-relaxed shadow-sm",
                                       isMe 
                                         ? "bg-blue-600 text-white rounded-tr-sm" 
-                                        : "bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-100 dark:border-slate-700 rounded-tl-sm"
+                                        : "bg-card text-card-foreground border border-border rounded-tl-sm"
                                     )}>
                                         {msg.content}
                                         <div className={cn(
                                           "text-[10px] mt-2 opacity-0 group-hover:opacity-70 transition-opacity absolute bottom-1 right-3",
-                                          isMe ? "text-blue-100" : "text-slate-400"
+                                          isMe ? "text-blue-100" : "text-muted-foreground"
                                         )}>
                                             {format(new Date(msg.createdAt), "MM/dd HH:mm")}
                                         </div>
@@ -365,14 +397,14 @@ export default function ContactClient({
                 </ScrollArea>
              )}
              
-             <div className="mt-auto border-t border-slate-200 dark:border-slate-800 p-4 bg-white dark:bg-slate-900">
+             <div className="mt-auto border-t border-border p-4 bg-card">
                 <div className="flex gap-2 items-end max-w-3xl mx-auto">
                   <Textarea 
                      value={input} 
                      onChange={e => setInput(e.target.value)}
                      placeholder="メッセージを入力..."
                      onKeyDown={e => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), handleSend())}
-                     className="min-h-[50px] max-h-32 bg-slate-50 dark:bg-slate-950 resize-none py-3"
+                     className="min-h-[50px] max-h-32 bg-muted/50 resize-none py-3"
                   />
                   <Button size="icon" className="h-[50px] w-[50px] shrink-0 rounded-xl" onClick={handleSend} disabled={!input.trim()}>
                      <Send className="h-5 w-5" />
@@ -382,10 +414,10 @@ export default function ContactClient({
           </div>
         ) : (
           <div className="m-auto text-center space-y-3 p-8">
-            <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
-              <MessageSquare className="w-8 h-8 text-slate-400" />
+            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+              <MessageSquare className="w-8 h-8 text-muted-foreground" />
             </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">お問い合わせを選択</h3>
+            <h3 className="text-lg font-bold text-foreground">お問い合わせを選択</h3>
             <p className="text-muted-foreground text-sm max-w-sm mx-auto">
               左側のリストから履歴を選択するか、「新しい問い合わせ」ボタンから新規作成してください。
             </p>

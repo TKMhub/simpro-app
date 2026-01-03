@@ -4,6 +4,9 @@ import { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Juice - 勝敗をジュースで見える化',
   description: '日常の勝負を楽しく記録するアプリ。獲得したジュースの数で競い合おう。',
+  icons: {
+    icon: '/favicon-juice.svg',
+  },
 };
 
 export default function JuiceLayout({

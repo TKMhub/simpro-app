@@ -1,9 +1,13 @@
 import Link from "next/link";
-import { getAllTags } from "@/lib/blogData";
 
 export default function Footer() {
   const year = new Date().getFullYear();
-  const topics = getAllTags();
+  
+  const products = [
+    { name: "Zaiko.", href: "/product/zaiko" },
+    { name: "Juice.", href: "/product/juice" },
+  ];
+
   return (
     <footer className="my-5 sm:mt-16">
       <div className="mx-auto max-w-6xl px-3 sm:px-6">
@@ -60,26 +64,24 @@ export default function Footer() {
             </nav>
           </div>
           </div>
-          {/* Topics from existing content (frosted card) */}
-          {topics.length > 0 && (
-            <div className="mt-3">
-              <span className="uppercase tracking-wide text-neutral-400">Topics</span>
-              <nav aria-label="トピック一覧">
-                <ul className="flex flex-wrap gap-1.5">
-                  {topics.map((tag) => (
-                    <li key={tag}>
-                      <Link
-                        href={{ pathname: "/blog", query: { tag } }}
-                        className="inline-block rounded-md border border-white/10 px-2.5 py-1 text-xs text-neutral-200 hover:bg-white/10 transition-colors"
-                      >
-                        {tag}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </nav>
-            </div>
-          )}
+          {/* Products */}
+          <div className="mt-3">
+            <span className="uppercase tracking-wide text-neutral-400">Products</span>
+            <nav aria-label="プロダクト一覧">
+              <ul className="flex flex-wrap gap-1.5">
+                {products.map((p) => (
+                  <li key={p.name}>
+                    <Link
+                      href={p.href}
+                      className="inline-block rounded-md border border-white/10 px-2.5 py-1 text-xs text-neutral-200 hover:bg-white/10 transition-colors"
+                    >
+                      {p.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
         </div>
       </div>
     </footer>

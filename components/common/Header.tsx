@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import ThemedLogo from "@/components/common/ThemedLogo";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -92,13 +92,7 @@ export default function Header() {
         >
           {/* Left: Logo */}
           <Link href="/" className="flex items-center gap-2 px-2 sm:px-4 py-2 shrink-0">
-            <Image
-              src="/Simplo_gray_main_sub.svg"
-              alt="Logo"
-              width={50}
-              height={70}
-              priority
-            />
+            <ThemedLogo width={50} height={70} priority />
           </Link>
 
               {/* Mobile: Theme toggle + Hamburger */}
@@ -110,19 +104,13 @@ export default function Header() {
                   <MenuIcon />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-[80%] sm:max-w-sm bg-white dark:bg-black border-r dark:border-zinc-800">
+              <SheetContent side="left" className="w-[80%] sm:max-w-sm bg-background border-r border-border">
                 <SheetHeader className="p-0">
                   <SheetTitle className="sr-only">メニュー</SheetTitle>
                 </SheetHeader>
                 <div className="py-2 pl-5">
                   <Link href="/" className="inline-flex items-center gap-2">
-                    <Image
-                      src="/Simplo_gray_main_sub.svg"
-                      alt="Simpro logo"
-                      width={100}
-                      height={100}
-                      priority
-                    />
+                    <ThemedLogo width={100} height={100} priority />
                   </Link>
                 </div>
                 <div className="flex flex-col mt-4">
@@ -130,7 +118,7 @@ export default function Header() {
                     <ul className="flex flex-col gap-1.5">
                       <li>
                         <SheetClose asChild>
-                           <Link href="/" className="flex items-center gap-2 px-3 py-2 text-base font-medium rounded-md hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors text-slate-900 dark:text-slate-100">
+                           <Link href="/" className="flex items-center gap-2 px-3 py-2 text-base font-medium rounded-md hover:bg-accent transition-colors text-foreground">
                               <Home size={18} /> Home
                            </Link>
                         </SheetClose>
@@ -138,39 +126,39 @@ export default function Header() {
                       
                       {/* About Submenu */}
                       <li className="px-3 py-2">
-                         <div className="font-bold text-lg mb-2 text-slate-900 dark:text-white">About</div>
-                         <div className="pl-2 flex flex-col gap-1 border-l-2 border-slate-200 dark:border-zinc-800 ml-1">
+                         <div className="font-bold text-lg mb-2 text-foreground">About</div>
+                         <div className="pl-2 flex flex-col gap-1 border-l-2 border-border ml-1">
                             <SheetClose asChild>
-                               <Link href="/about" className="block py-2 px-3 text-base text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">About</Link>
+                               <Link href="/about" className="block py-2 px-3 text-base text-muted-foreground hover:text-foreground transition-colors">About</Link>
                             </SheetClose>
                             <SheetClose asChild>
-                               <Link href="/link" className="block py-2 px-3 text-base text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">Link</Link>
+                               <Link href="/link" className="block py-2 px-3 text-base text-muted-foreground hover:text-foreground transition-colors">Link</Link>
                             </SheetClose>
                          </div>
                       </li>
                       
                       {/* Output Submenu */}
                       <li className="px-3 py-2">
-                         <div className="font-bold text-lg mb-2 text-slate-900 dark:text-white">Output</div>
-                         <div className="pl-2 flex flex-col gap-1 border-l-2 border-slate-200 dark:border-zinc-800 ml-1">
+                         <div className="font-bold text-lg mb-2 text-foreground">Output</div>
+                         <div className="pl-2 flex flex-col gap-1 border-l-2 border-border ml-1">
                             <SheetClose asChild>
-                               <Link href="/product" className="block py-2 px-3 text-base text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">Product</Link>
+                               <Link href="/product" className="block py-2 px-3 text-base text-muted-foreground hover:text-foreground transition-colors">Product</Link>
                             </SheetClose>
                             <SheetClose asChild>
-                               <Link href="/blog" className="block py-2 px-3 text-base text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">Blog</Link>
+                               <Link href="/blog" className="block py-2 px-3 text-base text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
                             </SheetClose>
                          </div>
                       </li>
 
                       {/* Contact Submenu */}
                       <li className="px-3 py-2">
-                         <div className="font-bold text-lg mb-2 text-slate-900 dark:text-white">Contact</div>
-                         <div className="pl-2 flex flex-col gap-1 border-l-2 border-slate-200 dark:border-zinc-800 ml-1">
+                         <div className="font-bold text-lg mb-2 text-foreground">Contact</div>
+                         <div className="pl-2 flex flex-col gap-1 border-l-2 border-border ml-1">
                             <SheetClose asChild>
-                               <Link href="/request" className="block py-2 px-3 text-base text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">Request</Link>
+                               <Link href="/request" className="block py-2 px-3 text-base text-muted-foreground hover:text-foreground transition-colors">Request</Link>
                             </SheetClose>
                             <SheetClose asChild>
-                               <Link href="/contact" className="block py-2 px-3 text-base text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">Contact</Link>
+                               <Link href="/contact" className="block py-2 px-3 text-base text-muted-foreground hover:text-foreground transition-colors">Contact</Link>
                             </SheetClose>
                          </div>
                       </li>
@@ -178,7 +166,7 @@ export default function Header() {
                       {profile?.role === "SUPER_ADMIN" && (
                          <li>
                            <SheetClose asChild>
-                             <Link href="/admin" className="block rounded-md px-3 py-2 text-base font-medium hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors text-slate-900 dark:text-slate-100">
+                             <Link href="/admin" className="block rounded-md px-3 py-2 text-base font-medium hover:bg-accent transition-colors text-foreground">
                                Admin
                              </Link>
                            </SheetClose>
@@ -200,53 +188,53 @@ export default function Header() {
             <ul className="flex items-center gap-2 sm:gap-3 md:gap-4 text-sm">
               {/* About Dropdown */}
               <li>
-                <DropdownMenu>
-                  <DropdownMenuTrigger className={cn(navItemClass, "outline-none")}>
+                  <DropdownMenu modal={false}>
+                    <DropdownMenuTrigger className={cn(navItemClass, "outline-none")}>
                      About <ChevronDown size={14} />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="center" className="bg-white/80 dark:bg-black/80 backdrop-blur-md border-slate-200 dark:border-zinc-800">
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="center" className="bg-[var(--glass-bg)] backdrop-blur-md border-[var(--glass-border)]">
                      <DropdownMenuItem asChild>
                         <Link href="/about" className="cursor-pointer">About</Link>
                      </DropdownMenuItem>
                      <DropdownMenuItem asChild>
                         <Link href="/link" className="cursor-pointer">Link</Link>
                      </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
               </li>
               
               {/* Output Dropdown */}
               <li>
-                <DropdownMenu>
-                  <DropdownMenuTrigger className={cn(navItemClass, "outline-none")}>
+                  <DropdownMenu modal={false}>
+                    <DropdownMenuTrigger className={cn(navItemClass, "outline-none")}>
                      Output <ChevronDown size={14} />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="center" className="bg-white/80 dark:bg-black/80 backdrop-blur-md border-slate-200 dark:border-zinc-800">
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="center" className="bg-[var(--glass-bg)] backdrop-blur-md border-[var(--glass-border)]">
                      <DropdownMenuItem asChild>
                         <Link href="/product" className="cursor-pointer">Product</Link>
                      </DropdownMenuItem>
                      <DropdownMenuItem asChild>
                         <Link href="/blog" className="cursor-pointer">Blog</Link>
                      </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
               </li>
 
               {/* Contact Dropdown */}
               <li>
-                <DropdownMenu>
-                  <DropdownMenuTrigger className={cn(navItemClass, "outline-none")}>
+                  <DropdownMenu modal={false}>
+                    <DropdownMenuTrigger className={cn(navItemClass, "outline-none")}>
                      Contact <ChevronDown size={14} />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="center" className="bg-white/80 dark:bg-black/80 backdrop-blur-md border-slate-200 dark:border-zinc-800">
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="center" className="bg-[var(--glass-bg)] backdrop-blur-md border-[var(--glass-border)]">
                      <DropdownMenuItem asChild>
                         <Link href="/request" className="cursor-pointer">Request</Link>
                      </DropdownMenuItem>
                      <DropdownMenuItem asChild>
                         <Link href="/contact" className="cursor-pointer">Contact</Link>
                      </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
               </li>
 
               {profile?.role === "SUPER_ADMIN" && (
@@ -259,7 +247,7 @@ export default function Header() {
               
               <li className="flex items-center gap-2 border-l border-slate-200 dark:border-slate-700 pl-3 ml-1">
                  <ThemeToggle />
-                 <Link href="/" aria-label="Home" className="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                 <Link href="/" aria-label="Home" className="p-2 rounded-md hover:bg-accent transition-colors">
                     <Home size={18} />
                  </Link>
               </li>

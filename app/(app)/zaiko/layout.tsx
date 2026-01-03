@@ -4,6 +4,9 @@ import { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Zaiko. - 家庭の在庫管理をゼロに',
   description: '家族で使える在庫管理アプリ。買い忘れも、買いすぎも、もうありません。',
+  icons: {
+    icon: '/favicon-zaiko.svg',
+  },
 };
 
 export default function ZaikoLayout({

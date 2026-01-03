@@ -77,7 +77,7 @@ export default async function ProductDetailPage({ params }: Props) {
             alt="cover"
             fill
             sizes="(max-width: 768px) 100vw, 768px"
-            className="object-cover"
+            className="object-contain p-8"
             priority
             fallbackSrc="/Simplo_gray_main_sub.jpg"
           />
