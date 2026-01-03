@@ -9,78 +9,79 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="my-5 sm:mt-16">
-      <div className="mx-auto max-w-6xl px-3 sm:px-6">
-        <div className=" flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6 py-4 rounded-xl border border-white/10 bg-[#343434] text-neutral-200 shadow-sm shadow-black/5">
-          <div className="flex">
-
-          <div className=" justify-between">
-            <div className="flex items-center gap-3 text-sm text-neutral-400">
-              <span className="font-medium text-neutral-200">
-                Simplo
-              </span>
-              <span aria-hidden>-</span>
-              <span>@ {year}</span>
+    <footer className="my-10 sm:my-16 px-4">
+      <div className="mx-auto max-w-6xl">
+        <div className="p-8 rounded-3xl border border-white/10 bg-[#343434] text-neutral-200 shadow-sm shadow-black/5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-8 md:gap-12">
+            
+            {/* Brand Section */}
+            <div className="md:col-span-4 flex flex-col gap-4">
+               <div className="flex flex-col">
+                  <span className="font-bold text-2xl tracking-tight text-white">Simplo</span>
+                  <span className="text-xs text-neutral-400 mt-1">
+                    Simplified products for your life.
+                  </span>
+               </div>
+               <span className="text-xs text-neutral-500 mt-auto">© {year} Simplo. All rights reserved.</span>
             </div>
 
-            <nav
-              aria-label="フッターナビゲーション"
-              className="order-last sm:order-none"
-              >
-              <ul className="flex items-center gap-3 text-sm">
-                <li>
-                  <Link
-                    href="/about"
-                    className="px-2 py-1.5 rounded-md hover:bg-white/10 transition-colors"
-                    >
-                    about
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/blog"
-                    className="px-2 py-1.5 rounded-md hover:bg-white/10 transition-colors"
-                    >
-                    blog
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/product"
-                    className="px-2 py-1.5 rounded-md hover:bg-white/10 transition-colors"
-                    >
-                    product
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/link"
-                    className="px-2 py-1.5 rounded-md hover:bg-white/10 transition-colors"
-                    >
-                    link
-                  </Link>
-                </li>
-              </ul>
-            </nav>
-          </div>
-          </div>
-          {/* Products */}
-          <div className="mt-3">
-            <span className="uppercase tracking-wide text-neutral-400">Products</span>
-            <nav aria-label="プロダクト一覧">
-              <ul className="flex flex-wrap gap-1.5">
-                {products.map((p) => (
-                  <li key={p.name}>
-                    <Link
-                      href={p.href}
-                      className="inline-block rounded-md border border-white/10 px-2.5 py-1 text-xs text-neutral-200 hover:bg-white/10 transition-colors"
-                    >
-                      {p.name}
-                    </Link>
+            <div className="md:col-span-8 grid grid-cols-2 sm:grid-cols-3 gap-8">
+              {/* About */}
+              <div className="flex flex-col gap-4">
+                <h3 className="font-bold text-white text-sm uppercase tracking-wider opacity-70">About</h3>
+                <ul className="flex flex-col gap-2.5 text-sm text-neutral-400">
+                  <li>
+                    <Link href="/about" className="hover:text-white transition-colors">About</Link>
                   </li>
-                ))}
-              </ul>
-            </nav>
+                  <li>
+                    <Link href="/link" className="hover:text-white transition-colors">Link</Link>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Output */}
+              <div className="flex flex-col gap-4">
+                <h3 className="font-bold text-white text-sm uppercase tracking-wider opacity-70">Output</h3>
+                <ul className="flex flex-col gap-2.5 text-sm text-neutral-400">
+                  <li>
+                    <Link href="/product" className="hover:text-white transition-colors">Product</Link>
+                  </li>
+                  <li>
+                    <Link href="/blog" className="hover:text-white transition-colors">Blog</Link>
+                  </li>
+                </ul>
+                
+                {/* Product Tags */}
+                <div className="pt-2">
+                   <div className="text-xs text-neutral-500 mb-2">Projects</div>
+                   <div className="flex flex-wrap gap-2">
+                      {products.map((p) => (
+                        <Link 
+                          key={p.name} 
+                          href={p.href}
+                          className="inline-block px-2 py-0.5 rounded text-[10px] bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-neutral-300"
+                        >
+                          {p.name}
+                        </Link>
+                      ))}
+                   </div>
+                </div>
+              </div>
+
+              {/* Contact */}
+              <div className="flex flex-col gap-4">
+                <h3 className="font-bold text-white text-sm uppercase tracking-wider opacity-70">Contact</h3>
+                <ul className="flex flex-col gap-2.5 text-sm text-neutral-400">
+                  <li>
+                    <Link href="/request" className="hover:text-white transition-colors">Request</Link>
+                  </li>
+                  <li>
+                    <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>

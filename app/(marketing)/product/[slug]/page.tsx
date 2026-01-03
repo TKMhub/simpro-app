@@ -7,6 +7,7 @@ import { getLocalProductBySlug } from "@/lib/product/local-content";
 import { RenderBlock } from "@/util/common/notion-render";
 import { fetchNotionBlocks } from "@/lib/blog/notion-client";
 import { normalizeNotionDocument } from "@/lib/blog/notion-normalize";
+import { ArrowRight, ExternalLink } from "lucide-react";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -97,15 +98,17 @@ export default async function ProductDetailPage({ params }: Props) {
         )}
 
         {product.contentLink && (
-          <div className="mt-10 flex justify-center">
-            <Button asChild size="lg" className="rounded-full px-8">
+          <div className="mt-16 flex justify-center pb-8">
+            <Button asChild size="lg" className="rounded-full px-12 py-7 text-lg font-bold shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/40 transition-all hover:scale-105 active:scale-95 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90">
               <Link 
                 href={product.contentLink}
                 target={product.actionType === 'transition' ? "_self" : "_blank"}
                 rel={product.actionType === 'download' ? "noopener noreferrer" : undefined}
                 download={product.actionType === 'download' ? true : undefined}
+                className="flex items-center gap-2"
               >
                 {product.actionType === 'download' ? 'ダウンロード' : 'コンテンツへ移動'}
+                {product.actionType === 'transition' ? <ArrowRight className="w-5 h-5" /> : <ExternalLink className="w-5 h-5" />}
               </Link>
             </Button>
           </div>
