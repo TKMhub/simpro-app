@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { format } from "date-fns";
-import { Loader2, Send, Plus, MessageSquare, Mail, LogIn } from "lucide-react";
+import { Loader2, Send, Plus, MessageSquare, Mail, LogIn, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
@@ -35,13 +35,22 @@ export default function ContactClient({
   userId: string | null
 }) {
   const [threads, setThreads] = useState<ThreadWithMessages[]>(initialThreads);
-  const [activeThreadId, setActiveThreadId] = useState<string | null>(initialThreads[0]?.id || null);
+  const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [activeDetails, setActiveDetails] = useState<FullThread | null>(null);
   const [input, setInput] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const router = useRouter();
+
+  // Handle desktop auto-select
+  useEffect(() => {
+    if (window.innerWidth >= 768 && !activeThreadId && !isCreating && initialThreads.length > 0) {
+        setActiveThreadId(initialThreads[0].id);
+    }
+  }, []);
+
+  const showMobileContent = !!(activeThreadId || isCreating);
 
   // Create form state
   const [newSubject, setNewSubject] = useState("");
@@ -153,8 +162,11 @@ export default function ContactClient({
     <div className="flex h-[calc(100vh-140px)] gap-6">
       {/* Sidebar List (Only visible if logged in and has threads) */}
       {userId && (
-        <div className="w-80 hidden md:flex flex-col gap-4 border-r border-border pr-6">
-            <Button onClick={() => setIsCreating(true)} className="w-full shadow-sm" size="lg">
+        <div className={cn(
+            "w-full md:w-80 flex-col gap-4 border-r border-border pr-6",
+            showMobileContent ? "hidden md:flex" : "flex"
+        )}>
+            <Button onClick={() => setIsCreating(true)} className="w-full shadow-sm bg-primary text-primary-foreground hover:bg-primary/90" size="lg">
               <Plus className="mr-2 h-4 w-4" /> 新しい問い合わせ
             </Button>
             <ScrollArea className="flex-1 -mr-4 pr-4">
@@ -201,18 +213,26 @@ export default function ContactClient({
       {/* Main Content */}
       <div className={cn(
         "flex-1 flex flex-col h-full",
-        !userId && "max-w-2xl mx-auto w-full items-center justify-center py-8"
+        !userId && "max-w-2xl mx-auto w-full items-center justify-center py-8",
+        userId && !showMobileContent ? "hidden md:flex" : "flex"
       )}>
         {(isCreating || (!userId && threads.length === 0)) ? (
           <div className={cn(
             "w-full h-fit flex flex-col gap-6 rounded-xl py-6",
             !userId && "max-w-xl"
           )}>
-            <div className="pb-4 border-b border-border">
-              <h2 className="text-2xl font-bold tracking-tight">お問い合わせ</h2>
-              <p className="text-muted-foreground mt-1">
-                ご質問、ご要望などお気軽にお送りください。
-              </p>
+            <div className="pb-4 border-b border-border flex items-center gap-2">
+              {userId && (
+                <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsCreating(false)}>
+                    <ArrowLeft className="h-4 w-4" />
+                </Button>
+              )}
+              <div>
+                  <h2 className="text-2xl font-bold tracking-tight">お問い合わせ</h2>
+                  <p className="text-muted-foreground mt-1">
+                    ご質問、ご要望などお気軽にお送りください。
+                  </p>
+              </div>
             </div>
             <div className="space-y-6">
               <Tabs defaultValue={newType} onValueChange={(v) => setNewType(v as ContactType | "X_DM")} className="w-full">
@@ -246,7 +266,7 @@ export default function ContactClient({
                             src="/icons/x.svg" 
                             alt="X" 
                             fill 
-                            className="object-contain invert dark:invert-0" 
+                            className="object-contain dark:invert" 
                           />
                         </div>
                       </div>
@@ -282,13 +302,13 @@ export default function ContactClient({
                       "border p-3 rounded-lg text-xs mb-4 flex gap-2 items-center",
                       newType === "CHAT" 
                         ? "bg-blue-50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-900/30 text-blue-800 dark:text-blue-300"
-                        : "bg-yellow-50 dark:bg-yellow-900/10 border-yellow-200 dark:border-yellow-900/30 text-yellow-800 dark:text-yellow-400"
+                        : "bg-orange-50 dark:bg-orange-900/10 border-orange-200 dark:border-orange-900/30 text-orange-800 dark:text-orange-400"
                     )}>
                         <span className={cn(
                           "font-bold px-1.5 py-0.5 rounded",
                           newType === "CHAT"
                             ? "bg-blue-200 dark:bg-blue-900/50"
-                            : "bg-yellow-200 dark:bg-yellow-900/50"
+                            : "bg-orange-200 dark:bg-orange-900/50"
                         )}>Note</span>
                         <span>返信にお時間をいただく場合がございます。</span>
                     </div>
@@ -363,17 +383,22 @@ export default function ContactClient({
         ) : activeThread && userId ? (
           <div className="flex flex-col h-full relative rounded-2xl overflow-hidden bg-card/60 backdrop-blur-md border border-border shadow-xl">
              <div className="border-b border-border p-4 bg-card/50 backdrop-blur-sm flex items-center justify-between">
-                <h2 className="text-lg font-bold flex items-center gap-3">
-                   <div className={cn(
-                      "p-2 rounded-full",
-                      activeThread.type === "CHAT" 
-                        ? "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
-                        : "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400"
-                   )}>
-                      {activeThread.type === "CHAT" ? <MessageSquare size={16} /> : <Mail size={16} />}
-                   </div>
-                   {activeThread.subject || "チャットでのお問い合わせ"}
-                </h2>
+                <div className="flex items-center gap-3">
+                    <Button variant="ghost" size="icon" className="md:hidden -ml-2 h-8 w-8" onClick={() => setActiveThreadId(null)}>
+                        <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                    <h2 className="text-lg font-bold flex items-center gap-3">
+                    <div className={cn(
+                        "p-2 rounded-full",
+                        activeThread.type === "CHAT" 
+                            ? "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
+                            : "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400"
+                    )}>
+                        {activeThread.type === "CHAT" ? <MessageSquare size={16} /> : <Mail size={16} />}
+                    </div>
+                    {activeThread.subject || "チャットでのお問い合わせ"}
+                    </h2>
+                </div>
                 <span className="text-xs font-medium bg-muted px-3 py-1 rounded-full text-muted-foreground">
                   {activeThread.status}
                 </span>

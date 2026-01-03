@@ -13,14 +13,14 @@ export default function Footer() {
       <div className="mx-auto max-w-6xl">
         <div className="p-8 rounded-3xl border border-white/10 bg-[#343434] text-neutral-200 shadow-sm shadow-black/5">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-8 md:gap-12">
-            
+
             {/* Brand Section */}
             <div className="md:col-span-4 flex flex-col gap-4">
                <div className="flex flex-col">
                   <span className="font-bold text-2xl tracking-tight text-white">Simplo</span>
                   <span className="text-xs text-neutral-400 mt-1">
                     Simplified products for your life.
-                  </span>
+              </span>
                </div>
                <span className="text-xs text-neutral-500 mt-auto">© {year} Simplo. All rights reserved.</span>
             </div>
@@ -30,12 +30,12 @@ export default function Footer() {
               <div className="flex flex-col gap-4">
                 <h3 className="font-bold text-white text-sm uppercase tracking-wider opacity-70">About</h3>
                 <ul className="flex flex-col gap-2.5 text-sm text-neutral-400">
-                  <li>
+                <li>
                     <Link href="/about" className="hover:text-white transition-colors">About</Link>
-                  </li>
-                  <li>
+                </li>
+                <li>
                     <Link href="/link" className="hover:text-white transition-colors">Link</Link>
-                  </li>
+                </li>
                 </ul>
               </div>
 
@@ -43,13 +43,13 @@ export default function Footer() {
               <div className="flex flex-col gap-4">
                 <h3 className="font-bold text-white text-sm uppercase tracking-wider opacity-70">Output</h3>
                 <ul className="flex flex-col gap-2.5 text-sm text-neutral-400">
-                  <li>
+                <li>
                     <Link href="/product" className="hover:text-white transition-colors">Product</Link>
-                  </li>
-                  <li>
+                </li>
+                <li>
                     <Link href="/blog" className="hover:text-white transition-colors">Blog</Link>
-                  </li>
-                </ul>
+                </li>
+              </ul>
                 
                 {/* Product Tags */}
                 <div className="pt-2">
@@ -65,8 +65,8 @@ export default function Footer() {
                         </Link>
                       ))}
                    </div>
-                </div>
-              </div>
+          </div>
+          </div>
 
               {/* Contact */}
               <div className="flex flex-col gap-4">
@@ -77,7 +77,7 @@ export default function Footer() {
                   </li>
                   <li>
                     <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
-                  </li>
+                    </li>
                 </ul>
               </div>
             </div>
