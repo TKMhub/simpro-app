@@ -9,7 +9,7 @@ export default async function AdminLayout({
 }) {
   const profile = await getCurrentProfile();
 
-  if (!profile || profile.role !== "SUPER_ADMIN") {
+  if (!profile || (profile.role !== "SUPER_ADMIN" && profile.role !== "ADMIN")) {
     redirect("/");
   }
 

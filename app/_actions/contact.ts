@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/db/prisma";
 import { ContactType, ContactStatus } from "@/lib/generated/prisma";
 import { revalidatePath } from "next/cache";
+import { sendMail } from "@/lib/mail";
 
 // --- Contact Actions ---
 
@@ -34,8 +35,29 @@ export async function createContactThread(data: CreateContactData) {
     },
   });
 
-  // Notify Admin (TODO: Email implementation)
-  console.log(`New contact thread created: ${thread.id}`);
+  // Notify Admin
+  const adminEmail = process.env.ADMIN_EMAIL || "simpro201010@gmail.com";
+  
+  // For new thread creation
+  const subjectText = data.subject || "No Subject";
+  const typeText = data.type === "CHAT" ? "チャット" : "メールフォーム";
+  
+  await sendMail({
+    to: adminEmail,
+    subject: `[Simplo] 新しいお問い合わせ (${typeText}): ${subjectText}`,
+    text: `
+新しいお問い合わせがありました。
+
+タイプ: ${typeText}
+件名: ${subjectText}
+名前: ${data.name || "N/A"}
+メール: ${data.email || "N/A"}
+ID: ${thread.id}
+
+管理画面で確認:
+${process.env.NEXT_PUBLIC_APP_URL}/admin/contacts/${thread.id}
+    `,
+  });
 
   revalidatePath("/admin/contacts");
   return thread;
@@ -84,7 +106,51 @@ export async function sendMessage(threadId: string, content: string, attachments
   });
 
   // Notify (Email)
-  console.log(`New message in thread ${threadId}`);
+  const adminEmail = process.env.ADMIN_EMAIL || "simpro201010@gmail.com";
+  
+  if (!isAdmin) {
+      // User sent a message -> Notify Admin
+      await sendMail({
+        to: adminEmail,
+        subject: `[Simplo] 新着メッセージ: ${thread.subject || "チャット"}`,
+        text: `
+ユーザーから新しいメッセージが届きました。
+
+内容:
+${content}
+
+スレッドID: ${threadId}
+管理画面で確認:
+${process.env.NEXT_PUBLIC_APP_URL}/admin/contacts/${threadId}
+        `,
+      });
+  } else {
+      // Admin sent a message -> Notify User (if email exists)
+      // Check if thread has email or associated user has email
+      let userEmail = thread.email;
+      if (!userEmail && thread.userId) {
+          const threadUser = await prisma.profile.findUnique({ where: { id: thread.userId } });
+          userEmail = threadUser?.email;
+      }
+
+      if (userEmail) {
+          await sendMail({
+            to: userEmail,
+            subject: `[Simplo] お問い合わせへの返信`,
+            text: `
+お問い合わせありがとうございます。
+以下のメッセージが届きました。
+
+----------------
+${content}
+----------------
+
+ご確認はこちら:
+${process.env.NEXT_PUBLIC_APP_URL}/contact
+            `,
+          });
+      }
+  }
 
   revalidatePath(`/contact`);
   revalidatePath(`/admin/contacts/${threadId}`);

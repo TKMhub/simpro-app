@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 // Define generic types that match the Prisma return types used
 type ThreadWithMessages = ContactThread & {
@@ -240,7 +241,14 @@ export default function ContactClient({
                 {newType === "X_DM" ? (
                    <div className="flex flex-col items-center justify-center p-8 text-center space-y-6 h-full min-h-[400px] border rounded-lg bg-card border-border">
                       <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-full">
-                        <svg viewBox="0 0 24 24" className="w-8 h-8" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+                        <div className="relative w-8 h-8">
+                          <Image 
+                            src="/icons/x.svg" 
+                            alt="X" 
+                            fill 
+                            className="object-contain dark:invert" 
+                          />
+                        </div>
                       </div>
                       <div className="max-w-md space-y-2">
                         <h3 className="font-bold text-xl">X (旧Twitter) DM</h3>
@@ -270,8 +278,18 @@ export default function ContactClient({
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <div className="bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-900/30 p-3 rounded-lg text-xs text-yellow-800 dark:text-yellow-400 mb-4 flex gap-2 items-center">
-                        <span className="font-bold bg-yellow-200 dark:bg-yellow-900/50 px-1.5 py-0.5 rounded">Note</span>
+                    <div className={cn(
+                      "border p-3 rounded-lg text-xs mb-4 flex gap-2 items-center",
+                      newType === "CHAT" 
+                        ? "bg-blue-50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-900/30 text-blue-800 dark:text-blue-300"
+                        : "bg-yellow-50 dark:bg-yellow-900/10 border-yellow-200 dark:border-yellow-900/30 text-yellow-800 dark:text-yellow-400"
+                    )}>
+                        <span className={cn(
+                          "font-bold px-1.5 py-0.5 rounded",
+                          newType === "CHAT"
+                            ? "bg-blue-200 dark:bg-blue-900/50"
+                            : "bg-yellow-200 dark:bg-yellow-900/50"
+                        )}>Note</span>
                         <span>返信にお時間をいただく場合がございます。</span>
                     </div>
 
