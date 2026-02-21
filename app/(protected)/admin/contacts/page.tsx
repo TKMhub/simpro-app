@@ -40,7 +40,7 @@ export default async function AdminContactsPage() {
           <TableBody>
             {contacts.map((contact) => (
               <TableRow key={contact.id}>
-                <TableCell>{contact.user.displayName || contact.user.email}</TableCell>
+                <TableCell>{contact.user?.displayName || contact.user?.email || 'Unknown User'}</TableCell>
                 <TableCell>
                   <div className="flex flex-col">
                     <span className="font-medium">{contact.type}</span>

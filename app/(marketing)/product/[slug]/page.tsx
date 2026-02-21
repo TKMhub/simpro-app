@@ -7,6 +7,7 @@ import { getLocalProductBySlug } from "@/lib/product/local-content";
 import { RenderBlock } from "@/util/common/notion-render";
 import { fetchNotionBlocks } from "@/lib/blog/notion-client";
 import { normalizeNotionDocument } from "@/lib/blog/notion-normalize";
+import type { NotionDocument } from "@/lib/blog/types";
 import { ArrowRight, ExternalLink } from "lucide-react";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -23,7 +24,7 @@ export default async function ProductDetailPage({ params }: Props) {
   const product = await getLocalProductBySlug(slug);
   if (!product) return notFound();
 
-  let notion = { blocks: [], unavailable: true };
+  let notion: NotionDocument = { blocks: [], unavailable: true };
   
   // Fetch Notion content if ID is valid
   // We use a simple check to skip placeholders

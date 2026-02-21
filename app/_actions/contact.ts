@@ -130,7 +130,7 @@ ${process.env.NEXT_PUBLIC_APP_URL}/admin/contacts/${threadId}
       let userEmail = thread.email;
       if (!userEmail && thread.userId) {
           const threadUser = await prisma.profile.findUnique({ where: { id: thread.userId } });
-          userEmail = threadUser?.email;
+          userEmail = threadUser?.email ?? null;
       }
 
       if (userEmail) {

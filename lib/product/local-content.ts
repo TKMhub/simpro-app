@@ -7,7 +7,7 @@ const CONTENT_DIR = path.join(process.cwd(), 'content/products');
 
 export async function getLocalProductList(): Promise<ProductHeader[]> {
   const types = ['application', 'template', 'tool'] as const;
-  let items: ProductHeader[] = [];
+  const items: ProductHeader[] = [];
 
   for (const type of types) {
     const dir = path.join(CONTENT_DIR, type);
